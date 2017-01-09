@@ -2,6 +2,7 @@ import cx_Oracle
 import sys
 import logging
 
+from repo.writer import write
 
 def open_connection(host, port, service, user, password):
     logging.debug('Opening connection to db')
@@ -12,8 +13,13 @@ def open_connection(host, port, service, user, password):
 
 def load_report(cursor, accession_number):
     befund_schluessel = _load_by_accession_number(cursor, accession_number)
-    print("Got BEFUND_SCHLUESSEL", befund_schluessel)
-    return _load_befund(cursor, accession_number, befund_schluessel)
+    print("Got befund schluessel", befund_schluessel)
+    if befund_schluessel is not None:
+        report = _load_befund(cursor, accession_number, befund_schluessel)
+        report_as_html = write(accession_number, report)
+        return report_as_html
+    else:
+        return None
 
 
 def _load_by_accession_number(cursor, accession_number):
@@ -25,9 +31,12 @@ def _load_by_accession_number(cursor, accession_number):
           WHERE
             A.UNTERS_SCHLUESSEL = :accession_number
           """
-    cursor.execute(sql, accession_number=accession_number)
-    row = cursor.fetchone()
-    return row[0]
+    try:
+        cursor.execute(sql, accession_number=accession_number)
+        row = cursor.fetchone()
+        return row[0]
+    except cx_Oracle.DatabaseError:
+        return None
 
 
 def _load_befund(cursor, accession_number, befund_schluessel):

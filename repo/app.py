@@ -27,8 +27,7 @@ def show():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
     con = get_db()
-    report = load_report(con.cursor(), accession_number)
-    report_as_html = write(accession_number, report)
+    report_as_html = load_report(con.cursor(), accession_number)
     return render_template('report.html',
                            version=app.config['VERSION'],
                            accession_number=accession_number,

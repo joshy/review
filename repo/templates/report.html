@@ -10,7 +10,11 @@
   {% include 'partials/header.html' %}
   <div class="w-100 bt b--black-10">
     <div class="pa3 ph5-ns pt0 cf">
-      {{ report | safe }}
+      {% if report is not none %}
+        {{ report | safe }}
+      {% else %}
+        <p>No report found, check Accession Number <b>{{accession_number}}</b> is right.</p>
+      {% endif %}
     </div>
   </div>
 </body>
