@@ -1,8 +1,7 @@
 from flask import Flask, render_template, g, request
 
-from repo.database import load_report, open_connection
-from repo.writer import write
-
+from repo.database import open_connection
+from repo.report import get_as_html, get_as_txt
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -26,12 +25,20 @@ def main():
 def show():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
+    output = request.args.get('output', 'html')
     con = get_db()
-    report_as_html = load_report(con.cursor(), accession_number)
-    return render_template('report.html',
-                           version=app.config['VERSION'],
-                           accession_number=accession_number,
-                           report=report_as_html)
+
+    if output == 'text':
+        report_as_text = get_as_txt(con.cursor(), accession_number)
+        return render_template('plain.html', report=report_as_text)
+
+    else:
+        report_as_html = get_as_html(con.cursor(), accession_number)
+        return render_template('report.html',
+                               version=app.config['VERSION'],
+                               accession_number=accession_number,
+                               report=report_as_html)
+
 
 
 def get_db():
@@ -40,6 +47,7 @@ def get_db():
     if db is None:
         db = g._database = open_connection(**DB_SETTINGS)
     return g._database
+
 
 @app.teardown_appcontext
 def teardown_db(exception):

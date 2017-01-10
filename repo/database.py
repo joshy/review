@@ -1,8 +1,25 @@
-import cx_Oracle
-import sys
-import logging
+"""
+  A visualization of the views and its relationship between.
+  UNTERS_SCHLUESSEL ^= ACCESSION NUMBER
 
-from repo.writer import write
+                             VIEW: A_BEFUND
+  +---------------------------------------+
+  |UNTERS_SCHLUESSEL |  BEFUND_SCHLUESSEL |
+  +---------------------------------------+
+  |                  |                    |
+  +---------------------------------------+
+                               |
+          +--------------------+
+          v                VIEW: A_BEFUND_TEXT
+  +------------------------------------------+
+  | BEFUND_SCHLUESSEL| SQZ     |  BEFUND_TEXT|
+  +------------------------------------------+
+  |                  |         |             |
+  +------------------------------------------+
+"""
+import logging
+import cx_Oracle
+
 
 def open_connection(host, port, service, user, password):
     logging.debug('Opening connection to db')
@@ -12,12 +29,11 @@ def open_connection(host, port, service, user, password):
 
 
 def load_report(cursor, accession_number):
+    logging.info('Getting accession number %s from db', accession_number)
     befund_schluessel = _load_by_accession_number(cursor, accession_number)
-    print("Got befund schluessel", befund_schluessel)
+    logging.info("Found befund schluessel %s", befund_schluessel)
     if befund_schluessel is not None:
-        report = _load_befund(cursor, accession_number, befund_schluessel)
-        report_as_html = write(accession_number, report)
-        return report_as_html
+        return _load_befund(cursor, befund_schluessel)
     else:
         return None
 
@@ -35,11 +51,13 @@ def _load_by_accession_number(cursor, accession_number):
         cursor.execute(sql, accession_number=accession_number)
         row = cursor.fetchone()
         return row[0]
-    except cx_Oracle.DatabaseError:
+    except cx_Oracle.DatabaseError as e:
+        logging.error('Database error occured')
+        logging.error(e)
         return None
 
 
-def _load_befund(cursor, accession_number, befund_schluessel):
+def _load_befund(cursor, befund_schluessel):
     sql = """
           SELECT
             A.BEFUND_TEXT

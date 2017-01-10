@@ -12,3 +12,11 @@ For converting RTF `GNU unrtf` is needed locally.
 ## System dependencies
  * Oracle driver
  * GNU unrtf
+
+
+## URL
+ * load specific report use URL
+      `show?accession_number=<accession_number>`
+ * load specific report, formatted as text
+      `show?accession_number=<accession_number>&output=text`
+
