@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, render_template, g, request
 
 from repo.database import open_connection
@@ -17,9 +18,11 @@ DB_SETTINGS = {
     'password': app.config['DB_PASSWORD']
 }
 
+
 @app.route('/')
 def main():
     return render_template('index.html', version=app.config['VERSION'])
+
 
 @app.route('/show')
 def show():
@@ -40,7 +43,6 @@ def show():
                                report=report_as_html)
 
 
-
 def get_db():
     """ Returns a connection to the Oracle db. """
     db = getattr(g, '_database', None)
@@ -52,9 +54,11 @@ def get_db():
 @app.teardown_appcontext
 def teardown_db(exception):
     """ Closes DB connection when app context is done. """
+    logging.debug('Closing db connection')
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
 
 if __name__ == "__main__":
     app.run()

@@ -24,9 +24,10 @@ def get_as_txt(cursor, accession_number):
 
 
 def _lookup(accession_number):
-    logging.info('Looking accession_number %s locally', accession_number)
+    logging.info('Looking accession number %s locally', accession_number)
     results = glob.glob('reports/*' + accession_number + '.rtf')
     if len(results) > 0:
+        logging.info('Found accession number %s locally', accession_number)
         return results[0]
     else:
         return None
