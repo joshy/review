@@ -29,8 +29,12 @@ def show():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
     output = request.args.get('output', 'html')
-    con = get_db()
 
+    # if no number is given -> render main page
+    if len(accession_number) == 0:
+        return main()
+
+    con = get_db()
     if output == 'text':
         report_as_text = get_as_txt(con.cursor(), accession_number)
         return render_template('plain.html', report=report_as_text)

@@ -7,20 +7,21 @@ from repo.database import load_report
 
 
 def get_as_html(cursor, accession_number):
-    report = _lookup(accession_number)
-    if report is None:
-        report = load_report(cursor, accession_number)
-        report = write(accession_number, report)
+    report = _load_write(cursor, accession_number)
     return html(report)
 
 
 def get_as_txt(cursor, accession_number):
+    report = _load_write(cursor, accession_number)
+    return text(report)
+
+
+def _load_write(cursor, accession_number):
     report = _lookup(accession_number)
     if report is None:
         report = load_report(cursor, accession_number)
         report = write(accession_number, report)
-
-    return text(report)
+    return report
 
 
 def _lookup(accession_number):
