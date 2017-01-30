@@ -1,4 +1,5 @@
 import logging
+import os
 from flask import Flask, render_template, g, request
 
 from repo.database import open_connection
@@ -18,6 +19,10 @@ DB_SETTINGS = {
     'password': app.config['DB_PASSWORD']
 }
 
+REPORTS_FOLDER = 'reports'
+if not os.path.exists(REPORTS_FOLDER):
+    os.makedirs(REPORTS_FOLDER, exist_ok=True)
+
 
 @app.route('/')
 def main():
@@ -30,7 +35,7 @@ def show():
     accession_number = request.args.get('accession_number', '')
     output = request.args.get('output', 'html')
 
-    # if no number is given -> render main page
+    # if no accession number is given -> render main page
     if len(accession_number) == 0:
         return main()
 
