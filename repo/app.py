@@ -41,14 +41,15 @@ def show():
 
     con = get_db()
     if output == 'text':
-        report_as_text = get_as_txt(con.cursor(), accession_number)
-        return render_template('plain.html', report=report_as_text)
+        report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
+        return render_template('plain.html', report=report_as_text, meta_data=meta_data)
 
     else:
-        report_as_html = get_as_html(con.cursor(), accession_number)
+        report_as_html, meta_data = get_as_html(con.cursor(), accession_number)
         return render_template('report.html',
                                version=app.config['VERSION'],
                                accession_number=accession_number,
+                               meta_data=meta_data,
                                report=report_as_html)
 
 

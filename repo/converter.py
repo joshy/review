@@ -1,6 +1,14 @@
 import logging
+import json
 import re
 import subprocess
+
+
+def jjson(meta_data_file):
+    if meta_data_file is None:
+        return None
+    with open(meta_data_file) as f:
+        return json.load(f)
 
 
 def html(report_file):

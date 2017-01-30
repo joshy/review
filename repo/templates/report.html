@@ -8,8 +8,13 @@
 
 <body class="w-100">
   {% include 'partials/header.html' %}
+  <div class="w-100 bt b--black-10 pa3 ph5-ns cf f6">
+    {% if meta_data %}
+      StudyDate: {{meta_data.StudyDate }}
+    {% endif %}
+  </div>
   <div class="w-100 bt b--black-10">
-    <div class="pa3 ph5-ns pt0 cf">
+    <div class="pa3 ph5-ns cf">
       {% if report is not none %}
         {{ report | safe }}
       {% else %}

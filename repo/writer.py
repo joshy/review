@@ -1,17 +1,24 @@
 import os
-from typing import Optional
+import json
+from typing import Dict, Optional
 
-def write(accession_number, report):
-    # str, str -> Optional[str]
+FILE_PREFIX = 'ris-report-'
+
+def write(accession_number, report, meta_data):
+    # str, str, Dict[str,str] -> Optional[str]
     """
     Writes the report to the file system and gives back the full path.
     """
     if report is not None:
         file_dir = "reports"
-        file_name = "ris-report-" + str(accession_number) + ".rtf"
-        dest = os.path.join(file_dir, file_name)
-        with open(dest, 'w') as report_file:
+        report_file_name = FILE_PREFIX + str(accession_number) + ".rtf"
+        report_meta_name = FILE_PREFIX + str(accession_number) + ".json"
+        report_dest = os.path.join(file_dir, report_file_name)
+        meta_dest = os.path.join(file_dir, report_meta_name)
+
+        with open(report_dest, 'w') as report_file, open(meta_dest, 'w') as meta_file:
             report_file.write(report)
-        return dest
+            json.dump(meta_data, meta_file)
+        return report_dest
     else:
         return None
