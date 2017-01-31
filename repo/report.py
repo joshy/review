@@ -4,27 +4,27 @@ from typing import Optional
 
 from repo.converter import html, text, jjson
 from repo.writer import write
-from repo.database import load_report
+from repo.database import select_report
 
 
 def get_as_html(cursor, accession_number):
     # cursor, string -> Optional[str]
-    report, meta_data = _load_write(cursor, accession_number)
-    return html(report), jjson(meta_data)
+    report_file, meta_data_file = _load_write(cursor, accession_number)
+    return html(report_file), jjson(meta_data_file)
 
 
 def get_as_txt(cursor, accession_number):
     # cursor, string -> Optional[str]
-    report, meta_data = _load_write(cursor, accession_number)
-    return text(report), jjson(meta_data)
+    report_file, meta_data_file = _load_write(cursor, accession_number)
+    return text(report_file), jjson(meta_data_file)
 
 
 def _load_write(cursor, accession_number):
     # cursor, string -> Optional[str]
     report_file_ref, meta_data_file_ref = _lookup(accession_number)
-    if report_file_ref is None:
-        report_file_ref, meta_data_file_ref = load_report(cursor, accession_number)
-        report_file_ref = write(accession_number, report_file_ref, meta_data_file_ref)
+    if report_file_ref is None or meta_data_file_ref is None:
+        report, meta_data = select_report(cursor, accession_number)
+        report_file_ref, meta_data_file_ref = write(accession_number, report, meta_data)
     return report_file_ref, meta_data_file_ref
 
 

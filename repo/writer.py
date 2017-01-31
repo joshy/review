@@ -5,9 +5,10 @@ from typing import Dict, Optional
 FILE_PREFIX = 'ris-report-'
 
 def write(accession_number, report, meta_data):
-    # str, str, Dict[str,str] -> Optional[str]
+    # str, str, Dict[str,str] -> Tuple[Optional[str], Optional[str]]
     """
-    Writes the report to the file system and gives back the full path.
+    Writes the report to the file system and gives back the full path of the
+    filename.
     """
     if report is not None:
         file_dir = "reports"
@@ -19,6 +20,6 @@ def write(accession_number, report, meta_data):
         with open(report_dest, 'w') as report_file, open(meta_dest, 'w') as meta_file:
             report_file.write(report)
             json.dump(meta_data, meta_file)
-        return report_dest
+        return report_dest, meta_dest
     else:
-        return None
+        return None, None
