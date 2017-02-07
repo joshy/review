@@ -39,7 +39,7 @@ def select_report(cursor, accession_number):
     if befund_schluessel is not None:
         return _select_befund(cursor, befund_schluessel), meta_data
     else:
-        return None
+        return None, None
 
 
 def _select_by_accession_number(cursor, accession_number):

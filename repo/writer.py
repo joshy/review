@@ -10,7 +10,7 @@ def write(accession_number, report, meta_data):
     Writes the report to the file system and gives back the full path of the
     filename.
     """
-    if report is not None:
+    if report is not None and meta_data is not None:
         file_dir = "reports"
         report_file_name = FILE_PREFIX + str(accession_number) + ".rtf"
         report_meta_name = FILE_PREFIX + str(accession_number) + ".json"
