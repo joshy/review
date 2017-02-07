@@ -61,7 +61,7 @@ def _select_by_accession_number(cursor, accession_number):
         cursor.execute(sql, accession_number=accession_number)
         row = cursor.fetchone()
         if row is None:
-            return None
+            return None, None
         else:
             meta_data = {'StudyDate': row[1].strftime('%d.%m.%Y %H:%M:%S'),
                          'BefundStatus': row[2]}
@@ -69,7 +69,7 @@ def _select_by_accession_number(cursor, accession_number):
     except cx_Oracle.DatabaseError as e:
         logging.error('Database error occured')
         logging.error(e)
-        return None
+        return None, None
 
 
 def _select_befund(cursor, befund_schluessel):
