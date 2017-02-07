@@ -60,9 +60,12 @@ def _select_by_accession_number(cursor, accession_number):
     try:
         cursor.execute(sql, accession_number=accession_number)
         row = cursor.fetchone()
-        meta_data = {'StudyDate': row[1].strftime('%d.%m.%Y %H:%M:%S'),
-                     'BefundStatus': row[2]}
-        return row[0], meta_data if row is not None else None
+        if row is None:
+            return None
+        else:
+            meta_data = {'StudyDate': row[1].strftime('%d.%m.%Y %H:%M:%S'),
+                         'BefundStatus': row[2]}
+            return row[0], meta_data if row is not None else None
     except cx_Oracle.DatabaseError as e:
         logging.error('Database error occured')
         logging.error(e)
