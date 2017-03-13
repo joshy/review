@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.0.4 - 13.03.2017
+ * Removed unrtf dependency because it crashed sometimes
+
 ## v0.0.3 - 07.02.2017
  * Fixed wrong/not existing Accession Number entered
 

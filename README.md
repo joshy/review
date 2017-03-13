@@ -6,12 +6,8 @@ locally. This is GE Centricity specific. Also the view is very specific.
 
 *BEWARE: This is not a general solution*
 
-## Converting
-For converting RTF `GNU unrtf` is needed locally.
-
 ## System dependencies
  * Oracle driver
- * GNU unrtf
 
 
 ## URL
