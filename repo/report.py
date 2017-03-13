@@ -7,12 +7,6 @@ from repo.writer import write
 from repo.database import select_report
 
 
-def get_as_html(cursor, accession_number):
-    # cursor, string -> Optional[str]
-    report_file, meta_data_file = _load_write(cursor, accession_number)
-    return html(report_file), jjson(meta_data_file)
-
-
 def get_as_txt(cursor, accession_number):
     # cursor, string -> Optional[str]
     report_file, meta_data_file = _load_write(cursor, accession_number)

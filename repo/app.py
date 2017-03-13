@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, g, request
 
 from repo.database import open_connection
-from repo.report import get_as_html, get_as_txt
+from repo.report import get_as_txt
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -45,7 +45,7 @@ def show():
         return render_template('plain.html', report=report_as_text, meta_data=meta_data)
 
     else:
-        report_as_html, meta_data = get_as_html(con.cursor(), accession_number)
+        report_as_html, meta_data = get_as_txt(con.cursor(), accession_number)
         return render_template('report.html',
                                version=app.config['VERSION'],
                                accession_number=accession_number,
