@@ -42,7 +42,7 @@ def show():
     con = get_db()
     if output == 'text':
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
-        return render_template('plain.html', report=report_as_text, meta_data=meta_data)
+        return report_as_text
 
     else:
         report_as_html, meta_data = get_as_txt(con.cursor(), accession_number)
