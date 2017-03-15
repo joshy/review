@@ -8,7 +8,7 @@ from repo.report import get_as_txt
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-app.config['VERSION'] = '0.0.4'
+app.config['VERSION'] = '0.0.5'
 
 
 DB_SETTINGS = {

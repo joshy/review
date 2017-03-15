@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.0.5 - 15.07.2017
+ * &output=text outputs now only plain text without html
+
 ## v0.0.4 - 13.03.2017
  * Removed unrtf dependency because it crashed sometimes
 
