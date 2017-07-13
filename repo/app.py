@@ -1,9 +1,11 @@
 import logging
 import os
-from flask import Flask, render_template, g, request
+
+from datetime import datetime
+from flask import Flask, render_template, g, request, jsonify
 
 from repo.database import open_connection
-from repo.report import get_as_txt
+from repo.report import get_as_txt, query_report
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -29,6 +31,18 @@ def main():
     return render_template('index.html', version=app.config['VERSION'])
 
 
+@app.route('/q')
+def query():
+    day = request.args.get('day', '')
+    dd = datetime.strptime(day, '%Y-%m-%d')
+    if not day:
+        print('No day given, returning main')
+        return main()
+    con = get_db()
+    rows = query_report(con.cursor(), dd)
+    return jsonify(rows)
+
+
 @app.route('/show')
 def show():
     """ Renders RIS Report as HTML. """
@@ -43,6 +57,9 @@ def show():
     if output == 'text':
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
         return report_as_text
+
+    elif output == 'json':
+        report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
 
     else:
         report_as_html, meta_data = get_as_txt(con.cursor(), accession_number)
@@ -68,7 +85,3 @@ def teardown_db(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-
-
-if __name__ == "__main__":
-    app.run()

@@ -106,3 +106,4 @@ instance
 reports
 
 .vscode
+.mypy_cache

@@ -4,7 +4,12 @@ from typing import Optional
 
 from repo.converter import html, text, jjson
 from repo.writer import write
-from repo.database import select_report
+from repo.database import select_report, query_report
+
+
+def query(cursor, day):
+    rows = query_report(cursor, day)
+    return rows
 
 
 def get_as_txt(cursor, accession_number):
