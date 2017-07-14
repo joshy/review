@@ -55,24 +55,25 @@ def _query_acccesion_number_by_day(cursor, day):
           SELECT
             A.BEFUND_SCHLUESSEL,
             A.UNTERS_BEGINN,
-            A.BEFUND_STATUS,
             A.BEFUND_FREIGABE
           FROM
             A_BEFUND A
           WHERE
-            A.UNTERS_BEGINN BETWEEN TO_DATE(:start_day, 'YYYY-MM-DD HH24:MI:SS')
-            AND TO_DATE(:end_day, 'YYYY-MM-DD HH24:MI:SS')
+            A.UNTERS_BEGINN
+              BETWEEN
+                TO_DATE(:start__of_day, 'YYYY-MM-DD HH24:MI:SS')
+                  AND
+                TO_DATE(:end_of_day, 'YYYY-MM-DD HH24:MI:SS')
           """
     try:
-        s = day.strftime('%Y-%m-%d 00:00:00')
-        e = day.strftime('%Y-%m-%d 23:59:59')
-        cursor.execute(sql, start_day=s, end_day=e)
-        rows = cursor.fetchall()
-        from pprint import pprint
-        pprint(cursor.fetchall())
-        return rows
+        start_of_day = day.strftime('%Y-%m-%d 00:00:00')
+        end_of_day = day.strftime('%Y-%m-%d 23:59:59')
+        cursor.execute(sql, start_of_day=start_of_day, end_day=end_of_day)
+        desc = [d[0] for d in cursor.description]
+        result = [dict(zip(desc, row)) for row in cursor]
+        cursor.close()
+        return result
     except cx_Oracle.DatabaseError as e:
-        print(e)
         logging.error('Database error occured')
         logging.error(e)
         return None
