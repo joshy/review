@@ -30,6 +30,8 @@ def open_connection(host, port, service, user, password):
 
 def query_report(cursor, day):
     rows = _query_acccesion_number_by_day(cursor, day)
+    for row in rows:
+      row['rtf'] = _select_befund(cursor, row['befund_schluessel'])
     return rows
 
 
@@ -53,6 +55,7 @@ def _query_acccesion_number_by_day(cursor, day):
     """
     sql = """
           SELECT
+            A.UNTERS_SCHLUESSEL,
             A.BEFUND_SCHLUESSEL,
             A.UNTERS_BEGINN,
             A.BEFUND_FREIGABE
@@ -61,19 +64,19 @@ def _query_acccesion_number_by_day(cursor, day):
           WHERE
             A.UNTERS_BEGINN
               BETWEEN
-                TO_DATE(:start__of_day, 'YYYY-MM-DD HH24:MI:SS')
+                TO_DATE(:start_of_day, 'YYYY-MM-DD HH24:MI:SS')
                   AND
                 TO_DATE(:end_of_day, 'YYYY-MM-DD HH24:MI:SS')
           """
     try:
         start_of_day = day.strftime('%Y-%m-%d 00:00:00')
         end_of_day = day.strftime('%Y-%m-%d 23:59:59')
-        cursor.execute(sql, start_of_day=start_of_day, end_day=end_of_day)
-        desc = [d[0] for d in cursor.description]
+        cursor.execute(sql, start_of_day=start_of_day, end_of_day=end_of_day)
+        desc = [d[0].lower() for d in cursor.description]
         result = [dict(zip(desc, row)) for row in cursor]
-        cursor.close()
         return result
     except cx_Oracle.DatabaseError as e:
+        print(e)
         logging.error('Database error occured')
         logging.error(e)
         return None

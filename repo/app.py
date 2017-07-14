@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Flask, render_template, g, request, jsonify
 
 from repo.database import open_connection
-from repo.report import get_as_txt, query_report
+from repo.report import get_as_txt, q
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -39,7 +39,7 @@ def query():
         print('No day given, returning main')
         return main()
     con = get_db()
-    rows = query_report(con.cursor(), dd)
+    rows = q(con.cursor(), dd)
     return jsonify(rows)
 
 
@@ -48,21 +48,20 @@ def show():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
     output = request.args.get('output', 'html')
-
+    print(accession_number)
     # if no accession number is given -> render main page
-    if len(accession_number) == 0:
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
         return main()
 
     con = get_db()
     if output == 'text':
+        print('using text')
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
         return report_as_text
-
-    elif output == 'json':
-        report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
-
     else:
         report_as_html, meta_data = get_as_txt(con.cursor(), accession_number)
+        print(report_as_html)
         return render_template('report.html',
                                version=app.config['VERSION'],
                                accession_number=accession_number,

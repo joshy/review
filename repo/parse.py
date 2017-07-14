@@ -15,18 +15,23 @@ def parse(text: List[str]) -> Dict[str, str]:
     section = ''
     values = [] # type: List[str]
     data = {}
+    # remove empty lines
+    text = [x for x in text if x]
+
     for line in text:
-        if line and line.startswith(contexts):
+        if line.startswith(contexts):
             # Since we know filter(line.startswith, contexts) will get exactly
             # one hit, we just pull the hit using next
             current_section = next(filter(line.startswith, contexts))
-            # if there is no empty line save the current context to data
+            # if there is a new section save the current context to data
             if section and section != current_section:
-                data[section] = ''.join(values)
+                data[section.lower()] = ''.join(values)
+                values = []
             section = current_section
-        elif line and section:
+        else:
             values.append(line)
-        elif not line:
-            data[section] = ''.join(values)
-            section = ''
+    # add last element
+    if not section:
+        section = 'Datenimport'
+    data[section.lower()] = ''.join(values)
     return data

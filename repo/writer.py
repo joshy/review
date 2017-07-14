@@ -1,11 +1,12 @@
 import os
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 FILE_PREFIX = 'ris-report-'
 
-def write(accession_number, report, meta_data):
-    # str, str, Dict[str,str] -> Tuple[Optional[str], Optional[str]]
+
+def write(accession_number: str, report: str,
+          meta_data: Dict[str, str]) -> Tuple[Optional[str], Optional[str]]:
     """
     Writes the report to the file system and gives back the full path of the
     filename.
@@ -17,7 +18,8 @@ def write(accession_number, report, meta_data):
         report_dest = os.path.join(file_dir, report_file_name)
         meta_dest = os.path.join(file_dir, report_meta_name)
 
-        with open(report_dest, 'w') as report_file, open(meta_dest, 'w') as meta_file:
+        with open(report_dest, 'w') as report_file, open(meta_dest,
+                                                         'w') as meta_file:
             report_file.write(report)
             json.dump(meta_data, meta_file)
         return report_dest, meta_dest
