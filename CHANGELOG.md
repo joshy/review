@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.0.5 - 15.07.2017
+## v0.0.6 - 14.07.2017
+ * Can now query all reports per a specific day and outputs json
+ * RIS Reports query per day splits the report into sections, see parse.py
+
+## v0.0.5 - 15.06.2017
  * &output=text outputs now only plain text without html
 
 ## v0.0.4 - 13.03.2017

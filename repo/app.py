@@ -10,7 +10,7 @@ from repo.report import get_as_txt, q
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-app.config['VERSION'] = '0.0.5'
+app.config['VERSION'] = '1.0.0'
 
 
 DB_SETTINGS = {
