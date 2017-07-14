@@ -11,15 +11,6 @@ def jjson(meta_data_file):
         return json.load(f)
 
 
-def html(report_file):
-    if report_file is None:
-        return None
-    logging.debug('Running unrtf on file name %s', report_file)
-    completed = subprocess.run(['unrtf', '--html', report_file],
-                               stdout=subprocess.PIPE)
-    return completed.stdout.decode('UTF-8')
-
-
 def text(report_file):
     if report_file is None:
         return None

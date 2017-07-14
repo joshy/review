@@ -1,15 +1,16 @@
 import glob
 import logging
+
+from datetime import datetime
 from typing import Optional
 
-from repo.converter import html, text, jjson, rtf_to_text
+from repo.converter import text, jjson, rtf_to_text
 from repo.database import select_report, query_report
 from repo.parse import parse
 from repo.writer import write
 
 
-
-def q(cursor, day):
+def q(cursor, day: datetime):
     rows = query_report(cursor, day)
     for row in rows:
         text = rtf_to_text(row['rtf'])

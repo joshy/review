@@ -36,7 +36,7 @@ def query():
     day = request.args.get('day', '')
     dd = datetime.strptime(day, '%Y-%m-%d')
     if not day:
-        print('No day given, returning main')
+        logging.debug('No day given, returning to main view')
         return main()
     con = get_db()
     rows = q(con.cursor(), dd)
