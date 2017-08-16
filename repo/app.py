@@ -6,6 +6,7 @@ from flask import Flask, render_template, g, request, jsonify
 
 from repo.database import open_connection
 from repo.report import get_as_txt, q
+from repo.contrast_medium import query_contrast_medium
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -41,6 +42,18 @@ def query():
     con = get_db()
     rows = q(con.cursor(), dd)
     return jsonify(rows)
+
+
+@app.route('/cm')
+def cm():
+    "Queries for contrast medium for a accession number"
+    accession_number = request.args.get('accession_number', '')
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
+        return main()
+    con = get_db()
+    result = query_contrast_medium(con.cursor(),accession_number)
+    return jsonify(result)
 
 
 @app.route('/show')
