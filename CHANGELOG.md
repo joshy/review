@@ -1,6 +1,9 @@
 # Changelog
 
-## v0.0.6 - 14.07.2017
+## v1.1.0 - 16.08.2017
+ * Add contrast medium query
+
+## v1.0.0 - 14.07.2017
  * Can now query all reports per a specific day and outputs json
  * RIS Reports query per day splits the report into sections, see parse.py
 
