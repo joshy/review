@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from repo.converter import text, jjson, rtf_to_text
-from repo.database import select_report, query_report
+from repo.database.report import select_report, query_report
 from repo.parse import parse
 from repo.writer import write
 

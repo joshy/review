@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Report Review Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
+</head>
+
+<body class="w-100">
+  {% include 'partials/review-header.html' %}
+  <div class="w-100 bt b--black-10">
+    <div class="pa3 ph5-ns cf" style="white-space: pre-line">
+      {% if report is not none %}
+        {{ report | safe }}
+      {% else %}
+        <p>No report found, check Accession Number <b>{{accession_number}}</b> is right.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% assets "js_all" %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+</body>
+
+</html>

@@ -1,8 +1,9 @@
 DEBUG = True
-# Database settings
-DB_HOST = ''
-DB_PORT = 1521
 
-DB_SERVICE = ''
-DB_USER = ''
-DB_PASSWORD = ''
+# RIS Database settings
+RIS_DB_HOST = ''
+RIS_DB_PORT = 1521
+
+RIS_DB_SERVICE = ''
+RIS_DB_USER = ''
+RIS_DB_PASSWORD = ''

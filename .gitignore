@@ -107,3 +107,6 @@ reports
 
 .vscode
 .mypy_cache
+
+repo/static/gen
+privat_patient.csv

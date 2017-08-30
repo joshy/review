@@ -3,28 +3,36 @@ import os
 
 from datetime import datetime
 from flask import Flask, render_template, g, request, jsonify
+from flask_assets import Environment, Bundle
 
-from repo.database import open_connection
+from repo.database.connection import open_connection
 from repo.report import get_as_txt, q
-from repo.contrast_medium import query_contrast_medium
+from repo.database.contrast_medium import query_contrast_medium
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
 app.config['VERSION'] = '1.1.0'
 
-
 DB_SETTINGS = {
-    'host': app.config['DB_HOST'],
-    'port': app.config['DB_PORT'],
-    'service': app.config['DB_SERVICE'],
-    'user': app.config['DB_USER'],
-    'password': app.config['DB_PASSWORD']
+    'host': app.config['RIS_DB_HOST'],
+    'port': app.config['RIS_DB_PORT'],
+    'service': app.config['RIS_DB_SERVICE'],
+    'user': app.config['RIS_DB_USER'],
+    'password': app.config['RIS_DB_PASSWORD']
 }
 
 REPORTS_FOLDER = 'reports'
 if not os.path.exists(REPORTS_FOLDER):
     os.makedirs(REPORTS_FOLDER, exist_ok=True)
+
+
+assets = Environment(app)
+js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js",
+            "js/pikaday.js", "js/pikaday.jquery.js",
+            "js/script.js",
+            filters='jsmin', output='gen/packed.js')
+assets.register('js_all', js)
 
 
 @app.route('/')
@@ -43,6 +51,10 @@ def query():
     rows = q(con.cursor(), dd)
     return jsonify(rows)
 
+
+@app.route('/review')
+def review():
+    return render_template('review.html')
 
 @app.route('/cm')
 def cm():

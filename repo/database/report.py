@@ -21,13 +21,6 @@ import logging
 import cx_Oracle
 
 
-def open_connection(host, port, service, user, password):
-    logging.debug('Opening connection to db')
-    dsn = cx_Oracle.makedsn(host, port, service)
-    con = cx_Oracle.connect(user, password, dsn)
-    return con
-
-
 def query_report(cursor, day):
     rows = _query_acccesion_number_by_day(cursor, day)
     for row in rows:
@@ -49,6 +42,43 @@ def select_report(cursor, accession_number):
         return None, None
 
 
+def _query_accession_number_by_befund_status(cursor, start_date, end_date, status='s'):
+    """
+    Query all accession number by given time range and BEFUND_STATUS.
+    """
+    sql = """
+          SELECT
+            A.PATIENT_SCHLUESSEL,
+            A.UNTERS_SCHLUESSEL,
+            A.UNTERS_ART,
+            A.BEFUND_SCHLUESSEL,
+            A.SCHREIBER,
+            A.FREIGEBER,
+            A.BEFUND_FREIGABE
+          FROM
+            A_BEFUND A
+          WHERE
+              A.BEFUND_STATUS = :befund_status
+            AND
+              A.UNTERS_BEGINN
+                BETWEEN
+                  TO_DATE(:start, 'YYYY-MM-DD HH24:MI:SS')
+                    AND
+                  TO_DATE(:end, 'YYYY-MM-DD HH24:MI:SS')
+          """
+    try:
+        start = start_date.strftime('%Y-%m-%d HH:MM:SS')
+        end = end_date.strftime('%Y-%m-%d HH:MM:SS')
+        cursor.execute(sql, start=start, end=end, befund_status=befund_status)
+        desc = [d[0].lower() for d in cursor.description]
+        result = [dict(zip(desc, row)) for row in cursor]
+        return result
+    except cx_Oracle.DatabaseError as e:
+        logging.error('Database error occured')
+        logging.error(e)
+        return None
+
+
 def _query_acccesion_number_by_day(cursor, day):
     """
     Query all accession number by day.
@@ -62,7 +92,6 @@ def _query_acccesion_number_by_day(cursor, day):
           FROM
             A_BEFUND A
           WHERE
-            A.UNTERS_BEGINN
               BETWEEN
                 TO_DATE(:start_of_day, 'YYYY-MM-DD HH24:MI:SS')
                   AND
@@ -76,7 +105,6 @@ def _query_acccesion_number_by_day(cursor, day):
         result = [dict(zip(desc, row)) for row in cursor]
         return result
     except cx_Oracle.DatabaseError as e:
-        print(e)
         logging.error('Database error occured')
         logging.error(e)
         return None
