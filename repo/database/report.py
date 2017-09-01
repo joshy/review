@@ -24,7 +24,7 @@ import cx_Oracle
 def query_report(cursor, day):
     rows = _query_acccesion_number_by_day(cursor, day)
     for row in rows:
-      row['rtf'] = _select_befund(cursor, row['befund_schluessel'])
+        row['rtf'] = _select_befund(cursor, row['befund_schluessel'])
     return rows
 
 
@@ -42,7 +42,15 @@ def select_report(cursor, accession_number):
         return None, None
 
 
-def _query_accession_number_by_befund_status(cursor, start_date, end_date, status='s'):
+def query_report_by_befund_status(cursor, start_date, end_date, befund_status='s'):
+    rows = _query_by_befund_status(cursor, start_date, end_date, befund_status)
+    for row in rows:
+        column_name = 'befund_' + befund_status
+        row[column_name] = _select_befund(cursor, row['befund_schluessel'])
+    return rows
+
+
+def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
     """
     Query all accession number by given time range and BEFUND_STATUS.
     """
@@ -53,8 +61,14 @@ def _query_accession_number_by_befund_status(cursor, start_date, end_date, statu
             A.UNTERS_ART,
             A.BEFUND_SCHLUESSEL,
             A.SCHREIBER,
+            A.SIGNIERER,
             A.FREIGEBER,
-            A.BEFUND_FREIGABE
+            A.BEFUND_FREIGABE,
+            A.BEFUND_STATUS,
+            A.LESE_DATUM,
+            A.LESER,
+            A.GEGENLESE_DATUM,
+            A.GEGENLESER
           FROM
             A_BEFUND A
           WHERE
@@ -62,14 +76,14 @@ def _query_accession_number_by_befund_status(cursor, start_date, end_date, statu
             AND
               A.UNTERS_BEGINN
                 BETWEEN
-                  TO_DATE(:start, 'YYYY-MM-DD HH24:MI:SS')
+                  TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
                     AND
-                  TO_DATE(:end, 'YYYY-MM-DD HH24:MI:SS')
+                  TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
           """
     try:
-        start = start_date.strftime('%Y-%m-%d HH:MM:SS')
-        end = end_date.strftime('%Y-%m-%d HH:MM:SS')
-        cursor.execute(sql, start=start, end=end, befund_status=befund_status)
+        start = start_date.strftime('%Y-%m-%d %H:%M:%S')
+        end = end_date.strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute(sql, start_date=start, end_date=end, befund_status=befund_status)
         desc = [d[0].lower() for d in cursor.description]
         result = [dict(zip(desc, row)) for row in cursor]
         return result

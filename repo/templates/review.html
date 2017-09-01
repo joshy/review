@@ -10,13 +10,9 @@
 <body class="w-100">
   {% include 'partials/review-header.html' %}
   <div class="w-100 bt b--black-10">
-    <div class="pa3 ph5-ns cf" style="white-space: pre-line">
-      {% if report is not none %}
-        {{ report | safe }}
-      {% else %}
-        <p>No report found, check Accession Number <b>{{accession_number}}</b> is right.</p>
-      {% endif %}
-    </div>
+    {% for r in rows %}
+        {{ r }}
+    {% endfor %}
   </div>
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>

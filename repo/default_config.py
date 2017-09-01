@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG=True
 
 # RIS Database settings
 RIS_DB_HOST = ''
@@ -7,3 +7,8 @@ RIS_DB_PORT = 1521
 RIS_DB_SERVICE = ''
 RIS_DB_USER = ''
 RIS_DB_PASSWORD = ''
+
+# POSTGRESQL REVIEW DB settings
+REVIEW_DB_NAME = 'review_app'
+REVIEW_DB_USER = ''
+REVIEW_DB_PASSWORD = ''

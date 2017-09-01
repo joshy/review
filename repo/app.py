@@ -1,20 +1,23 @@
 import logging
 import os
+import schedule
 
-from datetime import datetime
-from flask import Flask, render_template, g, request, jsonify
-from flask_assets import Environment, Bundle
+from datetime import datetime, timedelta
+
+from flask import Flask, g, jsonify, render_template, request
+from flask_assets import Bundle, Environment
 
 from repo.database.connection import open_connection
-from repo.report import get_as_txt, q
 from repo.database.contrast_medium import query_contrast_medium
+from repo.database.report import query_report_by_befund_status
+from repo.report import get_as_txt, q
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
 app.config['VERSION'] = '1.1.0'
 
-DB_SETTINGS = {
+RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
     'port': app.config['RIS_DB_PORT'],
     'service': app.config['RIS_DB_SERVICE'],
@@ -22,10 +25,15 @@ DB_SETTINGS = {
     'password': app.config['RIS_DB_PASSWORD']
 }
 
+REVIEW_DB_SETTINGS = {
+    'dbname': app.config['REVIEW_DB_NAME'],
+    'user': app.config['REVIEW_DB_USER'],
+    'password': app.config['REVIEW_DB_PASSWORD']
+}
+
 REPORTS_FOLDER = 'reports'
 if not os.path.exists(REPORTS_FOLDER):
     os.makedirs(REPORTS_FOLDER, exist_ok=True)
-
 
 assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js",
@@ -47,14 +55,17 @@ def query():
     if not day:
         logging.debug('No day given, returning to main view')
         return main()
-    con = get_db()
+    con = get_ris_db()
     rows = q(con.cursor(), dd)
     return jsonify(rows)
 
 
 @app.route('/review')
 def review():
-    return render_template('review.html')
+    con =  get_review_db()
+    rows = query_report_by_befund_status(con.cursor(), start_date, end_date, 's')
+    return render_template('review.html', rows=rows)
+
 
 @app.route('/cm')
 def cm():
@@ -63,8 +74,8 @@ def cm():
     if not accession_number:
         print('No accession number found in request, use accession_number=XXX')
         return main()
-    con = get_db()
-    result = query_contrast_medium(con.cursor(),accession_number)
+    con = get_ris_db()
+    result = query_contrast_medium(con.cursor(), accession_number)
     return jsonify(result)
 
 
@@ -79,7 +90,7 @@ def show():
         print('No accession number found in request, use accession_number=XXX')
         return main()
 
-    con = get_db()
+    con = get_ris_db()
     if output == 'text':
         print('using text')
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
@@ -94,18 +105,26 @@ def show():
                                report=report_as_html)
 
 
-def get_db():
-    """ Returns a connection to the Oracle db. """
-    db = getattr(g, '_database', None)
+def get_review_db():
+    "Returns a connection to the PostgreSQL Review DB"
+    db = getattr(g, '_review_database', None)
     if db is None:
-        db = g._database = open_connection(**DB_SETTINGS)
-    return g._database
+        db = g._review_database = open_connection(**REVIEW_DB_SETTINGS)
+    return g._review_database
+
+
+def get_ris_db():
+    """ Returns a connection to the Oracle db. """
+    db = getattr(g, '_ris_database', None)
+    if db is None:
+        db = g._ris_database = open_connection(**RIS_DB_SETTINGS)
+    return g._ris_database
 
 
 @app.teardown_appcontext
 def teardown_db(exception):
     """ Closes DB connection when app context is done. """
     logging.debug('Closing db connection')
-    db = getattr(g, '_database', None)
+    db = getattr(g, '_ris_database', None)
     if db is not None:
         db.close()

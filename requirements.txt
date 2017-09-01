@@ -3,3 +3,4 @@ Flask-Assets
 cx_Oracle
 requests
 psycopg2
+schedule
