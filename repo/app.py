@@ -1,7 +1,7 @@
 import logging
 import os
 import schedule
-
+import psycopg2
 from datetime import datetime, timedelta
 
 from flask import Flask, g, jsonify, render_template, request
@@ -10,6 +10,7 @@ from flask_assets import Bundle, Environment
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
+from repo.database.review_report import query_review_reports
 from repo.report import get_as_txt, q
 
 app = Flask(__name__, instance_relative_config=True)
@@ -63,7 +64,8 @@ def query():
 @app.route('/review')
 def review():
     con =  get_review_db()
-    rows = query_report_by_befund_status(con.cursor(), start_date, end_date, 's')
+    now = datetime.now()
+    rows = query_review_reports(con.cursor(), now)
     return render_template('review.html', rows=rows)
 
 
@@ -109,7 +111,7 @@ def get_review_db():
     "Returns a connection to the PostgreSQL Review DB"
     db = getattr(g, '_review_database', None)
     if db is None:
-        db = g._review_database = open_connection(**REVIEW_DB_SETTINGS)
+        db = g._review_database = psycopg2.connect(**REVIEW_DB_SETTINGS)
     return g._review_database
 
 

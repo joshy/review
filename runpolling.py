@@ -33,44 +33,49 @@ def get_review_db():
     return db
 
 
-def query_ris(befund_status='s'):
-    logging.info("Start querying the database")
+def query_ris(befund_status='s', hours=3):
+    logging.info("Querying ris database for befund_status {}".format(befund_status))
     con =  get_ris_db()
-    start_date = datetime.now() - timedelta(hours=2)
-    end_date = datetime.now() - timedelta(hours=1)
-    logging.debug("Start date is {} an End date is {}".format(start_date, end_date))
-    rows = query_report_by_befund_status(con.cursor(), start_date, end_date, befund_status='s')
-    logging.info("Query returned #rows {}".format(len(rows)))
+    start_date = datetime.now() - timedelta(hours)
+    end_date = datetime.now()
+    logging.debug("Query param: start date: '{}', end date: '{}', befund_status: '{}'"
+        .format(start_date, end_date, befund_status))
+    rows = query_report_by_befund_status(con.cursor(), start_date, end_date, befund_status)
+    logging.info("Querying ris for befund_status {} returned #rows {}"
+        .format(befund_status, len(rows)))
     con.close()
     return rows
 
 
-def insert_review():
-    rows = query_ris()
-    review_db = get_review_db()
-    review_cursor = review_db.cursor()
+def insert_reviews(review_cursor, hours=1):
+    rows = query_ris('s', hours)
     count = len(rows)
-    for i, row in enumerate(rows):
-        logging.debug('Inserting row {} of total {}'.format(i, count))
+    for i, row in enumerate(rows, start=1):
+        logging.debug('Inserting row {}/{} rows'.format(i, count))
         insert(review_cursor, row)
     logging.info('Inserting done')
-    review_db.commit()
-    review_cursor.close()
 
 
-def update_review(befund_status='l'):
+def update_reviews(review_cursor, befund_status='l', hours=2):
     rows = query_ris(befund_status)
-    review_db = get_review_db()
-    review_cursor = review_db.cursor()
-    for row in rows:
+    count = len(rows)
+    logging.debug('Updating total of {} rows with befund_status {}'
+        .format(count, befund_status))
+    for i, row in enumerate(rows, start=1):
+        logging.debug('Updating row {}/{} rows'.format(i, count))
         update(review_cursor, row, befund_status)
+    logging.info('Updating befund_status {} done'.format(befund_status))
 
 
 def job():
-    insert_review()
-    update_review('l')
-    update_review('g')
-    update_review('f')
+    review_db = get_review_db()
+    review_cursor = review_db.cursor()
+    insert_reviews(review_cursor, hours=4)
+    update_reviews(review_cursor, 'l', hours=2)
+    update_reviews(review_cursor, 'g', hours=2)
+    update_reviews(review_cursor, 'f', hours=3)
+    review_db.commit()
+    review_cursor.close()
 
 
 def update(cursor, row, befund_status):
@@ -82,38 +87,51 @@ def update(cursor, row, befund_status):
             lese_datum = %s,
             leser = %s,
             gegenlese_datum = %s,
-            gegenleser = %s
+            gegenleser = %s,
+            befund_status = %s,
+            befund_freigabe = %s,
+            unters_beginn = %s
           WHERE
-            befund_schluessel = %s
+            unters_schluessel = %s
           """.format(field)
+    print(sql)
     cursor.execute(sql,
-        row['befund'],
+        (row[field],
         row['lese_datum'],
         row['leser'],
         row['gegenlese_datum'],
         row['gegenleser'],
-        row['befund_schluessel'])
+        row['befund_status'],
+        row['befund_freigabe'],
+        row['unters_beginn'],
+        row['unters_schluessel']))
+
 
 def insert(cursor, row):
     sql = """
           INSERT INTO reports
-          (patient_schluessel,
-          unters_schluessel,
-          unters_art,
-          befund_schluessel,
-          schreiber,
-          freigeber,
-          befund_freigabe,
-          befund_status,
-          befund_s)
+            (patient_schluessel,
+            unters_schluessel,
+            unters_art,
+            befund_schluessel,
+            unters_beginn,
+            schreiber,
+            freigeber,
+            befund_freigabe,
+            befund_status,
+            befund_s)
           VALUES
-          (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+          ON CONFLICT
+            (unters_schluessel)
+          DO NOTHING
           """
     cursor.execute(sql,
         (row['patient_schluessel'],
         row['unters_schluessel'],
         row['unters_art'],
         row['befund_schluessel'],
+        row['unters_beginn'],
         row['schreiber'],
         row['freigeber'],
         row['befund_freigabe'],
@@ -130,4 +148,4 @@ if __name__ == '__main__':
     schedule.every(10).seconds.do(job)
     t = Thread(target=run_schedule)
     t.start()
-    logging.info('Polling is running')
+    logging.info('Polling is up and running')

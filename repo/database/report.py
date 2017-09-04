@@ -59,6 +59,7 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
             A.PATIENT_SCHLUESSEL,
             A.UNTERS_SCHLUESSEL,
             A.UNTERS_ART,
+            A.UNTERS_BEGINN,
             A.BEFUND_SCHLUESSEL,
             A.SCHREIBER,
             A.SIGNIERER,

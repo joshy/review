@@ -10,9 +10,38 @@
 <body class="w-100">
   {% include 'partials/review-header.html' %}
   <div class="w-100 bt b--black-10">
-    {% for r in rows %}
-        {{ r }}
-    {% endfor %}
+    <div class="pa4">
+      <div class="overflow-auto">
+        <table class="f6 w-100 mw8 center" cellspacing="0">
+          <thead>
+            <tr>
+              <th class="fw6 bb bw1 b--black-80 tl pb3 pr3 bg-white">Patient</th>
+              <th class="fw6 bb bw1 b--black-80 tl pb3 pr3 bg-white">Type of exam</th>
+              <th class="fw6 bb bw1 b--black-80 tr pb3 pr3 bg-white">Date of exam</th>
+              <th class="fw6 bb bw1 b--black-80 tr pb3 pr3 bg-white">Writer</th>
+              <th class="fw6 bb bw1 b--black-80 tr pb3 pr3 bg-white">Reviewer</th>
+              <th class="fw6 bb bw1 b--black-80 tr pb3 pr3 bg-white">Report status</th>
+              <th class="fw6 bb bw1 b--black-80 tr pb3 bg-white">Report history</th>
+            </tr>
+          </thead>
+          <tbody class="lh-copy">
+            {% for row in rows %}
+            <tr>
+              <td class="pv1 pr3 bb b--black-10">{{ row['patient_schluessel'] }}</td>
+              <td class="pv1 pr3 bb b--black-10">{{ row['unters_art'] }}</td>
+              <td class="pv1 pr3 bb b--black-10 tr">{{ row['unters_beginn'] }}</td>
+              <td class="pv1 pr3 bb b--black-10 tr">{{ row['schreiber'] }}</td>
+              <td class="pv1 pr3 bb b--black-10 tr">{{ row['freigeber']}}</td>
+              <td class="pv1 pr3 bb b--black-10 tr">{{ row['befund_status']}}</td>
+              <td class="pv1 bb b--black-10 tr">
+                <a href="#">Show changes</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
