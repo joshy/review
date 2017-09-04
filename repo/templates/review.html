@@ -15,6 +15,7 @@
         <table class="f6 w-100 mw8 center" cellspacing="0">
           <thead>
             <tr>
+              <th class="fw6 bb bw1 b--black-80 tl pb3 pr3 bg-white">#</th>
               <th class="fw6 bb bw1 b--black-80 tl pb3 pr3 bg-white">Patient</th>
               <th class="fw6 bb bw1 b--black-80 tl pb3 pr3 bg-white">Type of exam</th>
               <th class="fw6 bb bw1 b--black-80 tr pb3 pr3 bg-white">Date of exam</th>
@@ -27,6 +28,7 @@
           <tbody class="lh-copy">
             {% for row in rows %}
             <tr>
+                <td class="pv1 pr3 bb b--black-10">{{ loop.index }}</td>
               <td class="pv1 pr3 bb b--black-10">{{ row['patient_schluessel'] }}</td>
               <td class="pv1 pr3 bb b--black-10">{{ row['unters_art'] }}</td>
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['unters_beginn'] }}</td>
@@ -34,7 +36,9 @@
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['freigeber']}}</td>
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['befund_status']}}</td>
               <td class="pv1 bb b--black-10 tr">
-                <a href="#">Show changes</a>
+                {% if row['befund_status'] == 'f' %}
+                  <a href="review/diff/{{ row['befund_schluessel'] }}">Show changes</a>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}

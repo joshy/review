@@ -70,10 +70,10 @@ def update_reviews(review_cursor, befund_status='l', hours=2):
 def job():
     review_db = get_review_db()
     review_cursor = review_db.cursor()
-    insert_reviews(review_cursor, hours=4)
+    insert_reviews(review_cursor, hours=2)
     update_reviews(review_cursor, 'l', hours=2)
     update_reviews(review_cursor, 'g', hours=2)
-    update_reviews(review_cursor, 'f', hours=3)
+    update_reviews(review_cursor, 'f', hours=2)
     review_db.commit()
     review_cursor.close()
 
@@ -94,7 +94,6 @@ def update(cursor, row, befund_status):
           WHERE
             unters_schluessel = %s
           """.format(field)
-    print(sql)
     cursor.execute(sql,
         (row[field],
         row['lese_datum'],
@@ -145,7 +144,7 @@ def run_schedule():
 
 
 if __name__ == '__main__':
-    schedule.every(10).seconds.do(job)
+    schedule.every(1).hour.do(job)
     t = Thread(target=run_schedule)
     t.start()
     logging.info('Polling is up and running')

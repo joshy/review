@@ -10,13 +10,14 @@ from flask_assets import Bundle, Environment
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
-from repo.database.review_report import query_review_reports
+from repo.database.review_report import query_review_reports, query_review_report
 from repo.report import get_as_txt, q
+from repo.converter import rtf_to_text
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-app.config['VERSION'] = '1.1.0'
+version = app.config['VERSION'] = '1.1.0'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
@@ -66,7 +67,21 @@ def review():
     con =  get_review_db()
     now = datetime.now()
     rows = query_review_reports(con.cursor(), now)
-    return render_template('review.html', rows=rows)
+    return render_template('review.html', rows=rows, version=version)
+
+
+@app.route('/review/diff/<id>')
+def diff(id):
+    con =  get_review_db()
+    row = query_review_report(con.cursor(), id)
+    cases = ['befund_s', 'befund_l', 'befund_g', 'befund_f']
+    for c in cases:
+        if c in row:
+            field = c + '_text'
+            v = row[c]
+            if v:
+                row[field] = rtf_to_text(v)
+    return render_template('diff.html', row=row, version=version)
 
 
 @app.route('/cm')

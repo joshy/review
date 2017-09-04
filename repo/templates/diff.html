@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Report Review Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
+</head>
+
+<body class="w-100" data-page="diff">
+    {% include 'partials/review-header.html' %}
+    <div class="w-100 bt b--black-10 ph5-ns cf f6">
+        <div class="dt dt--fixed">
+            <div class="dtc pl0 pa2" style="white-space: pre-line">
+                <p class="f5 mb0 bb">Writing</p>
+                <div id="writing">
+                    {{ row['befund_s_text'] }}
+                </div>
+            </div>
+            <div class="dtc pa2" style="white-space: pre-line">
+                <p class="f5 mb0 bb">Final</p>
+                <div id="final">
+                    {{ row['befund_f_text'] }}
+                </div>
+            </div>
+            <div class="dtc pr0 pa2" style="white-space: pre-line">
+                <p class="f5 mb0 bb">Diff</p>
+                <div id="diff"></div>
+            </div>
+        </div>
+    </div>
+    {% assets "js_all" %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/diff.js') }}"></script>
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+</body>
+
+</html>

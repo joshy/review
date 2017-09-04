@@ -21,7 +21,7 @@ def text(report_file):
 
 def rtf_to_text(text):
     pattern = re.compile(r"\\([a-z]{1,32})(-?\d{1,10})?[ ]?|\\'([0-9a-f]{2})|\\([^a-z])|([{}])|[\r\n]+|(.)", re.I)
-    # control words which specify a "destionation".
+    # control words which specify a "destination".
     destinations = frozenset((
     'aftncn','aftnsep','aftnsepc','annotation','atnauthor','atndate','atnicn','atnid',
     'atnparent','atnref','atntime','atrfend','atrfstart','author','background',
