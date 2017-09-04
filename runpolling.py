@@ -57,7 +57,7 @@ def insert_reviews(review_cursor, hours=1):
 
 
 def update_reviews(review_cursor, befund_status='l', hours=2):
-    rows = query_ris(befund_status)
+    rows = query_ris(befund_status, hours)
     count = len(rows)
     logging.debug('Updating total of {} rows with befund_status {}'
         .format(count, befund_status))
@@ -90,7 +90,10 @@ def update(cursor, row, befund_status):
             gegenleser = %s,
             befund_status = %s,
             befund_freigabe = %s,
-            unters_beginn = %s
+            unters_beginn = %s,
+            pat_vorname = %s,
+            pat_name = %s,
+            untart_name = %s
           WHERE
             unters_schluessel = %s
           """.format(field)
@@ -103,6 +106,9 @@ def update(cursor, row, befund_status):
         row['befund_status'],
         row['befund_freigabe'],
         row['unters_beginn'],
+        row['pat_vorname'],
+        row['pat_name'],
+        row['untart_name'],
         row['unters_schluessel']))
 
 

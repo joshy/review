@@ -69,9 +69,20 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
             A.LESE_DATUM,
             A.LESER,
             A.GEGENLESE_DATUM,
-            A.GEGENLESER
+            A.GEGENLESER,
+            B.UNTART_NAME,
+            C.PAT_NAME,
+            C.PAT_VORNAME
           FROM
             A_BEFUND A
+          INNER JOIN
+            A_UNTARTEN B
+          ON
+          	A.UNTERS_ART = B.UNTART_KUERZEL
+          INNER JOIN
+            A_PATIENT C
+          ON
+            A.PATIENT_SCHLUESSEL = C.PATIENT_SCHLUESSEL
           WHERE
               A.BEFUND_STATUS = :befund_status
             AND

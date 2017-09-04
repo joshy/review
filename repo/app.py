@@ -17,7 +17,7 @@ from repo.converter import rtf_to_text
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-version = app.config['VERSION'] = '1.1.0'
+version = app.config['VERSION'] = '2.0.0'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],

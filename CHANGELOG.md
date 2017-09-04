@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.0 - 04.09.2017
+ * First version of report review functionality
+
 ## v1.1.0 - 16.08.2017
  * Add contrast medium query
 

@@ -32,7 +32,10 @@ def query_review_reports(cursor, day):
             a.lese_datum,
             a.leser,
             a.gegenlese_datum,
-            a.gegenleser
+            a.gegenleser,
+            a.pat_name,
+            a.pat_vorname,
+            a.untart_name
           FROM
             reports a
           WHERE
