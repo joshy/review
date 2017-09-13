@@ -124,9 +124,12 @@ def insert(cursor, row):
             freigeber,
             befund_freigabe,
             befund_status,
-            befund_s)
+            befund_s,
+            untart_name,
+            pat_name,
+            pat_vorname)
           VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
           ON CONFLICT
             (unters_schluessel)
           DO NOTHING
@@ -141,7 +144,10 @@ def insert(cursor, row):
         row['freigeber'],
         row['befund_freigabe'],
         row['befund_status'],
-        row['befund_s']))
+        row['befund_s'],
+        row['untart_name'],
+        row['pat_name'],
+        row['pat_vorname']))
 
 def run_schedule():
     while 1:
@@ -150,7 +156,7 @@ def run_schedule():
 
 
 if __name__ == '__main__':
-    schedule.every(1).hour.do(job)
+    schedule.every(30).minutes.do(job)
     t = Thread(target=run_schedule)
     t.start()
     logging.info('Polling is up and running')

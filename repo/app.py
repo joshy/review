@@ -64,10 +64,13 @@ def query():
 
 @app.route('/review')
 def review():
+    now = datetime.now().strftime('%d.%m.%Y')
+    day = request.args.get('day', now)
+    dd = datetime.strptime(day, '%d.%m.%Y')
     con =  get_review_db()
-    now = datetime.now()
-    rows = query_review_reports(con.cursor(), now)
-    return render_template('review.html', rows=rows, version=version)
+    rows = query_review_reports(con.cursor(), dd)
+    day = dd.strftime('%d.%m.%Y')
+    return render_template('review.html', rows=rows, day=day, version=version)
 
 
 @app.route('/review/diff/<id>')
