@@ -1,6 +1,6 @@
-# RIS Report Server
+# RIS/Review Report Server
 
-## Connection
+## RIS Connection
 A connection to the RIS database is established and the reports are downloaded
 locally. This is GE Centricity specific. Also the view is very specific.
 
