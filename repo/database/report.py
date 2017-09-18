@@ -70,15 +70,16 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
             A.LESER,
             A.GEGENLESE_DATUM,
             A.GEGENLESER,
-            B.UNTART_NAME,
             C.PAT_NAME,
-            C.PAT_VORNAME
+            C.PAT_VORNAME,
+            B.INSTBEREICH_KUERZEL,
+            B.UNTART_BEZEICHNUNG
           FROM
             A_BEFUND A
           INNER JOIN
-            A_UNTARTEN B
+            A_UNTART_INSTBEREICH B
           ON
-          	A.UNTERS_ART = B.UNTART_KUERZEL
+            A.UNTERS_ART = B.UNTART_KUERZEL
           INNER JOIN
             A_PATIENT C
           ON
