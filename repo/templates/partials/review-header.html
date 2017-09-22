@@ -1,5 +1,5 @@
 <nav class="w-100 center pv3 mw8">
-    <div class="dtc v-btm w-30 tl">
+    <div class="dtc v-btm w-25 tl">
       <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black" href="/review" title="Home">
         Report Review Server
         <div>
@@ -10,12 +10,15 @@
 
     <div class="cf dtc w-40">
       <form action="/review">
+      <label class="f6 pa2" for="datepicker">Date </label>
       <input id="datepicker" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25" value="{{day}}" type="text" name="day" placeholder="day">
+      <label class="f6 pa2" for="writer">Writer </label>
+      <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25" value="{{writer}}" type="text" name="writer" placeholder="Shortname">
       <input class="f6 button-reset pa2 ba bg-yellow" type="submit" value="Search">
       </form>
     </div>
 
-    <div class="dtc v-btm w-30 tr">
+    <div class="dtc v-btm w-35 tr">
       <a class="link f6 f5-ns dib near-black" href="http://www.unispital-basel.ch/index.php?id=1899" title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
       <p class="pa0 ma0 fr">Universitätsspital Basel</p>
       <p class="pa0 ma0 fr">Klinik für Radiologie und Nuklearmedizin</p>

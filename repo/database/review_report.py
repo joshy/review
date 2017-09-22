@@ -1,3 +1,4 @@
+from jinja2 import Template
 def query_review_report(cursor, id):
     sql = """
           SELECT
@@ -13,9 +14,9 @@ def query_review_report(cursor, id):
     return result[0]
 
 
-def query_review_reports(cursor, day):
+def query_review_reports(cursor, day, writer):
     """
-    Query all reports in the review db by day.
+    Query all reports in the review db by day and writer (optional).
     """
     sql = """
           SELECT
@@ -44,12 +45,21 @@ def query_review_reports(cursor, day):
                   %s
                     AND
                   %s
+            {{ writer_clause }}
           ORDER BY
               a.unters_beginn
           """
     start = day.strftime('%Y-%m-%d 00:00:00')
     end = day.strftime('%Y-%m-%d 23:59:59')
-    cursor.execute(sql, (start, end))
+    template = Template(sql)
+    if writer:
+      sql = template.render(writer_clause=' AND a.schreiber = %s')
+      print(sql)
+      cursor.execute(sql, (start, end, writer.upper()))
+    else:
+      sql = template.render()
+      cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
     return result
+

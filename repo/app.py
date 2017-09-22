@@ -30,7 +30,8 @@ RIS_DB_SETTINGS = {
 REVIEW_DB_SETTINGS = {
     'dbname': app.config['REVIEW_DB_NAME'],
     'user': app.config['REVIEW_DB_USER'],
-    'password': app.config['REVIEW_DB_PASSWORD']
+    'password': app.config['REVIEW_DB_PASSWORD'],
+    'host': 'localhost'
 }
 
 REPORTS_FOLDER = 'reports'
@@ -66,11 +67,12 @@ def query():
 def review():
     now = datetime.now().strftime('%d.%m.%Y')
     day = request.args.get('day', now)
+    writer = request.args.get('writer', '')
     dd = datetime.strptime(day, '%d.%m.%Y')
     con =  get_review_db()
-    rows = query_review_reports(con.cursor(), dd)
+    rows = query_review_reports(con.cursor(), dd, writer)
     day = dd.strftime('%d.%m.%Y')
-    return render_template('review.html', rows=rows, day=day, version=version)
+    return render_template('review.html', rows=rows, day=day, writer=writer, version=version)
 
 
 @app.route('/review/diff/<id>')
