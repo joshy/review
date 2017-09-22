@@ -31,7 +31,7 @@
               <td class="pv1 bb b--black-10">{{ loop.index }}</td>
               <td class="pv1 pr3 bb b--black-10 w-25">{{ row['pat_name'] }}, {{row['pat_vorname']}}</td>
               <td class="pv1 pr3 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
-              <td class="pv1 pr3 bb b--black-10 tr w-15">{{ row['unters_beginn'] }}</td>
+              <td class="pv1 pr3 bb b--black-10 tr w-15">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M:%S')  }}</td>
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['schreiber'] }}</td>
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['freigeber']}}</td>
               <td class="pv1 pr3 bb b--black-10 tr">{{ row['befund_status']}}</td>
