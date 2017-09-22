@@ -4,3 +4,5 @@ cx_Oracle
 requests
 psycopg2
 schedule
+jsmin
+daiquiri
