@@ -1,8 +1,15 @@
-"""
-Module to run the application. Defines also logging configuration.
-"""
-import logging, logging.config, yaml
-logging.config.dictConfig(yaml.load(open('repo/settings/logging.conf')))
+import logging
+import daiquiri
+
+daiquiri.setup(level=logging.DEBUG,
+    outputs=(
+        daiquiri.output.File('repo-errors.log', level=logging.ERROR),
+        daiquiri.output.RotatingFile(
+            'repo-debug.log',
+            level=logging.DEBUG,
+            # 10 MB
+            max_size_bytes=10000000)
+    ))
 
 from repo.app import app
 
