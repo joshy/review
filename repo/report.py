@@ -20,10 +20,21 @@ def q(cursor, day: datetime):
     return rows
 
 
-def get_as_txt(cursor, accession_number):
+def get_with_file(cursor, accession_number):
     # cursor, string -> Optional[str]
     report_file, meta_data_file = _load_write(cursor, accession_number)
     return text(report_file), jjson(meta_data_file)
+
+
+def get_as_txt(cursor, accession_number):
+    # cursor, string -> Optional[str]
+    report, meta_data = _load(cursor, accession_number)
+    return rtf_to_text(report), meta_data
+
+
+def _load(cursor, accession_number):
+    report, meta_data = select_report(cursor, accession_number)
+    return report, meta_data
 
 
 def _load_write(cursor, accession_number):

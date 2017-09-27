@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.1 - 27.09.2017
+ * Request param output=text does not store the file anymore
+
 ## v2.0.0 - 04.09.2017
  * First version of report review functionality
 

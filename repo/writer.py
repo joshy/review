@@ -13,6 +13,8 @@ def write(accession_number: str, report: str,
     """
     if report is not None and meta_data is not None:
         file_dir = "reports"
+        if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
         report_file_name = FILE_PREFIX + str(accession_number) + ".rtf"
         report_meta_name = FILE_PREFIX + str(accession_number) + ".json"
         report_dest = os.path.join(file_dir, report_file_name)
