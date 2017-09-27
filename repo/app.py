@@ -11,13 +11,13 @@ from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import query_review_reports, query_review_report
-from repo.report import get_as_txt, q
+from repo.report import get_as_txt, get_with_file, q
 from repo.converter import rtf_to_text
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-version = app.config['VERSION'] = '2.0.0'
+version = app.config['VERSION'] = '2.0.1'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
@@ -106,7 +106,6 @@ def show():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
     output = request.args.get('output', 'html')
-    print(accession_number)
     # if no accession number is given -> render main page
     if not accession_number:
         print('No accession number found in request, use accession_number=XXX')
@@ -114,12 +113,10 @@ def show():
 
     con = get_ris_db()
     if output == 'text':
-        print('using text')
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
         return report_as_text
     else:
-        report_as_html, meta_data = get_as_txt(con.cursor(), accession_number)
-        print(report_as_html)
+        report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
         return render_template('report.html',
                                version=app.config['VERSION'],
                                accession_number=accession_number,
