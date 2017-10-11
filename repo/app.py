@@ -17,7 +17,7 @@ from repo.converter import rtf_to_text
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-version = app.config['VERSION'] = '2.0.1'
+version = app.config['VERSION'] = '2.0.2'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
@@ -55,6 +55,7 @@ def main():
 def query():
     day = request.args.get('day', '')
     dd = datetime.strptime(day, '%Y-%m-%d')
+    p = request.args.get('parse', )
     if not day:
         logging.debug('No day given, returning to main view')
         return main()

@@ -1,5 +1,8 @@
 # Changelog
 
+## v.2.0.2 - 11.10.2017
+ * Download report as text link added
+
 ## v2.0.1 - 27.09.2017
  * Request param output=text does not store the file anymore
 
