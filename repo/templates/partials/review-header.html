@@ -1,27 +1,29 @@
-<nav class="w-100 center pv3 mw8">
-    <div class="dtc v-btm w-25 tl">
-      <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black" href="/review" title="Home">
-        Report Review Server
-        <div>
-            <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
-        </div>
-      </a>
-    </div>
+<nav class="w-100 center pv4 mw8 bb b--light-gray">
+  <div class="dtc v-btm w-25 tl">
+    <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black underline-hover" href="/review" title="Home">
+      Report Review Server
+      <div>
+        <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
+      </div>
+    </a>
+  </div>
 
-    <div class="cf dtc w-40">
-      <form action="/review">
+  <div class="cf dtc w-40">
+    <form action="/review">
       <label class="f6 pa2" for="datepicker">Date </label>
-      <input id="datepicker" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25" value="{{day}}" type="text" name="day" placeholder="day">
+      <input id="datepicker" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25 b--near-black" value="{{day}}" type="text"
+        name="day" placeholder="day">
       <label class="f6 pa2" for="writer">Writer </label>
-      <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25" value="{{writer}}" type="text" name="writer" placeholder="Shortname">
-      <input class="f6 button-reset pa2 ba bg-yellow" type="submit" value="Search">
-      </form>
-    </div>
+      <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-25 b--near-black" value="{{writer}}" type="text"
+        name="writer" placeholder="Shortname">
+      <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
+    </form>
+  </div>
 
-    <div class="dtc v-btm w-35 tr">
-      <a class="link f6 f5-ns dib near-black" href="http://www.unispital-basel.ch/index.php?id=1899" title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
-      <p class="pa0 ma0 fr">Universitätsspital Basel</p>
-      <p class="pa0 ma0 fr">Klinik für Radiologie und Nuklearmedizin</p>
-      </a>
-    </div>
-  </nav>
+  <div class="dtc v-btm w-35 tr">
+    <a class="link f6 f5-ns dib near-black underline-hover" href="http://www.unispital-basel.ch/index.php?id=1899" title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
+      Universitätsspital Basel
+      <br>Klinik für Radiologie und Nuklearmedizin
+    </a>
+  </div>
+</nav>
