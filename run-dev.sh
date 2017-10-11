@@ -1,2 +1,2 @@
 #!/bin/sh
-nodemon --exec "python" runserver.py
+nodemon --ignore reports --exec "python" runserver.py
