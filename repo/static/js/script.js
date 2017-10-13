@@ -7,10 +7,18 @@ $(function () {
 
     if ('diff' == $('body').data('page')) {
         console.log('on diff page');
+        diff();
+    }
+
+
+    function diff() {
         var writing = $('#writing').text();
         var final = $('#final').text();
         var diff = JsDiff.diffWords(writing, final);
         var display = $('#diff').get(0);
+        while (display.firstChild) {
+            display.removeChild(display.firstChild);
+        }
         var fragment = document.createDocumentFragment();
 
         diff.forEach(function (part) {
@@ -29,5 +37,12 @@ $(function () {
         });
         display.appendChild(fragment);
     }
+
+    $('input[type=radio][name=befund_text]').change(function() {
+        var writing = $('#writing')
+        var x = document.getElementById(this.value).textContent
+        writing.text(x)
+        diff();
+    });
 
 });

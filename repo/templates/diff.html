@@ -7,24 +7,45 @@
   <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
 </head>
 
-<body class="w-100" data-page="diff">
+<body class="w-100 sans-serif" data-page="diff">
     {% include 'partials/review-header.html' %}
-    <div class="w-100 bt b--black-10 ph5-ns cf f6">
-        <div class="dt dt--fixed">
-            <div class="dtc pl0 pa2" style="white-space: pre-line">
-                <p class="f5 mb0 bb">Writing by {{row['schreiber']}}</p>
-                <div id="writing">
-                    {{ row['befund_s_text'] }}
+    <div class="w-100 ph5-ns cf f6">
+        <div class="flex">
+            <div class="pl0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
+                <div class="w-100 mb0 bb inline-flex">
+                    <span class="f5 inline-flex self-end-ns">Writing by {{row['schreiber']}}</span>
+                    <form class="inline-flex ml-auto">
+                        <span class="self-end-ns">Diff with Status:</span>
+                        <label class="pl3 inline-flex" for="befund_s_text">
+                            <input class="mr1" type="radio" name="befund_text" value="befund_g" id="befund_g_text" checked/> Gegengelesen
+                        </label>
+                        <label class="pl3 inline-flex" for="befund_s_text">
+                            <input class="mr1" type="radio" name="befund_text" value="befund_s" id="befund_s_text" /> Schreiben
+                        </label>
+                    </form>
+                    </div>
+                    <div id="writing">
+                    {{ row['befund_g_text'] }}
+                </div>
+                <div class="dn" id="befund_s">
+                    {{ row['befund_s_text']}}
+                </div>
+                <div class="dn" id="befund_g">
+                    {{ row['befund_g_text']}}
                 </div>
             </div>
-            <div class="dtc pa2" style="white-space: pre-line">
-                <p class="f5 mb0 bb">Approval by {{row['freigeber']}}</p>
+            <div class="pa2 pt4" style="white-space: pre-line; flex:1; width:0">
+                <div class="w-100 mb0 bb inline-flex">
+                    <span class="f5 inline-flex">Approval by {{row['freigeber']}}</span>
+                </div>
                 <div id="final">
                     {{ row['befund_f_text'] }}
                 </div>
             </div>
-            <div class="dtc pr0 pa2" style="white-space: pre-line">
-                <p class="f5 mb0 bb">Diff</p>
+            <div class="pr0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
+                <div class="w-100 mb0 bb inline-flex">
+                    <span class="f5 inline-flex ">Diff</span>
+                </div>
                 <div id="diff"></div>
             </div>
         </div>
