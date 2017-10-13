@@ -1,5 +1,8 @@
 # Changelog
 
+## v.2.0.3 - 13.10.2017
+ * Diff with different report status
+
 ## v.2.0.2 - 11.10.2017
  * Download report as text link added
 
