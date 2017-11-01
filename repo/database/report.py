@@ -118,6 +118,7 @@ def _query_acccesion_number_by_day(cursor, day):
           FROM
             A_BEFUND A
           WHERE
+            A.UNTERS_BEGINN
               BETWEEN
                 TO_DATE(:start_of_day, 'YYYY-MM-DD HH24:MI:SS')
                   AND
