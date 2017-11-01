@@ -55,12 +55,12 @@ def main():
 def query():
     day = request.args.get('day', '')
     dd = datetime.strptime(day, '%Y-%m-%d')
-    p = request.args.get('parse', )
+    parse_text = request.args.get('parse', False)
     if not day:
         logging.debug('No day given, returning to main view')
         return main()
     con = get_ris_db()
-    rows = q(con.cursor(), dd)
+    rows = q(con.cursor(), dd, parse_text)
     return jsonify(rows)
 
 

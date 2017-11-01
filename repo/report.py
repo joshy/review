@@ -10,13 +10,14 @@ from repo.parse import parse
 from repo.writer import write
 
 
-def q(cursor, day: datetime):
+def q(cursor, day: datetime, parse_report: bool):
     rows = query_report(cursor, day)
     for row in rows:
         text = rtf_to_text(row['rtf'])
-        row.pop('rtf', None)
-        parsed = parse(text.splitlines())
-        row.update(parsed)
+        row['txt'] = text
+        if parse_report:
+            parsed = parse(text.splitlines())
+            row.update(parsed)
     return rows
 
 
