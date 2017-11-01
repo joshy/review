@@ -1,5 +1,8 @@
 # Changelog
 
+## v.2.0.4 - 01.11.2017
+ * Ris reports per day working again, default is not parsing the text
+
 ## v.2.0.3 - 13.10.2017
  * Diff with different report status
 
