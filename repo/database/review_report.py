@@ -54,7 +54,6 @@ def query_review_reports(cursor, day, writer):
     template = Template(sql)
     if writer:
       sql = template.render(writer_clause=' AND a.schreiber = %s')
-      print(sql)
       cursor.execute(sql, (start, end, writer.upper()))
     else:
       sql = template.render()
