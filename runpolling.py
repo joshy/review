@@ -11,6 +11,8 @@ from repo.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
 from repo.database.connection import open_connection
 from repo.database.report import query_report_by_befund_status
 
+from review.compare import diffs
+from review.database import insert, update, query_review_reports, update_metrics
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -34,7 +36,7 @@ def get_review_db():
 
 
 def query_ris(befund_status='s', hours=3):
-    logging.info("Querying ris database for befund_status {}".format(befund_status))
+    logging.info("Querying ris for befund_status {}".format(befund_status))
     con =  get_ris_db()
     start_date = datetime.now() - timedelta(hours)
     end_date = datetime.now()
@@ -67,6 +69,15 @@ def update_reviews(review_cursor, befund_status='l', hours=2):
     logging.info('Updating befund_status {} done'.format(befund_status))
 
 
+def calculate_comparison(review_cursor):
+    rows = query_review_reports(review_cursor)
+    for r in rows:
+        d = diffs(r)
+        update_metrics(review_cursor, r['unters_schluessel'], d)
+
+
+
+
 def job():
     review_db = get_review_db()
     review_cursor = review_db.cursor()
@@ -76,78 +87,9 @@ def job():
     update_reviews(review_cursor, 'f', hours=2)
     review_db.commit()
     review_cursor.close()
+    cursor = review_db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    calculate_comparison(cursor)
 
-
-def update(cursor, row, befund_status):
-    field = 'befund_' + befund_status
-    sql = """
-          UPDATE reports
-          SET
-            {} = %s,
-            lese_datum = %s,
-            leser = %s,
-            gegenlese_datum = %s,
-            gegenleser = %s,
-            befund_status = %s,
-            befund_freigabe = %s,
-            unters_beginn = %s,
-            pat_vorname = %s,
-            pat_name = %s,
-            untart_name = %s
-          WHERE
-            unters_schluessel = %s
-          """.format(field)
-    cursor.execute(sql,
-        (row[field],
-        row['lese_datum'],
-        row['leser'],
-        row['gegenlese_datum'],
-        row['gegenleser'],
-        row['befund_status'],
-        row['befund_freigabe'],
-        row['unters_beginn'],
-        row['pat_vorname'],
-        row['pat_name'],
-        row['untart_name'],
-        row['unters_schluessel']))
-
-
-def insert(cursor, row):
-    sql = """
-          INSERT INTO reports
-            (patient_schluessel,
-            unters_schluessel,
-            unters_art,
-            befund_schluessel,
-            unters_beginn,
-            schreiber,
-            freigeber,
-            befund_freigabe,
-            befund_status,
-            befund_s,
-            untart_name,
-            pat_name,
-            pat_vorname)
-          VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-          ON CONFLICT
-            (unters_schluessel)
-          DO NOTHING
-          """
-    cursor.execute(sql,
-        (row['patient_schluessel'],
-        row['unters_schluessel'],
-        row['unters_art'],
-        row['befund_schluessel'],
-        row['unters_beginn'],
-        row['schreiber'],
-        row['freigeber'],
-        row['befund_freigabe'],
-        row['befund_status'],
-        row['befund_s'],
-        row['untart_name'],
-        row['pat_name'],
-        row['pat_vorname']))
 
 def run_schedule():
     while 1:

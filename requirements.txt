@@ -6,3 +6,4 @@ psycopg2
 schedule
 jsmin
 daiquiri
+PyReadableDiff

@@ -1,2 +1,2 @@
 #!/bin/sh
-nodemon --ignore reports --exec "python" runserver.py
+nodemon --ignore reports --ignore repo/repo/static --exec "python" runserver.py
