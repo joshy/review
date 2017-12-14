@@ -7,6 +7,8 @@ import daiquiri
 import daiquiri.formatter
 import schedule
 
+from psycopg2.extras import DictCursor
+
 from repo.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
 from repo.database.connection import open_connection
 from repo.database.report import query_report_by_befund_status
@@ -69,13 +71,20 @@ def update_reviews(review_cursor, befund_status='l', hours=2):
     logging.info('Updating befund_status {} done'.format(befund_status))
 
 
-def calculate_comparison(review_cursor):
-    rows = query_review_reports(review_cursor)
-    for r in rows:
+def calculate_comparison():
+    db = get_review_db()
+    cursor = db.cursor(cursor_factory=DictCursor)
+    rows = query_review_reports(cursor)
+    total = len(rows)
+    logging.debug('Total rows to update %s', total)
+    for i, r in enumerate(rows):
         d = diffs(r)
-        update_metrics(review_cursor, r['unters_schluessel'], d)
-
-
+        update_metrics(cursor, r['unters_schluessel'], d)
+        logging.debug('Updated row %s of %s', i, total)
+        if (i%10 == 0):
+             db.commit()
+    db.commit()
+    cursor.close()
 
 
 def job():
@@ -87,8 +96,7 @@ def job():
     update_reviews(review_cursor, 'f', hours=2)
     review_db.commit()
     review_cursor.close()
-    cursor = review_db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    calculate_comparison(cursor)
+    calculate_comparison()
 
 
 def run_schedule():

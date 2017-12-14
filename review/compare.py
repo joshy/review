@@ -24,6 +24,12 @@ def _tokenize(string):
     return [token for token in _word_split_re.split(string) if token]
 
 
+def _total_length(report) -> int:
+    if report is None:
+        return 0
+    return len(list(filter(str.strip, report.split(' '))))
+
+
 def _all_deletions(changes):
     deletions = [x for x in [_words_deleted_filter(y) for y in changes]
                  if x is not None]
@@ -57,10 +63,15 @@ def _diff(before, after):
     return {'jaccard': j, 'additions': additions, 'deletions': deletions}
 
 
-def diffs(row) -> Tuple[Dict[str, str], Dict[str, str]]:
+def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int]]:
     befund_s = rtf_to_text(row['befund_s'])
-    befund_g = rtf_to_text(row['befund_g'])
-    befund_f = rtf_to_text(row['befund_f'])
-    compare_s_g = _diff(befund_s, befund_g)
-    compare_f_g = _diff(befund_g, befund_f)
-    return compare_s_g, compare_f_g
+    befund_g = rtf_to_text(row['befund_g']) \
+                if row['befund_g'] is not None else ''
+    befund_f = rtf_to_text(row['befund_f']) \
+                if row['befund_f'] is not None else ''
+    compare_s_f = _diff(befund_s, befund_g)
+    compare_g_f = _diff(befund_g, befund_f)
+    total_lengths = {'total_words_s': _total_length(befund_s),
+                     'total_words_g': _total_length(befund_g),
+                     'total_words_f': _total_length(befund_f)}
+    return compare_s_f, compare_g_f, total_lengths

@@ -1,6 +1,6 @@
 import unittest
 
-from review.compare import _diff
+from review.compare import _diff, _total_length
 
 class TestCompare(unittest.TestCase):
     def test_compare(self):
@@ -66,3 +66,27 @@ class TestCompare(unittest.TestCase):
         self.assertEqual(r['deletions'], 0)
         self.assertEqual(r['additions'], 2)
         self.assertEqual(r['jaccard'], 0.0)
+
+class TestLength(unittest.TestCase):
+    def test_length(self):
+        l1 = "Hello Mary Sue from Johnny"
+        length = _total_length(l1)
+        self.assertEqual(length, 5)
+
+    def test_length1(self):
+        l1 = """
+             Hello Mary Sue from Johnny
+             3 mm
+             """
+        length = _total_length(l1)
+        self.assertEqual(length, 7)
+
+    def test_length2(self):
+        l1 = None
+        length = _total_length(l1)
+        self.assertEqual(length, 0)
+
+    def test_length3(self):
+        l1 = "  foooooo "
+        length = _total_length(l1)
+        self.assertEqual(length, 1)

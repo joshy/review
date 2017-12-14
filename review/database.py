@@ -1,4 +1,10 @@
+import psycopg2
+
 def query_review_reports(cursor):
+    """
+    Returns the rows where the reports are finalized and metrics are not yet
+    calculated.
+    """
     sql = """
           SELECT
             unters_schluessel,
@@ -8,9 +14,9 @@ def query_review_reports(cursor):
           FROM
             reports
           WHERE
-            befund_g is not null
-          OR
             befund_f is not null
+          AND
+            jaccard_s_f is null
           """
     cursor.execute(sql)
     results = cursor.fetchall()
@@ -19,23 +25,33 @@ def query_review_reports(cursor):
 def update_metrics(cursor, unters_schluessel, diffs):
     sql = """
           UPDATE reports SET
-            jaccard_s_g = %s,
-            words_added_s_g = %s,
-            words_deleted_s_g = %s,
+            jaccard_s_f = %s,
+            words_added_s_f = %s,
+            words_deleted_s_f = %s,
             jaccard_g_f = %s,
             words_added_g_f = %s,
-            words_deleted_g_f = %s
+            words_deleted_g_f = %s,
+            total_words_s = %s,
+            total_words_g = %s,
+            total_words_f = %s
           WHERE
             unters_schluessel = %s
           """
-    cursor.execute(sql,
-        (diffs[0]['jaccard'],
-         diffs[0]['additions'],
-         diffs[0]['deletions'],
-         diffs[1]['jaccard'],
-         diffs[1]['additions'],
-         diffs[1]['deletions'],
-         unters_schluessel))
+    try:
+
+      cursor.execute(sql,
+          (diffs[0]['jaccard'],
+          diffs[0]['additions'],
+          diffs[0]['deletions'],
+          diffs[1]['jaccard'],
+          diffs[1]['additions'],
+          diffs[1]['deletions'],
+          diffs[2]['total_words_s'],
+          diffs[2]['total_words_g'],
+          diffs[2]['total_words_g'],
+          unters_schluessel))
+    except psycopg2.Error as e:
+      logging.error('Error ', e)
 
 def insert(cursor, row):
     sql = """
