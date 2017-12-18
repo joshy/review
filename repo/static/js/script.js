@@ -43,6 +43,22 @@ $(function () {
         var x = document.getElementById(this.value).textContent
         writing.text(x)
         diff();
+        console.log(this.value)
+        if (this.value === 'befund_s') {
+            $('#words_added_g_f').addClass('dn')
+            $('#words_deleted_g_f').addClass('dn')
+            $('#jaccard_g_f').addClass('dn')
+            $('#words_added_s_f').removeClass('dn')
+            $('#words_deleted_s_f').removeClass('dn')
+            $('#jaccard_s_f').removeClass('dn')
+        } else if (this.value === 'befund_g') {
+            $('#words_added_g_f').removeClass('dn')
+            $('#words_deleted_g_f').removeClass('dn')
+            $('#jaccard_g_f').removeClass('dn')
+            $('#words_added_s_f').addClass('dn')
+            $('#words_deleted_s_f').addClass('dn')
+            $('#jaccard_s_f').addClass('dn')
+        }
     });
 
 });

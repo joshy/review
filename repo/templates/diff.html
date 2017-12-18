@@ -12,10 +12,10 @@
     <div class="w-100 ph5-ns cf f6">
         <div class="flex">
             <div class="pl0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex">
-                    <span class="f5 inline-flex self-end-ns">Writing by {{row['schreiber']}}</span>
+                <div class="w-100 mb0 bb inline-flex f7">
+                    <span class=" inline-flex self-end-ns">Writing:<span class="b pl1"> {{row['schreiber']}}</span></span>
                     <form class="inline-flex ml-auto">
-                        <span class="self-end-ns">Diff with Status:</span>
+                        <span class="self-end-ns">Diff with</span>
                         <label class="pl3 inline-flex" for="befund_s_text">
                             <input class="mr1" type="radio" name="befund_text" value="befund_g" id="befund_g_text" checked/> Gegengelesen
                         </label>
@@ -35,16 +35,25 @@
                 </div>
             </div>
             <div class="pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex">
-                    <span class="f5 inline-flex">Approval by {{row['freigeber']}}</span>
+                <div class="w-100 mb0 bb inline-flex f7">
+                    <span class="inline-flex">Approval:<span class="b pl1"> {{row['freigeber']}}</span></span>
                 </div>
                 <div id="final">
                     {{ row['befund_f_text'] }}
                 </div>
             </div>
             <div class="pr0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex">
-                    <span class="f5 inline-flex ">Diff</span>
+                <div class="w-100 mb0 bb inline-flex f7">
+                    <div class="inline-flex ">Diff </div>
+                    <div class="inline-flex pl4 ml-auto">Additions:
+                        <div id="words_added_g_f"> {{row['words_added_g_f']}}</div><div id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</div>
+                    </div>
+                    <div class="inline-flex pl2">Deletions:
+                        <div id="words_deleted_g_f">{{row['words_deleted_g_f']}}</div><div id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</div>
+                    </div>
+                    <div class="inline-flex pl2">Similarity:
+                        <div id="jaccard_g_f">{{row['jaccard_g_f']}}</div><div id="jaccard_s_f" class="dn f6">{{row['jaccard_s_f']}}</div>
+                    </div>
                 </div>
                 <div id="diff"></div>
             </div>
