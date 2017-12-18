@@ -1,18 +1,20 @@
 import logging
 import os
-import schedule
-import psycopg2
 from datetime import datetime, timedelta
 
+import psycopg2
+import schedule
 from flask import Flask, g, jsonify, render_template, request
 from flask_assets import Bundle, Environment
+from psycopg2.extras import RealDictCursor
 
+from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
-from repo.database.review_report import query_review_reports, query_review_report
+from repo.database.review_report import (query_by_writer, query_review_report,
+                                         query_review_reports)
 from repo.report import get_as_txt, get_with_file, q
-from repo.converter import rtf_to_text
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -89,6 +91,19 @@ def diff(id):
                 row[field] = rtf_to_text(v)
     return render_template('diff.html', row=row, version=version)
 
+
+@app.route('/writer/<writer>')
+def dashboard(writer):
+    con = get_review_db()
+    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer)
+    return render_template('dashboard.html', rows=rows)
+
+
+@app.route('/writer/data/<writer>')
+def dashboard_data(writer):
+    con = get_review_db()
+    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer)
+    return jsonify(rows)
 
 @app.route('/cm')
 def cm():
