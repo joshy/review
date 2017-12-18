@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 
 def query_review_reports(cursor):
@@ -39,19 +40,19 @@ def update_metrics(cursor, unters_schluessel, diffs):
           """
     try:
 
-      cursor.execute(sql,
+        cursor.execute(sql,
           (diffs[0]['jaccard'],
-          diffs[0]['additions'],
-          diffs[0]['deletions'],
-          diffs[1]['jaccard'],
-          diffs[1]['additions'],
-          diffs[1]['deletions'],
-          diffs[2]['total_words_s'],
-          diffs[2]['total_words_g'],
-          diffs[2]['total_words_g'],
-          unters_schluessel))
+           diffs[0]['additions'],
+           diffs[0]['deletions'],
+           diffs[1]['jaccard'],
+           diffs[1]['additions'],
+           diffs[1]['deletions'],
+           diffs[2]['total_words_s'],
+           diffs[2]['total_words_g'],
+           diffs[2]['total_words_g'],
+           unters_schluessel))
     except psycopg2.Error as e:
-      logging.error('Error ', e)
+        logging.error('Error %s', e)
 
 def insert(cursor, row):
     sql = """
@@ -77,18 +78,18 @@ def insert(cursor, row):
           """
     cursor.execute(sql,
         (row['patient_schluessel'],
-        row['unters_schluessel'],
-        row['unters_art'],
-        row['befund_schluessel'],
-        row['unters_beginn'],
-        row['schreiber'],
-        row['freigeber'],
-        row['befund_freigabe'],
-        row['befund_status'],
-        row['befund_s'],
-        row['untart_name'],
-        row['pat_name'],
-        row['pat_vorname']))
+         row['unters_schluessel'],
+         row['unters_art'],
+         row['befund_schluessel'],
+         row['unters_beginn'],
+         row['schreiber'],
+         row['freigeber'],
+         row['befund_freigabe'],
+         row['befund_status'],
+         row['befund_s'],
+         row['untart_name'],
+         row['pat_name'],
+         row['pat_vorname']))
 
 
 def update(cursor, row, befund_status):
@@ -112,14 +113,14 @@ def update(cursor, row, befund_status):
           """.format(field)
     cursor.execute(sql,
         (row[field],
-        row['lese_datum'],
-        row['leser'],
-        row['gegenlese_datum'],
-        row['gegenleser'],
-        row['befund_status'],
-        row['befund_freigabe'],
-        row['unters_beginn'],
-        row['pat_vorname'],
-        row['pat_name'],
-        row['untart_name'],
-        row['unters_schluessel']))
+         row['lese_datum'],
+         row['leser'],
+         row['gegenlese_datum'],
+         row['gegenleser'],
+         row['befund_status'],
+         row['befund_freigabe'],
+         row['unters_beginn'],
+         row['pat_vorname'],
+         row['pat_name'],
+         row['untart_name'],
+         row['unters_schluessel']))
