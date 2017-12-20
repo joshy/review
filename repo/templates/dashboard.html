@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Report Review Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
+</head>
+
+<body class="w-100 sans-serif" data-page="dashboard">
+  {% include 'partials/dashboard-header.html' %}
+  <div class="w-100 b--black-10 mw8 center">
+      <svg width="960" height="300"></svg>
+      <svg id="grouped" width="960" height="300"></svg>
+  </div>
+  {% assets "js_all" %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
+  {% endassets %}
+</body>
+<style>
+  .bar {
+    fill: steelblue;
+  }
+
+  .bar:hover {
+    fill: brown;
+  }
+
+  .axis--x path {
+    display: none;
+  }
+</style>
+
+</html>

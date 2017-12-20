@@ -15,50 +15,6 @@ def query_review_report(cursor, id):
     result = [dict(zip(desc, row)) for row in cursor]
     return result[0]
 
-def query_by_writer(cursor, writer):
-    """
-    Query all reports in the review db by day and writer (optional).
-    """
-    sql = """
-          SELECT
-            a.patient_schluessel,
-            a.unters_schluessel,
-            a.unters_art,
-            a.unters_beginn,
-            a.befund_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.befund_freigabe,
-            a.befund_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
-            a.untart_name,
-            a.jaccard_s_f,
-            a.jaccard_g_f,
-            a.words_added_s_f,
-            a.words_added_g_f,
-            a.words_deleted_s_f,
-            a.words_deleted_g_f,
-            a.total_words_s,
-            a.total_words_g,
-            a.total_words_f
-          FROM
-            reports a
-          WHERE
-              a.unters_beginn > current_date - interval '30' day
-          AND
-              a.schreiber = %s
-          ORDER BY
-              a.unters_beginn
-          """
-    cursor.execute(sql, (writer.upper(),))
-    return cursor.fetchall()
-
 
 def query_review_reports(cursor, day, writer):
     """

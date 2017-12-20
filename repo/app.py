@@ -4,15 +4,18 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import schedule
+import pandas as pd
 from flask import Flask, g, jsonify, render_template, request
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
+
+from review.database import query_by_writer
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
-from repo.database.review_report import (query_by_writer, query_review_report,
+from repo.database.review_report import (query_review_report,
                                          query_review_reports)
 from repo.report import get_as_txt, get_with_file, q
 
@@ -92,18 +95,25 @@ def diff(id):
     return render_template('diff.html', row=row, version=version)
 
 
-@app.route('/writer/<writer>')
+@app.route('/review/writer/<writer>')
 def dashboard(writer):
     con = get_review_db()
     rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer)
     return render_template('dashboard.html', rows=rows)
 
 
-@app.route('/writer/data/<writer>')
-def dashboard_data(writer):
+@app.route('/review/writer/foo/data.csv')
+def data():
     con = get_review_db()
-    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer)
-    return jsonify(rows)
+    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), 'schno')
+    df = pd.DataFrame(rows)
+    df = df[['jaccard_s_f', 'jaccard_g_f', 'befund_schluessel']]
+    print(len(df))
+    df = df.dropna(axis=0, how='any')
+    print(len(df))
+    print(df.columns)
+    return df.to_csv(index_label='index', columns=['jaccard_s_f', 'jaccard_g_f', 'befund_schluessel'])
+
 
 @app.route('/cm')
 def cm():
