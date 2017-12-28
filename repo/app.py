@@ -10,6 +10,7 @@ from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer
+from review.calculations import relative
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -95,25 +96,25 @@ def diff(id):
     return render_template('diff.html', row=row, version=version)
 
 
-@app.route('/review/writer/<writer>')
-def dashboard(writer):
+@app.route('/review/dashboard')
+def dashboard():
+    writer = request.args.get('w', '')
+    days = int(request.args.get('d', '15'))
     con = get_review_db()
-    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer)
-    return render_template('dashboard.html', rows=rows)
+    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer, days)
+    return render_template('dashboard.html', rows=rows, writer=writer, days=days)
 
 
-@app.route('/review/writer/foo/data.csv')
-def data():
+@app.route('/review/dashboard/data/<writer>/<days>')
+def data(writer, days):
+    print(writer, days)
     con = get_review_db()
-    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), 'schno')
-    df = pd.DataFrame(rows)
-    df = df[['jaccard_s_f', 'jaccard_g_f', 'befund_schluessel']]
-    print(len(df))
-    df = df.dropna(axis=0, how='any')
-    print(len(df))
-    print(df.columns)
-    return df.to_csv(index_label='index', columns=['jaccard_s_f', 'jaccard_g_f', 'befund_schluessel'])
-
+    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer, days)
+    if len(rows)>0:
+        df = pd.DataFrame(rows)
+        df = relative(df)
+        return df.to_csv(index_label='index')
+    return pd.DataFrame().to_csv()
 
 @app.route('/cm')
 def cm():

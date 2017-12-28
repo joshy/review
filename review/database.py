@@ -1,5 +1,6 @@
 import logging
 import psycopg2
+import datetime
 
 def query_review_reports(cursor):
     """
@@ -126,9 +127,9 @@ def update(cursor, row, befund_status):
          row['unters_schluessel']))
 
 
-def query_by_writer(cursor, writer):
+def query_by_writer(cursor, writer, days):
     """
-    Query all reports in the review db by day and writer (optional).
+    Query all reports in the review db by writer.
     """
     sql = """
           SELECT
@@ -161,11 +162,12 @@ def query_by_writer(cursor, writer):
           FROM
             reports a
           WHERE
-              a.unters_beginn > current_date - interval '15' day
+              a.unters_beginn > current_date - %s
           AND
               a.schreiber = %s
           ORDER BY
               a.unters_beginn
           """
-    cursor.execute(sql, (writer.upper(),))
+    t = datetime.timedelta(days=int(days))
+    cursor.execute(sql, (t, writer.upper()))
     return cursor.fetchall()
