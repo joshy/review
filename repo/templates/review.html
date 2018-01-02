@@ -32,7 +32,7 @@
               <td class="pa1 bb b--black-10 w-25">{{ row['pat_name'] }}, {{row['pat_vorname']}}</td>
               <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
               <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M:%S') }}</td>
-              <td class="pa1 bb b--black-10 tr">{{ row['schreiber'] }}</td>
+              <td class="pa1 bb b--black-10 tr"><a href="review/dashboard?w={{row['schreiber']}}">{{ row['schreiber'] }}</a></td>
               <td class="pa1 bb b--black-10 tr">{{ row['freigeber']}}</td>
               <td class="pa1 bb b--black-10 tr">{{ row['befund_status']}}</td>
               <td class="bb b--black-10 tr">

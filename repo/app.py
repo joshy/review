@@ -114,7 +114,7 @@ def data(writer, days):
         df = pd.DataFrame(rows)
         df = relative(df)
         return df.to_csv(index_label='index')
-    return pd.DataFrame().to_csv(label_index='index')
+    return pd.DataFrame().to_csv(index_label='index')
 
 @app.route('/cm')
 def cm():
