@@ -10,7 +10,22 @@
 <body class="w-100 sans-serif" data-page="dashboard">
   {% include 'partials/dashboard-header.html' %}
   <div class="w-100 b--black-10 mw8 center">
+      <div>
+        <h1 class="f4">Personal Dashboard</h1>
+        <p>
+            This is a personal dashboard. This should help the assistant to improve
+            on writing radiology reports.
+        </p>
+        <h1 class="f5">Document Similarity</h1>
+      </div>
       <svg id="grouped" width="960" height="300"></svg>
+      <p>
+      The graph above shows the similarity between different status of the report. The
+      darker color shows how similar the report on status "Schreiben" is compared to
+      status "Final". The lighter color shows the similarity between status "Gegengelesen" to
+      "Final". Similarity of 100% means the documents are the same, 0% means totally different.
+      </p>
+      <h1 class="f5">Document changes</h1>
       <svg id="add_delete" width="960" height="300"></svg>
       <svg id="add_delete_absolute" width="960" height="300"></svg>
   </div>

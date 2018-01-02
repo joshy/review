@@ -102,7 +102,7 @@ def dashboard():
     days = int(request.args.get('d', '15'))
     con = get_review_db()
     rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer, days)
-    return render_template('dashboard.html', rows=rows, writer=writer, days=days)
+    return render_template('dashboard.html', rows=rows, writer=writer, days=days, version=version)
 
 
 @app.route('/review/dashboard/data/<writer>/<days>')
@@ -114,7 +114,7 @@ def data(writer, days):
         df = pd.DataFrame(rows)
         df = relative(df)
         return df.to_csv(index_label='index')
-    return pd.DataFrame().to_csv()
+    return pd.DataFrame().to_csv(label_index='index')
 
 @app.route('/cm')
 def cm():

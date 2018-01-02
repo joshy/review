@@ -95,14 +95,23 @@ $(function () {
             .range(["#6b486b", "#ff8c00"]);
 
         d3.csv(data_url(), function (d, i, columns) {
-            for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = +d[columns[i]];
+            for (var i = 1, n = columns.length; i < n; ++i) {
+                if (columns[i] === 'unters_beginn') {
+                    d[columns[i]] = new Date(d[columns[i]]);
+                } else {
+                    d[columns[i]] = +d[columns[i]];
+                }
+
+            }
             return d;
         }, function (error, data) {
             if (error) throw error;
             var keys = ['jaccard_s_f', 'jaccard_g_f']
             x0.domain(data.map(function (d) { return d.index; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-            y.domain([0, d3.max(data, function (d) { return d3.max(keys, function (key) { return d[key]; }); })]).nice();
+            y.domain([0, d3.max(data, function (d) {
+                return d3.max(keys, function (key) {
+                    return d[key]; }); })]).nice();
 
             g.append("g")
                 .selectAll("g")
@@ -127,7 +136,7 @@ $(function () {
                 .attr("class", "axis")
                 .call(d3.axisLeft(y).ticks(10, "%"))
                 .append("text")
-                .attr("x", 2)
+                .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)
                 .attr("dy", "0.32em")
                 .attr("fill", "#000")
@@ -155,7 +164,13 @@ $(function () {
                 .attr("x", width - 24)
                 .attr("y", 9.5)
                 .attr("dy", "0.32em")
-                .text(function (d) { return d; });
+                .text(function (d) {
+                    if (d === 'jaccard_s_f') {
+                        return 'Schreiben vs Final';
+                    } else if (d === 'jaccard_g_f') {
+                        return 'Gegengelesen vs Final'
+                    }
+                });
         });
     }
 
@@ -216,7 +231,7 @@ $(function () {
                 .attr("class", "axis")
                 .call(d3.axisLeft(y).ticks(10, ".0%"))
                 .append("text")
-                .attr("x", 2)
+                .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)
                 .attr("dy", "0.32em")
                 .attr("fill", "#000")
@@ -243,7 +258,13 @@ $(function () {
                 .attr("x", width - 24)
                 .attr("y", 9.5)
                 .attr("dy", "0.32em")
-                .text(function (d) { return d; });
+                .text(function (d) {
+                    if (d === 'words_added_g_f_relative') {
+                        return 'Words added after Gegengelesen (relativ)';
+                    } else if (d === 'words_deleted_g_f_relative') {
+                        return 'Words deleted after Gegengelesen (relativ)'
+                    }
+                });
         });
     }
 
@@ -304,7 +325,7 @@ $(function () {
                 .attr("class", "axis")
                 .call(d3.axisLeft(y).ticks(10))
                 .append("text")
-                .attr("x", 2)
+                .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)
                 .attr("dy", "0.32em")
                 .attr("fill", "#000")
@@ -331,7 +352,13 @@ $(function () {
                 .attr("x", width - 24)
                 .attr("y", 9.5)
                 .attr("dy", "0.32em")
-                .text(function (d) { return d; });
+                .text(function (d) {
+                    if (d === 'words_added_g_f') {
+                        return 'Words added after Gegengelesen (absolute)';
+                    } else if (d === 'words_deleted_g_f') {
+                        return 'Words deleted after Gegengelesen (absolute)'
+                    }
+                });
         });
     }
 
