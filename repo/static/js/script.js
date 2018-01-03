@@ -99,9 +99,9 @@ $(function () {
                 if (columns[i] === 'unters_beginn') {
                     d[columns[i]] = new Date(d[columns[i]]);
                 } else {
-                    d[columns[i]] = +d[columns[i]];
+                    var number = +d[columns[i]];
+                    d[columns[i]] = isNaN(+d[columns[i]]) ? d[columns[i]] : +d[columns[i]];
                 }
-
             }
             return d;
         }, function (error, data) {
@@ -113,28 +113,54 @@ $(function () {
                 return d3.max(keys, function (key) {
                     return d[key]; }); })]).nice();
 
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
             g.append("g")
                 .selectAll("g")
                 .data(data)
                 .enter().append("g")
-                  .attr("transform", function (d) { return "translate(" + x0(d.index) + ",0)"; })
+                  .attr("transform", function (d) {
+                      return "translate(" + x0(d.index) + ",0)"; })
                 .selectAll("rect")
-                .data(function (d) { return keys.map(function (key) { return { key: key, value: d[key] }; }); })
+                .data(function (d) {
+                    return keys.map(function (key) {
+                        return { key: key, value: d[key], e: d }; }); })
                 .enter().append("rect")
                   .attr("x", function (d) { return x1(d.key); })
                   .attr("y", function (d) { return y(d.value); })
                   .attr("width", x1.bandwidth())
                   .attr("height", function (d) { return height - y(d.value); })
-                  .attr("fill", function (d) { return z(d.key); });
+                  .attr("fill", function (d) { return z(d.key); })
+                  .on("mouseover", function(d) {
+                      console.log(d);
+                      div.transition()
+                          .duration(200)
+                          .style("opacity", .9);
+                      div.html("<span>Similarity: " + d.value + "</span><br/>"
+                               + "<span>" + d.e.untart_name + "</span>")
+                          .style("left", (d3.event.pageX) + "px")
+                          .style("top", (d3.event.pageY - 28) + "px")
+                  })
+                  .on("mouseout", function(d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                  })
+                  .on("click", function(d) {
+                      var url = 'diff/' + d.e.befund_schluessel
+                      window.location = url;
+                  })
 
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0).ticks(10));
+                .call(d3.axisBottom(x0));
 
             g.append("g")
                 .attr("class", "axis")
-                .call(d3.axisLeft(y).ticks(10, "%"))
+                .call(d3.axisLeft(y).ticks(8, "%"))
                 .append("text")
                 .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)
@@ -195,7 +221,9 @@ $(function () {
             .range(["#2CA02C", "#d62728"]);
 
         d3.csv(data_url(), function (d, i, columns) {
-            for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = +d[columns[i]];
+            for (var i = 1, n = columns.length; i < n; ++i) {
+                d[columns[i]] = +d[columns[i]];
+            }
             return d;
         }, function (error, data) {
             if (error) throw error;
@@ -229,7 +257,7 @@ $(function () {
 
             g.append("g")
                 .attr("class", "axis")
-                .call(d3.axisLeft(y).ticks(10, ".0%"))
+                .call(d3.axisLeft(y).ticks(8, ".0%"))
                 .append("text")
                 .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)
@@ -246,7 +274,8 @@ $(function () {
                 .selectAll("g")
                 .data(keys.slice().reverse())
                 .enter().append("g")
-                .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+                .attr("transform", function (d, i) {
+                    return "translate(0," + i * 20 + ")"; });
 
             legend.append("rect")
                 .attr("x", width - 19)
@@ -289,7 +318,9 @@ $(function () {
             .range(["#2CA02C", "#d62728"]);
 
         d3.csv(data_url(), function (d, i, columns) {
-            for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = +d[columns[i]];
+            for (var i = 1, n = columns.length; i < n; ++i) {
+                d[columns[i]] = +d[columns[i]];
+            }
             return d;
         }, function (error, data) {
             if (error) throw error;
@@ -323,7 +354,7 @@ $(function () {
 
             g.append("g")
                 .attr("class", "axis")
-                .call(d3.axisLeft(y).ticks(10))
+                .call(d3.axisLeft(y).ticks(8))
                 .append("text")
                 .attr("x", 5)
                 .attr("y", y(y.ticks().pop()) + 0.5)

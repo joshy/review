@@ -13,7 +13,7 @@ def query_review_report(cursor, id):
     cursor.execute(sql, (id,))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
-    return result[0]
+    return result[0] if result else []
 
 
 def query_review_reports(cursor, day, writer):

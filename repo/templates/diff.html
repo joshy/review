@@ -10,6 +10,11 @@
 <body class="w-100 sans-serif" data-page="diff">
     {% include 'partials/review-header.html' %}
     <div class="w-100 ph5-ns cf f6">
+        {% if not row %}
+        <div class="f6 w-100 mw8 center pv3 mt1 red">
+            Sorry, somehow you got a wrong url, nothing to show here.
+        </div>
+        {% else %}
         <div class="flex">
             <div class="pl0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
                 <div class="w-100 mb0 bb inline-flex f7">
@@ -45,19 +50,20 @@
             <div class="pr0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
                 <div class="w-100 mb0 bb inline-flex f7">
                     <div class="inline-flex ">Diff </div>
-                    <div class="inline-flex pl4 ml-auto">Additions:
-                        <div id="words_added_g_f"> {{row['words_added_g_f']}}</div><div id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</div>
+                    <div class="inline-flex pl4 ml-auto">
+                        <span>Additions: <span id="words_added_g_f"> {{row['words_added_g_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
                     </div>
-                    <div class="inline-flex pl2">Deletions:
-                        <div id="words_deleted_g_f">{{row['words_deleted_g_f']}}</div><div id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</div>
+                    <div class="inline-flex pl2">
+                        <span>Deletions: <span id="words_deleted_g_f">{{row['words_deleted_g_f']}}</span><span id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</span></span>
                     </div>
-                    <div class="inline-flex pl2">Similarity:
-                        <div id="jaccard_g_f">{{row['jaccard_g_f']}}</div><div id="jaccard_s_f" class="dn f6">{{row['jaccard_s_f']}}</div>
+                    <div class="inline-flex pl2">
+                        <span>Similarity: <span id="jaccard_g_f">{{row['jaccard_g_f']}}</span><span id="jaccard_s_f" class="dn f6">{{row['jaccard_s_f']}}</span></span>
                     </div>
                 </div>
                 <div id="diff"></div>
             </div>
         </div>
+        {% endif %}
     </div>
     {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>

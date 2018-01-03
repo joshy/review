@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
   <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
 </head>
 
 <body class="w-100 sans-serif" data-page="dashboard">
@@ -14,8 +15,7 @@
         <h1 class="f4">Personal Dashboard</h1>
         <p>
             This is a personal dashboard which should help the assistant to improve
-            on writing radiology reports. Different metrics are shown to get
-            quantitative feedback.
+            on writing radiology reports.
         </p>
         <h1 class="f5">Document Similarity</h1>
       </div>
@@ -25,6 +25,7 @@
       darker color shows how similar the report on status "Schreiben" is compared to
       status "Final". The lighter color shows the similarity between status "Gegengelesen" to
       "Final". Similarity of 100% means the documents are the same, 0% means totally different.
+      Left click to open diff of report.
       </p>
       <h1 class="f5">Document changes</h1>
       <svg id="add_delete" width="960" height="300"></svg>
