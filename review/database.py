@@ -50,7 +50,7 @@ def update_metrics(cursor, unters_schluessel, diffs):
            diffs[1]['deletions'],
            diffs[2]['total_words_s'],
            diffs[2]['total_words_g'],
-           diffs[2]['total_words_g'],
+           diffs[2]['total_words_f'],
            unters_schluessel))
     except psycopg2.Error as e:
         logging.error('Error %s', e)

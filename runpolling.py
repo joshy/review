@@ -76,8 +76,8 @@ def calculate_comparison():
     cursor = db.cursor(cursor_factory=DictCursor)
     rows = query_review_reports(cursor)
     total = len(rows)
-    logging.debug('Total rows to update %s', total)
-    for i, r in enumerate(rows):
+    logging.debug('Total rows to update %s for metrics', total)
+    for i, r in enumerate(rows, 1):
         d = diffs(r)
         update_metrics(cursor, r['unters_schluessel'], d)
         logging.debug('Updated row %s of %s', i, total)
@@ -85,6 +85,7 @@ def calculate_comparison():
              db.commit()
     db.commit()
     cursor.close()
+    logging.debug('Updating metrics done')
 
 
 def job():
