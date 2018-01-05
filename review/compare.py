@@ -72,7 +72,7 @@ def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
                 if row['befund_g'] is not None else ''
     befund_f = rtf_to_text(row['befund_f']) \
                 if row['befund_f'] is not None else ''
-    compare_s_f = _diff(befund_s, befund_g)
+    compare_s_f = _diff(befund_s, befund_f)
     compare_g_f = _diff(befund_g, befund_f)
     total_lengths = {'total_words_s': _total_length(befund_s),
                      'total_words_g': _total_length(befund_g),
