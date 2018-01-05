@@ -1,4 +1,6 @@
+import logging
 import re
+import time
 from typing import Dict, Tuple
 
 import pydiff
@@ -63,7 +65,8 @@ def _diff(before, after):
     return {'jaccard': j, 'additions': additions, 'deletions': deletions}
 
 
-def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int]]:
+def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
+    s = time.time()
     befund_s = rtf_to_text(row['befund_s'])
     befund_g = rtf_to_text(row['befund_g']) \
                 if row['befund_g'] is not None else ''
@@ -74,4 +77,6 @@ def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int]]:
     total_lengths = {'total_words_s': _total_length(befund_s),
                      'total_words_g': _total_length(befund_g),
                      'total_words_f': _total_length(befund_f)}
-    return compare_s_f, compare_g_f, total_lengths
+    e = time.time()
+    logging.debug('Single row diff calculation took %s', e-s)
+    return compare_s_f, compare_g_f, total_lengths, row['unters_schluessel']

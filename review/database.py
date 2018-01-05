@@ -1,5 +1,6 @@
 import logging
 import psycopg2
+from psycopg2.extras import execute_values
 import datetime
 
 def query_review_reports(cursor):
@@ -12,13 +13,19 @@ def query_review_reports(cursor):
             unters_schluessel,
             befund_s,
             befund_g,
-            befund_f
+            befund_f,
+            unters_beginn
           FROM
             reports
           WHERE
             befund_f is not null
           AND
             jaccard_s_f is null
+          OR
+            total_words_g = 0
+          ORDER BY
+            unters_beginn desc
+          LIMIT 1000
           """
     cursor.execute(sql)
     results = cursor.fetchall()
@@ -165,6 +172,8 @@ def query_by_writer(cursor, writer, days):
               a.unters_beginn > current_date - %s
           AND
               a.schreiber = %s
+          AND
+              a.befund_status = 'f'
           ORDER BY
               a.unters_beginn
           """

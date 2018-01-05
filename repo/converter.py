@@ -19,8 +19,9 @@ def text(report_file):
         return rtf_to_text(text)
 
 
+PATTERN  = re.compile(r"\\([a-z]{1,32})(-?\d{1,10})?[ ]?|\\'([0-9a-f]{2})|\\([^a-z])|([{}])|[\r\n]+|(.)", re.I)
+
 def rtf_to_text(text):
-    pattern = re.compile(r"\\([a-z]{1,32})(-?\d{1,10})?[ ]?|\\'([0-9a-f]{2})|\\([^a-z])|([{}])|[\r\n]+|(.)", re.I)
     # control words which specify a "destination".
     destinations = frozenset((
     'aftncn','aftnsep','aftnsepc','annotation','atnauthor','atndate','atnicn','atnid',
@@ -87,7 +88,7 @@ def rtf_to_text(text):
     ucskip = 1              # Number of ASCII characters to skip after a unicode character.
     curskip = 0             # Number of ASCII characters left to skip
     out = []                # Output buffer.
-    for match in pattern.finditer(text):
+    for match in PATTERN.finditer(text):
         word,arg,hex,char,brace,tchar = match.groups()
         if brace:
             curskip = 0
