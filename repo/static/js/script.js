@@ -6,7 +6,6 @@ $(function () {
     });
 
     if ('diff' == $('body').data('page')) {
-        console.log('on diff page');
         diff();
     }
 
@@ -30,8 +29,7 @@ $(function () {
             if (part.removed === true) {
                 span.className = "strike";
             }
-            span.appendChild(document
-                .createTextNode(part.value));
+            span.appendChild(document.createTextNode(part.value));
             fragment.appendChild(span);
         });
         display.appendChild(fragment);
@@ -42,7 +40,6 @@ $(function () {
         var x = document.getElementById(this.value).textContent
         writing.text(x)
         diff();
-        console.log(this.value)
         if (this.value === 'befund_s') {
             $('#words_added_g_f').addClass('dn')
             $('#words_deleted_g_f').addClass('dn')
@@ -76,7 +73,7 @@ $(function () {
 
     function draw_grouped() {
         var svg = d3.select("#grouped"),
-            margin = { top: 20, right: 20, bottom: 30, left: 40 },
+            margin = { top: 20, right: 20, bottom: 50, left: 40 },
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -117,6 +114,7 @@ $(function () {
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
+            tooltipFormat = d3.timeFormat("%d.%m.%Y");
             g.append("g")
                 .selectAll("g")
                 .data(data)
@@ -134,12 +132,12 @@ $(function () {
                   .attr("height", function (d) { return height - y(d.value); })
                   .attr("fill", function (d) { return z(d.key); })
                   .on("mouseover", function(d) {
-                      console.log(d);
                       div.transition()
                           .duration(200)
                           .style("opacity", .9);
                       div.html("<span>Similarity: " + d.value + "</span><br/>"
-                               + "<span>" + d.e.untart_name + "</span>")
+                               + "<span>" + d.e.untart_name + "</span><br/>"
+                               + "<span>" + tooltipFormat(d.e.unters_beginn) + "</span>")
                           .style("left", (d3.event.pageX) + "px")
                           .style("top", (d3.event.pageY - 28) + "px")
                   })

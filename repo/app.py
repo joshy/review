@@ -86,7 +86,7 @@ def review():
 def diff(id):
     con =  get_review_db()
     row = query_review_report(con.cursor(), id)
-    cases = ['befund_s', 'befund_l', 'befund_g', 'befund_f']
+    cases = ['befund_s', 'befund_g', 'befund_f']
     for c in cases:
         if c in row:
             field = c + '_text'

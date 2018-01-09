@@ -11,3 +11,15 @@ div.tooltip {
     pointer-events: none;
     color: black;
 }
+
+.bar {
+    fill: steelblue;
+  }
+
+  .bar:hover {
+    fill: brown;
+  }
+
+  .axis--x path {
+    display: none;
+  }

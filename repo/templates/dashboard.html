@@ -19,7 +19,7 @@
         </p>
         <h1 class="f5">Document Similarity</h1>
       </div>
-      <svg id="grouped" width="960" height="300"></svg>
+      <svg id="grouped" width="960" height="330"></svg>
       <p>
       The graph above shows the similarity between different status of the report. The
       darker color shows how similar the report on status "Schreiben" is compared to
@@ -37,18 +37,5 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
   {% endassets %}
 </body>
-<style>
-  .bar {
-    fill: steelblue;
-  }
-
-  .bar:hover {
-    fill: brown;
-  }
-
-  .axis--x path {
-    display: none;
-  }
-</style>
 
 </html>
