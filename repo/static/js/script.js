@@ -85,6 +85,9 @@ $(function () {
         var x1 = d3.scaleBand()
             .padding(0.05);
 
+        var x2 = d3.scaleTime()
+            .range([0, width]);
+
         var y = d3.scaleLinear()
             .rangeRound([height, 0]);
 
@@ -93,7 +96,7 @@ $(function () {
 
         d3.csv(data_url(), function (d, i, columns) {
             for (var i = 1, n = columns.length; i < n; ++i) {
-                if (columns[i] === 'unters_beginn') {
+                if (columns[i] === 'unters_beginn' || columns[i] === 'befund_freigabe') {
                     d[columns[i]] = new Date(d[columns[i]]);
                 } else {
                     var number = +d[columns[i]];
@@ -106,6 +109,9 @@ $(function () {
             var keys = ['jaccard_s_f', 'jaccard_g_f']
             x0.domain(data.map(function (d) { return d.index; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+
+            var datekey = function(d) { return d.unters_beginn };
+            x2.domain([d3.min(data, datekey), d3.max(data, datekey)]);
             y.domain([0, d3.max(data, function (d) {
                 return d3.max(keys, function (key) {
                     return d[key]; }); })]).nice();
@@ -155,6 +161,12 @@ $(function () {
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x0));
+
+            f = d3.timeFormat("%a");
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + (height + 25) + ")")
+                .call(d3.axisBottom(x2).tickFormat(d3.timeFormat("%d.%m")).ticks(30));
 
             g.append("g")
                 .attr("class", "axis")
