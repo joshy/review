@@ -8,14 +8,14 @@
 
 <body class="w-100 sans-serif">
   {% include 'partials/header.html' %}
+  {% if meta_data %}
   <div class="w-100 bb b--black-10 pt3 pb1 f6 mw8 center code">
-    {% if meta_data %}
       StudyDate: {{ meta_data.StudyDate }}
-    {% endif %}
     <a class="link underline-hover dark-blue fr" id="download" href="#download">Download Report
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="2" x2="12" y2="16"></line></svg>
     </a>
   </div>
+  {% endif %}
   <div class="w-100 b--black-10 mw8 center">
     <div id="report" class="cf" style="white-space: pre-line">
       {% if report is not none %}
