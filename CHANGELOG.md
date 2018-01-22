@@ -1,5 +1,8 @@
 # Changelog
 
+## v.3.0.0 - 22.01.2018
+ * Dashboard for personal use added
+
 ## v.2.0.4 - 01.11.2017
  * Ris reports per day working again, default is not parsing the text
 
