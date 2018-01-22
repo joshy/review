@@ -1,5 +1,8 @@
 # Changelog
 
+## v.3.0.1 - 22.01.2018
+ * Fixed output=text for invalid acc nr
+ 
 ## v.3.0.0 - 22.01.2018
  * Dashboard for personal use added
 

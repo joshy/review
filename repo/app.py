@@ -23,7 +23,7 @@ from repo.report import get_as_txt, get_with_file, q
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
-version = app.config['VERSION'] = '3.0.0'
+version = app.config['VERSION'] = '3.0.1'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
