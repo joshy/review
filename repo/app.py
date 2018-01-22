@@ -141,7 +141,12 @@ def show():
     con = get_ris_db()
     if output == 'text':
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
-        return report_as_text
+        if report_as_text:
+            return report_as_text
+        else:
+            # don't throw an error, no report found -> return empty response
+            # because not all accession numbers have a valid report
+            return ""
     else:
         report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
         return render_template('report.html',

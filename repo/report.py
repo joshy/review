@@ -30,8 +30,10 @@ def get_with_file(cursor, accession_number):
 def get_as_txt(cursor, accession_number):
     # cursor, string -> Optional[str]
     report, meta_data = _load(cursor, accession_number)
-    return rtf_to_text(report), meta_data
-
+    if report:
+        return rtf_to_text(report), meta_data
+    else:
+        return None, None
 
 def _load(cursor, accession_number):
     report, meta_data = select_report(cursor, accession_number)
