@@ -1,8 +1,11 @@
 # Changelog
 
+## v.3.0.2 - 05.02.2018
+ * Dashboard query changed from days to number of exams
+
 ## v.3.0.1 - 22.01.2018
  * Fixed output=text for invalid acc nr
- 
+
 ## v.3.0.0 - 22.01.2018
  * Dashboard for personal use added
 
