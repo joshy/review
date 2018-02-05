@@ -66,8 +66,8 @@ $(function () {
 
     function data_url() {
         var writer = document.getElementById('writer').value;
-        var days = document.getElementById('days').value;
-        var data_url = 'dashboard/data/' + writer + '/' + days;
+        var last_exams = document.getElementById('last_exams').value;
+        var data_url = 'dashboard/data/' + writer + '/' + last_exams;
         return data_url;
     }
 
@@ -104,7 +104,7 @@ $(function () {
         }, function (error, data) {
             if (error) throw error;
             var keys = ['jaccard_s_f', 'jaccard_g_f']
-            x0.domain(data.map(function (d) { return d.index; }));
+            x0.domain(data.map(function (d) { return d.unters_beginn; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
             y.domain([0, d3.max(data, function (d) {
                 return d3.max(keys, function (key) {
@@ -120,7 +120,7 @@ $(function () {
                 .data(data)
                 .enter().append("g")
                   .attr("transform", function (d) {
-                      return "translate(" + x0(d.index) + ",0)"; })
+                      return "translate(" + x0(d.unters_beginn) + ",0)"; })
                 .selectAll("rect")
                 .data(function (d) {
                     return keys.map(function (key) {
@@ -154,7 +154,7 @@ $(function () {
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0));
+                .call(d3.axisBottom(x0).tickFormat(d3.timeFormat('%d.%m')));
 
             g.append("g")
                 .attr("class", "axis")
@@ -220,13 +220,18 @@ $(function () {
 
         d3.csv(data_url(), function (d, i, columns) {
             for (var i = 1, n = columns.length; i < n; ++i) {
-                d[columns[i]] = +d[columns[i]];
+                if (columns[i] === 'unters_beginn') {
+                    d[columns[i]] = new Date(d[columns[i]]);
+                } else {
+                    var number = +d[columns[i]];
+                    d[columns[i]] = isNaN(+d[columns[i]]) ? d[columns[i]] : +d[columns[i]];
+                }
             }
             return d;
         }, function (error, data) {
             if (error) throw error;
             var keys = ['words_added_g_f_relative', 'words_deleted_g_f_relative']
-            x0.domain(data.map(function (d) { return d.index; }));
+            x0.domain(data.map(function (d) { return d.unters_beginn; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
             y.domain([0, d3.max(data, function (d) {
                 return d3.max(keys, function (key) {
@@ -237,7 +242,7 @@ $(function () {
                 .data(data)
                 .enter().append("g")
                   .attr("transform", function (d) {
-                      return "translate(" + x0(d.index) + ",0)"; })
+                      return "translate(" + x0(d.unters_beginn) + ",0)"; })
                 .selectAll("rect")
                   .data(function (d) { return keys.map(function (key) {
                       return { key: key, value: d[key] }; }); })
@@ -251,7 +256,7 @@ $(function () {
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0));
+                .call(d3.axisBottom(x0).tickFormat(d3.timeFormat('%d.%m')));
 
             g.append("g")
                 .attr("class", "axis")
@@ -317,13 +322,18 @@ $(function () {
 
         d3.csv(data_url(), function (d, i, columns) {
             for (var i = 1, n = columns.length; i < n; ++i) {
-                d[columns[i]] = +d[columns[i]];
+                if (columns[i] === 'unters_beginn') {
+                    d[columns[i]] = new Date(d[columns[i]]);
+                } else {
+                    var number = +d[columns[i]];
+                    d[columns[i]] = isNaN(+d[columns[i]]) ? d[columns[i]] : +d[columns[i]];
+                }
             }
             return d;
         }, function (error, data) {
             if (error) throw error;
             var keys = ['words_added_g_f', 'words_deleted_g_f']
-            x0.domain(data.map(function (d) { return d.index; }));
+            x0.domain(data.map(function (d) { return d.unters_beginn; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
             y.domain([0, d3.max(data, function (d) {
                 return d3.max(keys, function (key) {
@@ -334,7 +344,7 @@ $(function () {
                 .data(data)
                 .enter().append("g")
                   .attr("transform", function (d) {
-                      return "translate(" + x0(d.index) + ",0)"; })
+                      return "translate(" + x0(d.unters_beginn) + ",0)"; })
                 .selectAll("rect")
                   .data(function (d) { return keys.map(function (key) {
                       return { key: key, value: d[key] }; }); })
@@ -348,7 +358,7 @@ $(function () {
             g.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0));
+                .call(d3.axisBottom(x0).tickFormat(d3.timeFormat('%d.%m')));
 
             g.append("g")
                 .attr("class", "axis")

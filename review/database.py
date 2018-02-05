@@ -134,7 +134,7 @@ def update(cursor, row, befund_status):
          row['unters_schluessel']))
 
 
-def query_by_writer(cursor, writer, days):
+def query_by_writer(cursor, writer, last_exams):
     """
     Query all reports in the review db by writer.
     """
@@ -169,14 +169,12 @@ def query_by_writer(cursor, writer, days):
           FROM
             reports a
           WHERE
-              a.unters_beginn > current_date - %s
-          AND
               a.schreiber = %s
           AND
               a.befund_status = 'f'
           ORDER BY
               a.unters_beginn
+          LIMIT %s
           """
-    t = datetime.timedelta(days=int(days))
-    cursor.execute(sql, (t, writer.upper()))
+    cursor.execute(sql, (writer.upper(), last_exams))
     return cursor.fetchall()

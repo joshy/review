@@ -79,7 +79,8 @@ def review():
     con =  get_review_db()
     rows = query_review_reports(con.cursor(), dd, writer)
     day = dd.strftime('%d.%m.%Y')
-    return render_template('review.html', rows=rows, day=day, writer=writer, version=version)
+    return render_template('review.html',
+        rows=rows, day=day, writer=writer, version=version)
 
 
 @app.route('/review/diff/<id>')
@@ -99,17 +100,20 @@ def diff(id):
 @app.route('/review/dashboard')
 def dashboard():
     writer = request.args.get('w', '')
-    days = int(request.args.get('d', '15'))
+    last_exams = int(request.args.get('last_exams', '30'))
     con = get_review_db()
-    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer, days)
-    return render_template('dashboard.html', rows=rows, writer=writer, days=days, version=version)
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    rows = query_by_writer(cursor, writer, last_exams)
+    return render_template('dashboard.html',
+        rows=rows, writer=writer, last_exams=last_exams, version=version)
 
 
-@app.route('/review/dashboard/data/<writer>/<days>')
-def data(writer, days):
-    print(writer, days)
+@app.route('/review/dashboard/data/<writer>/<last_exams>')
+def data(writer, last_exams):
+    print(writer, last_exams)
     con = get_review_db()
-    rows = query_by_writer(con.cursor(cursor_factory=RealDictCursor), writer, days)
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    rows = query_by_writer(cursor, writer, last_exams)
     if len(rows)>0:
         df = pd.DataFrame(rows)
         df = relative(df)
