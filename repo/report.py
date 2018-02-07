@@ -27,6 +27,14 @@ def get_with_file(cursor, accession_number):
     return text(report_file), jjson(meta_data_file)
 
 
+def get_as_rtf(cursor, accession_number):
+    report, _  = _load(cursor, accession_number)
+    if report:
+        return report
+    else:
+        return None
+
+
 def get_as_txt(cursor, accession_number):
     # cursor, string -> Optional[str]
     report, meta_data = _load(cursor, accession_number)

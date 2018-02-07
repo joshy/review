@@ -11,7 +11,10 @@
   {% if meta_data %}
   <div class="w-100 bb b--black-10 pt3 pb1 f6 mw8 center code">
       StudyDate: {{ meta_data.StudyDate }}
-    <a class="link underline-hover dark-blue fr" id="download" href="#download">Download Report
+      <a class="link underline-hover dark-blue fr" id="download" href="/download?accession_number={{accession_number}}">Download Original (RTF) Report
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="2" x2="12" y2="16"></line></svg>
+      </a>
+    <a class="link underline-hover dark-blue fr pr5" id="download" href="#download">Download Text Report
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="2" x2="12" y2="16"></line></svg>
     </a>
   </div>

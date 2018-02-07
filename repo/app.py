@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import psycopg2
 import schedule
 import pandas as pd
-from flask import Flask, g, jsonify, render_template, request
+from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
@@ -18,7 +18,7 @@ from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
-from repo.report import get_as_txt, get_with_file, q
+from repo.report import get_as_txt, get_as_rtf, get_with_file, q
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -158,6 +158,20 @@ def show():
                                accession_number=accession_number,
                                meta_data=meta_data,
                                report=report_as_html)
+
+
+@app.route('/download')
+def download():
+    """ Downloads the original RTF report. """
+    accession_number = request.args.get('accession_number', '')
+    if not accession_number:
+        return ""
+    con = get_ris_db()
+    report = get_as_rtf(con.cursor(), accession_number)
+    response = make_response(report)
+    cd = 'attachment; filename={}.rtf'.format(accession_number)
+    response.headers['Content-Disposition'] = cd
+    return response
 
 
 def get_review_db():
