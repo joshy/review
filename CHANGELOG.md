@@ -1,21 +1,24 @@
 # Changelog
 
-## v.3.0.2 - 05.02.2018
+## v3.0.3 - 09.02.2018
+ * Download RTF report
+
+## v3.0.2 - 05.02.2018
  * Dashboard query changed from days to number of exams
 
-## v.3.0.1 - 22.01.2018
+## v3.0.1 - 22.01.2018
  * Fixed output=text for invalid acc nr
 
-## v.3.0.0 - 22.01.2018
+## v3.0.0 - 22.01.2018
  * Dashboard for personal use added
 
-## v.2.0.4 - 01.11.2017
+## v2.0.4 - 01.11.2017
  * Ris reports per day working again, default is not parsing the text
 
-## v.2.0.3 - 13.10.2017
+## v2.0.3 - 13.10.2017
  * Diff with different report status
 
-## v.2.0.2 - 11.10.2017
+## v2.0.2 - 11.10.2017
  * Download report as text link added
 
 ## v2.0.1 - 27.09.2017
