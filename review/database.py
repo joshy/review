@@ -173,7 +173,7 @@ def query_by_writer(cursor, writer, last_exams):
           AND
               a.befund_status = 'f'
           ORDER BY
-              a.unters_beginn
+              a.unters_beginn desc
           LIMIT %s
           """
     cursor.execute(sql, (writer.upper(), last_exams))
