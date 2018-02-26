@@ -22,7 +22,7 @@ def query_review_reports(cursor):
           AND
             jaccard_s_f is null
           OR
-            total_words_g = 0
+            (jaccard_s_f = 0 AND jaccard_g_f = 0)
           ORDER BY
             unters_beginn desc
           LIMIT 1000
