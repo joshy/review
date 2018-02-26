@@ -1,5 +1,7 @@
 # Changelog
 
+## v3.0.4 - 26.02.2018
+ * Dashboard was always showing old data (side-effect of showing last exams)
 ## v3.0.3 - 09.02.2018
  * Download RTF report
 
