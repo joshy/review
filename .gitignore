@@ -110,3 +110,5 @@ reports
 
 repo/static/gen
 privat_patient.csv
+
+*.csv
