@@ -67,7 +67,8 @@ def _diff(before, after):
 
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     s = time.time()
-    befund_s = rtf_to_text(row['befund_s'])
+    befund_s = rtf_to_text(row['befund_s']) \
+                if row['befund_s'] is not None else ''
     befund_g = rtf_to_text(row['befund_g']) \
                 if row['befund_g'] is not None else ''
     befund_f = rtf_to_text(row['befund_f']) \

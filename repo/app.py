@@ -110,11 +110,10 @@ def dashboard():
 
 @app.route('/review/dashboard/data/<writer>/<last_exams>')
 def data(writer, last_exams):
-    print(writer, last_exams)
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     rows = query_by_writer(cursor, writer, last_exams)
-    if len(rows)>0:
+    if len(rows) > 0:
         df = pd.DataFrame(rows)
         df = relative(df)
         return df.to_csv(index_label='index')
