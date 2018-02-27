@@ -115,7 +115,7 @@ def data(writer, last_exams):
     rows = query_by_writer(cursor, writer, last_exams)
     if len(rows) > 0:
         df = pd.DataFrame(rows)
-        df = relative(df)
+        df = relative(df).sort_values('unters_beginn')
         return df.to_csv(index_label='index')
     return pd.DataFrame().to_csv(index_label='index')
 
