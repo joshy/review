@@ -7,3 +7,4 @@ schedule
 jsmin
 daiquiri
 PyReadableDiff
+striprtf
