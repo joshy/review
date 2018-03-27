@@ -44,8 +44,11 @@
             <span>Processed Output</span>
         </div>
         <div class="w-100 pt3 pb1 f6 code">
-            <p>NLP</p><span>{{nlp}}</span>
+            <p>NLP</p><span>{# nlp #}</span>
         </div>
+        {% if nlp.calcium_score %}
+            {% include 'partials/calcium.html' %}
+        {% endif %}
     </div>
 </body>
 <script>

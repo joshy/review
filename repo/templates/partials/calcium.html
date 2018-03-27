@@ -1,0 +1,11 @@
+<div>
+    <span class="b">Calcium Score</span>
+    <div class="ml2">
+        {% for key, value in nlp.calcium_score.items() %}
+        <dl class="ml2 f6 lh-title mv2"></dl>
+        <dt class="dib">{{ key|e }}</dt>
+        <dd class="dib ml0 b">{{ value|e }}</dd>
+        </dl>
+        {% endfor %}
+    </div>
+</div>

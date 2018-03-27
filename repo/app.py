@@ -173,12 +173,25 @@ def nlp():
     con = get_ris_db()
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
     report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
-    return render_template('nlp.html',
-                            version=app.config['VERSION'],
-                            accession_number=accession_number,
-                            meta_data=meta_data,
-                            nlp=classify(report_as_text),
-                            report=report_as_html)
+    import distill
+    result = distill.process(report_as_text, meta_data)
+    #clas = {'nlp': classify(report_as_text)}
+    #z = {**result, **clas}
+
+    output = request.args.get('output', 'html')
+    if output == 'json':
+        j = {}
+        j['report'] = report_as_text
+        j['meta_data'] = meta_data
+        j['distill'] = result
+        return jsonify(j)
+    else:
+        return render_template('nlp.html',
+                                version=app.config['VERSION'],
+                                accession_number=accession_number,
+                                meta_data=meta_data,
+                                nlp=result,
+                                report=report_as_html)
 
 
 @app.route('/download')
