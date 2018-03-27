@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Report Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
+</head>
+
+<body class="w-100 sans-serif">
+  {% include 'partials/header.html' %}
+    <div class="fl w-50 pa5 bg-washed-yellow">
+        {% if meta_data %}
+        <div class="w-100 bb b--black-10 pt1 pb1 f6 mw8 center code">
+            <span class="f7">{{meta_data.Untersuchung}}, {{ meta_data.StudyDate }}</span>
+            <a class="link underline-hover dark-blue fr" id="download" href="/download?accession_number={{accession_number}}">Download RTF Report
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path>
+                    <polyline points="8 12 12 16 16 12"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="16"></line>
+                </svg>
+            </a>
+            <a class="link underline-hover dark-blue fr pr5" id="download" href="#download">Download Text Report
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 17v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"></path>
+                    <polyline points="8 12 12 16 16 12"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="16"></line>
+                </svg>
+            </a>
+        </div>
+        {% endif %}
+        <div class="w-100 b--black-10 mw8 center">
+            <div id="report" class="cf" style="white-space: pre-line">
+                {% if report is not none %} {{ report | safe }} {% else %}
+                <p>No report found, check Accession Number
+                    <b>{{accession_number}}</b> is right.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="fl w-50 pa5 bg-washed-green">
+        <div class="w-100 bb b--black-10 pt3 pb1 f6 center code">
+            <span>Processed Output</span>
+        </div>
+        <div class="w-100 pt3 pb1 f6 code">
+            <p>NLP</p><span>{{nlp}}</span>
+        </div>
+    </div>
+</body>
+<script>
+  function downloadInnerHtml(filename) {
+    var elHtml = document.getElementById('report').innerHTML;
+    var link = document.createElement('a');
+    mimeType ='text/plain';
+
+    link.setAttribute('download', filename);
+    link.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(elHtml));
+    document.body.append(link)
+    link.click();
+    document.body.removeChild(link)
+  }
+  var filename = '{{accession_number}}.txt';
+  l = document.getElementById('download');
+  l.addEventListener("click", function(e) {
+    downloadInnerHtml(filename);
+  });
+</script>
+</html>

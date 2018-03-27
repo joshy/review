@@ -19,6 +19,7 @@ from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
 from repo.report import get_as_txt, get_as_rtf, get_with_file, q
+from repo.nlp import classify
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -157,6 +158,27 @@ def show():
                                accession_number=accession_number,
                                meta_data=meta_data,
                                report=report_as_html)
+
+
+@app.route('/nlp')
+def nlp():
+    """ Renders RIS Report as HTML. """
+    accession_number = request.args.get('accession_number', '')
+    output = request.args.get('output', 'html')
+    # if no accession number is given -> render main page
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
+        return main()
+
+    con = get_ris_db()
+    report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
+    report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
+    return render_template('nlp.html',
+                            version=app.config['VERSION'],
+                            accession_number=accession_number,
+                            meta_data=meta_data,
+                            nlp=classify(report_as_text),
+                            report=report_as_html)
 
 
 @app.route('/download')
