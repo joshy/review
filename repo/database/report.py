@@ -164,6 +164,7 @@ def _select_by_accession_number(cursor, accession_number):
         else:
             meta_data = {
                 'StudyDate': row[1].strftime('%d.%m.%Y %H:%M:%S'),
+                'AccessionNumber': row[3],
                 'BefundStatus': row[2],
                 'Untersuchung': row[5]
             }
