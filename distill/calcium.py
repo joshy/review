@@ -2,6 +2,8 @@
 Extract calcium score from report
 """
 
+RESULT_KEY_CALCIUM_SCORE = 'calcium_score'
+
 def extract_score(report, meta_data):
     result = {}
     lines = [s.strip() for s in report.splitlines()]
@@ -9,7 +11,7 @@ def extract_score(report, meta_data):
         r = None
         if l.startswith('Coronararterie|Calcium-Score'):
             r = l
-            result['calcium_score'] = _values(r)
+            result[RESULT_KEY_CALCIUM_SCORE] = _values(r)
     return result
 
 
