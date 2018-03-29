@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+import re
 LVEF = 'Linksventrikuläre Auswurffraktion (LVEF)'
 RVEF = 'Rechtsventrikuläre Auswurffraktion (RVEF)'
 EDV = 'Enddiastolisches Volumen (EDV)'
@@ -11,20 +11,21 @@ EDI = 'Myokardmasse indexiert (ED)'
 
 RESULT_KEY_VENCTRICLE_FUNCTION = 'ventricle_function'
 
-LEFT_INDEX_START_V1 = 'Linksventrikuläre Funktion|Norm. Frau / Mann*|gemessen|'
-RIGHT_INDEX_START_V1 = 'Rechtsventrikuläre Funktion| Norm. Frau / Mann*|gemessen|'
+LEFT_INDEX_START_V1 = 'Linksventrikuläre.*Funktion.*Norm.*Frau.*Mann.*gemessen'
+RIGHT_INDEX_START_V1 = 'Rechtsventrikuläre.*Funktion.*Norm.*Frau.*Mann.*gemessen'
 
-LEFT_INDEX_START_V2 = 'Linksventrikuläre Funktion|gemessen|Norm. Frau / Mann*|'
-RIGHT_INDEX_START_V2 = 'Rechtsventrikuläre Funktion|gemessen|Norm. Frau / Mann*|'
+LEFT_INDEX_START_V2 = 'Linksventrikuläre.*Funktion.*gemessen.*Norm.*Frau.*Mann'
+RIGHT_INDEX_START_V2 = 'Rechtsventrikuläre.*Funktion.*gemessen.*Norm.*Frau.*Mann'
 
 
 def extract_ventricle_function(report, meta_data):
 
     lines = [s.strip() for s in report.splitlines()]
-    left_index_v1 = [i for i,s in enumerate(lines) if s.startswith(LEFT_INDEX_START_V1)]
-    right_index_v1 = [i for i,s in enumerate(lines) if s.startswith(RIGHT_INDEX_START_V1)]
-    left_index_v2 = [i for i,s in enumerate(lines) if s.startswith(LEFT_INDEX_START_V2)]
-    right_index_v2 = [i for i,s in enumerate(lines) if s.startswith(RIGHT_INDEX_START_V2)]
+    left_index_v1 = [i for i,s in enumerate(lines) if re.match(LEFT_INDEX_START_V1, s)]
+    right_index_v1 = [i for i,s in enumerate(lines) if re.match(RIGHT_INDEX_START_V1, s)]
+
+    left_index_v2 = [i for i,s in enumerate(lines) if re.match(LEFT_INDEX_START_V2, s)]
+    right_index_v2 = [i for i,s in enumerate(lines) if re.match(RIGHT_INDEX_START_V2, s)]
 
     left = OrderedDict()
     right = OrderedDict()

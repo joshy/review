@@ -8,9 +8,9 @@
 
 <body class="w-100 sans-serif">
   {% include 'partials/header.html' %}
-    <div class="fl w-50 pa5 bg-washed-yellow">
+    <div class="fl w-50 pa5 bg-near-white   ">
         {% if meta_data %}
-        <div class="w-100 bb b--black-10 pt1 pb1 f6 mw8 center code">
+        <div class="w-100 bb b--black-10 pb1 f6 mw8 center code">
             <span class="f7">{{meta_data.Untersuchung}}, {{ meta_data.StudyDate }}</span>
             <a class="link underline-hover dark-blue fr" id="download" href="/download?accession_number={{accession_number}}">Download RTF Report
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -39,8 +39,8 @@
             </div>
         </div>
     </div>
-    <div class="fl w-50 pa5 bg-washed-green">
-        <div class="w-100 bb b--black-10 pt3 pb1 f6 center code">
+    <div class="fl w-50 pa5 bg-washed-blue">
+        <div class="w-100 bb b--black-10 pb1 f6 center code">
             <span>Processed Output</span>
         </div>
         <div class="w-100 pt3 pb1 f6 code">

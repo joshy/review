@@ -133,34 +133,6 @@ def cm():
 
 
 @app.route('/show')
-def show():
-    """ Renders RIS Report as HTML. """
-    accession_number = request.args.get('accession_number', '')
-    output = request.args.get('output', 'html')
-    # if no accession number is given -> render main page
-    if not accession_number:
-        print('No accession number found in request, use accession_number=XXX')
-        return main()
-
-    con = get_ris_db()
-    if output == 'text':
-        report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
-        if report_as_text:
-            return report_as_text
-        else:
-            # don't throw an error, no report found -> return empty response
-            # because not all accession numbers have a valid report
-            return ""
-    else:
-        report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
-        return render_template('report.html',
-                               version=app.config['VERSION'],
-                               accession_number=accession_number,
-                               meta_data=meta_data,
-                               report=report_as_html)
-
-
-@app.route('/nlp')
 def nlp():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
