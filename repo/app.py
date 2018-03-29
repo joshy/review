@@ -2,24 +2,24 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+import pandas as pd
 import psycopg2
 import schedule
-import pandas as pd
-from flask import Flask, g, jsonify, render_template, request, make_response
+from flask import Flask, g, jsonify, make_response, render_template, request
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer
-from review.calculations import relative
-
+import distill
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
-from repo.report import get_as_txt, get_as_rtf, get_with_file, q
 from repo.nlp import classify
+from repo.report import get_as_rtf, get_as_txt, get_with_file, q
+from review.calculations import relative
+from review.database import query_by_writer
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -173,7 +173,6 @@ def nlp():
     con = get_ris_db()
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
     report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
-    import distill
     result = distill.process(report_as_text, meta_data)
     #clas = {'nlp': classify(report_as_text)}
     #z = {**result, **clas}

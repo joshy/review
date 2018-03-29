@@ -2,7 +2,7 @@
 Extract calcium score from report
 """
 
-def execute(report, meta_data):
+def extract_score(report, meta_data):
     result = {}
     lines = [s.strip() for s in report.splitlines()]
     for l in lines:
@@ -25,5 +25,5 @@ def _values(line):
         values[k]: values[k + 1]
         for k in range(2, len(values) - 2, 2) if values[k]
     }
-    result = {k.strip(): v.strip() for k, v in result.items() if v is not None}
+    result = {k.strip() : v.strip() for k, v in result.items() if v is not None}
     return result

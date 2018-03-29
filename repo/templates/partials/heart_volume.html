@@ -1,0 +1,21 @@
+<div>
+    <table class="w-100 table f6">
+        <thead>
+            <tr>
+                <th class="pl0 pa1 bb b--navy bw1 tl">Heart volume</th>
+                <th class="pa1 bb b--navy bw1 tl">Norm Frau-/Mann</th>
+                <th class="pa1 bb b--navy bw1 tl">gemessen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in nlp.heart_volume.items() %}
+            <tr>
+                <td class="pl0 pa1 v-top">{{ key|e }}</td>
+                {% for kkey, vvalue in value.items() %}
+                <td class="pl0 pa1 v-top">{{ vvalue|e }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

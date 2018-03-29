@@ -49,6 +49,9 @@
         {% if nlp.calcium_score %}
             {% include 'partials/calcium.html' %}
         {% endif %}
+        {% if nlp.heart_volume %}
+            {% include 'partials/heart_volume.html' %}
+        {% endif %}
     </div>
 </body>
 <script>

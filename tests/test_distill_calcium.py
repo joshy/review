@@ -1,6 +1,6 @@
 import unittest
 
-from distill import execute
+from distill import extract_score
 
 class TestParse(unittest.TestCase):
     def test_a(self):
@@ -11,5 +11,13 @@ class TestParse(unittest.TestCase):
         Keine Coronarstenosen.
         Extracardiale Strukturen
         """
-        result = execute(sample_text, {'Untersuchung': 'CT Herz'})
-        self.assertEqual(result, {'calcium_score': {'RCA': ' 0', 'LM': ' 0', 'LAD/RIVA': ' 0', 'CX': ' 0', 'Gesamt Calcium-Score': ' 0'}})
+        result = extract_score(sample_text, {'Untersuchung': 'CT Herz'})
+        self.assertDictEqual(result, {
+            'calcium_score': {
+                'RCA': '0',
+                'LM': '0',
+                'LAD/RIVA': '0',
+                'CX': '0',
+                'Gesamt Calcium-Score': '0'
+            }
+        })
