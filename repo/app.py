@@ -157,6 +157,8 @@ def nlp():
         j['distill'] = result
         j['report_parts'] = parse_report(report_as_text)
         return jsonify(j)
+    elif output == 'text':
+        return report_as_text
     else:
         return render_template('nlp.html',
                                 version=app.config['VERSION'],
