@@ -17,7 +17,7 @@ from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
 from repo.nlp import classify
-from repo.report import get_as_rtf, get_as_txt, get_with_file, q
+from repo.report import get_as_rtf, get_as_txt, get_with_file, q, parse_report
 from review.calculations import relative
 from review.database import query_by_writer
 
@@ -155,6 +155,7 @@ def nlp():
         j['report'] = report_as_text
         j['meta_data'] = meta_data
         j['distill'] = result
+        j['report_parts'] = parse_report(report_as_text)
         return jsonify(j)
     else:
         return render_template('nlp.html',
