@@ -78,11 +78,14 @@ $(function () {
         draw_grouped();
         draw_add_delete();
         draw_add_delete_absolute();
-        draw_hist_g_f();
-        draw_hist_s_f();
-        draw_hist_words_added();
-        draw_hist_words_deleted();
-        draw_exp();
+        d3.csv(data_url(), function(data) {
+            draw_hist_g_f(data);
+            draw_hist_s_f(data);
+            draw_hist_words_added(data);
+            draw_hist_words_deleted(data);
+            draw_exp(data);
+         });
+
     }
 
     function data_url() {
@@ -101,11 +104,11 @@ $(function () {
     }
 
 
-    function draw_exp() {
+    function draw_exp(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "data": {"values": data, "format": "csv"},
             "mark": "point",
             "width": 800,
             "height": 330,
@@ -138,11 +141,11 @@ $(function () {
     }
 
 
-    function draw_hist_words_added() {
+    function draw_hist_words_added(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
               "x": {
@@ -167,11 +170,11 @@ $(function () {
           vegaEmbed("#vis_w_a", vlSpec, {"actions":false});
     }
 
-    function draw_hist_words_deleted() {
+    function draw_hist_words_deleted(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
               "x": {
@@ -196,11 +199,11 @@ $(function () {
           vegaEmbed("#vis_w_d", vlSpec, {"actions":false});
     }
 
-    function draw_hist_g_f() {
+    function draw_hist_g_f(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
               "x": {
@@ -225,11 +228,11 @@ $(function () {
           vegaEmbed("#vis_g_f", vlSpec, {"actions":false});
     }
 
-    function draw_hist_s_f() {
+    function draw_hist_s_f(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
               "x": {
