@@ -9,7 +9,7 @@ from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer
+from review.database import query_by_writer, query_by_writer_and_date
 from review.calculations import relative
 
 from repo.converter import rtf_to_text
@@ -100,24 +100,41 @@ def diff(id):
 @app.route('/review/dashboard')
 def dashboard():
     writer = request.args.get('w', '')
-    last_exams = int(request.args.get('last_exams', '30'))
-    con = get_review_db()
-    cursor = con.cursor(cursor_factory=RealDictCursor)
-    rows = query_by_writer(cursor, writer, last_exams)
+    last_exams = request.args.get('last_exams', 30)
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    rows = load_data(writer, last_exams, start_date, end_date)
+
     return render_template('dashboard.html',
-        rows=rows, writer=writer, last_exams=last_exams, version=version)
+        rows=rows, writer=writer, last_exams=last_exams,
+        start_date=start_date, end_date=end_date, version=version)
 
 
-@app.route('/review/dashboard/data/<writer>/<last_exams>')
-def data(writer, last_exams):
-    con = get_review_db()
-    cursor = con.cursor(cursor_factory=RealDictCursor)
-    rows = query_by_writer(cursor, writer, last_exams)
+@app.route('/review/dashboard/data/<writer>')
+def data(writer):
+    last_exams = request.args.get('last_exams', 30)
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    rows = load_data(writer, last_exams, start_date, end_date)
+
     if len(rows) > 0:
         df = pd.DataFrame(rows)
         df = relative(df).sort_values('unters_beginn')
         return df.to_csv(index_label='index')
     return pd.DataFrame().to_csv(index_label='index')
+
+
+def load_data(writer, last_exams, start_date, end_date):
+    con = get_review_db()
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    if start_date and end_date:
+        s_d = datetime.strptime(start_date, '%d.%m.%Y')
+        e_d = datetime.strptime(end_date, '%d.%m.%Y')
+        rows = query_by_writer_and_date(cursor, writer, s_d, e_d)
+    else:
+        rows = query_by_writer(cursor, writer, last_exams)
+    return rows
+
 
 @app.route('/cm')
 def cm():

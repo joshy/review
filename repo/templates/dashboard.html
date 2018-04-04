@@ -20,15 +20,20 @@
       This is a personal dashboard which should help the assistant to improve on writing radiology reports.
     </p>
 
-    <h1 class="f5">Similarity distribution</h1>
-    <div id="vis_g_f" class="fl"></div>
-    <div id="vis_s_f" class="fl"></div>
+    <h1 class="f5">Distributions</h1>
+    <div class="flex justify-around">
+      <div id="vis_g_f" class=""></div>
+      <div id="vis_s_f" class=""></div>
+      <div id="vis_w_a" class=""></div>
+      <div id="vis_w_d" class=""></div>
+    </div>
     <div class="cf"></div>
     <p>This left graph shows a distribution of the similarities between the
       Reports <em>Gegengelesen</em> vs. <em>Final</em>. The right graph the distribution between
       <em>Schreiben</em> vs <em>Final</em>
     </p>
     <h1 class="f5">Document Similarity</h1>
+    <!--<div id="vis_exp" class="fl"></div>-->
     <svg id="grouped" width="960" height="330"></svg>
     <p>
       The graph above shows the similarity between different status of the report. The darker color shows how similar the report
@@ -36,9 +41,6 @@
       to "Final". Similarity of 100% means the documents are the same, 0% means totally different. Left click to open diff
       of report.
     </p>
-
-
-
     <h1 class="f5">Document changes</h1>
     <svg id="add_delete" width="960" height="300"></svg>
     <svg id="add_delete_absolute" width="960" height="300"></svg>

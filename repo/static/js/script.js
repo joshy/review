@@ -1,9 +1,20 @@
 $(function () {
 
-    var picker = new Pikaday({
-        field: document.getElementById('datepicker'),
-        format: 'DD.MM.YYYY'
-    });
+    var startDatePicker = $('#start_date').pikaday({
+        format: 'DD.MM.YYYY',
+        firstDay: 1,
+        minDate: new Date(2017, 10, 1),
+        maxDate: new Date(),
+        yearRange: [2017, 2018]
+      });
+
+      var endDatePicker = $('#end_date').pikaday({
+        format: 'DD.MM.YYYY',
+        firstDay: 1,
+        minDate: new Date(2017, 10, 1),
+        maxDate: new Date(),
+        yearRange: [2017, 2018]
+      });
 
     if ('diff' == $('body').data('page')) {
         diff();
@@ -64,15 +75,116 @@ $(function () {
         draw_add_delete_absolute();
         draw_hist_g_f();
         draw_hist_s_f();
+        draw_hist_words_added();
+        draw_hist_words_deleted();
+        draw_exp();
     }
 
     function data_url() {
         var writer = document.getElementById('writer').value;
         var last_exams = document.getElementById('last_exams').value;
-        var data_url = 'dashboard/data/' + writer + '/' + last_exams;
+        var start_date = document.getElementById('start_date').value;
+        var end_date = document.getElementById('end_date').value;
+        param = {'last_exams': last_exams, 'start_date': start_date, 'end_date': end_date}
+        var data_url = 'dashboard/data/' + writer + '?' + $.param(param)
         return data_url;
     }
 
+
+    function draw_exp() {
+        // Assign the specification to a local variable vlSpec.
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "mark": "point",
+            "width": 800,
+            "height": 330,
+            "encoding": {
+              "x": {
+                  "field": "unters_beginn",
+                  "type": "temporal",
+                  "axis": {
+                      "title": "G->F distribution"
+                   }
+                },
+              "y": {
+                "field": "jaccard_g_f", "type": "quantitative",
+                "axis": {
+                  "title": "Similarity G->F"
+                }
+              },
+              "y2": {
+                "field": "jaccard_s_f", "type": "quantitative",
+                "axis": {
+                  "title": "Similarity G->F"
+                }
+              },
+              "color": {"value":"#ff8c00"}
+            }
+          };
+
+          // Embed the visualization in the container with id `vis`
+          vegaEmbed("#vis_exp", vlSpec, {"actions":false});
+    }
+
+
+    function draw_hist_words_added() {
+        // Assign the specification to a local variable vlSpec.
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "mark": "bar",
+            "encoding": {
+              "x": {
+                  "bin": true,
+                  "field": "words_added_g_f",
+                  "type": "nominal",
+                  "axis": {
+                      "title": "G->F words added"
+                   }
+                },
+              "y": {
+                "aggregate": "count", "type": "quantitative",
+                "axis": {
+                  "title": "#Reports"
+                }
+              },
+              "color": {"value":"#2ca02c"}
+            }
+          };
+
+          // Embed the visualization in the container with id `vis`
+          vegaEmbed("#vis_w_a", vlSpec, {"actions":false});
+    }
+
+    function draw_hist_words_deleted() {
+        // Assign the specification to a local variable vlSpec.
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "mark": "bar",
+            "encoding": {
+              "x": {
+                  "bin": true,
+                  "field": "words_deleted_g_f",
+                  "type": "nominal",
+                  "axis": {
+                      "title": "G->F words deleted"
+                   }
+                },
+              "y": {
+                "aggregate": "count", "type": "quantitative",
+                "axis": {
+                  "title": "#Reports"
+                }
+              },
+              "color": {"value":"#d62728"}
+            }
+          };
+
+          // Embed the visualization in the container with id `vis`
+          vegaEmbed("#vis_w_d", vlSpec, {"actions":false});
+    }
 
     function draw_hist_g_f() {
         // Assign the specification to a local variable vlSpec.
@@ -86,7 +198,7 @@ $(function () {
                   "field": "jaccard_g_f",
                   "type": "nominal",
                   "axis": {
-                      "title": "G->F distribution"
+                      "title": "G->F similarity"
                    }
                 },
               "y": {
@@ -115,7 +227,7 @@ $(function () {
                   "field": "jaccard_s_f",
                   "type": "nominal",
                   "axis": {
-                      "title": "S->F distribution"
+                      "title": "S->F similarity"
                    }
                 },
               "y": {
@@ -127,7 +239,6 @@ $(function () {
               "color": {"value":"#6b486b"}
             }
           };
-
           // Embed the visualization in the container with id `vis`
           vegaEmbed("#vis_s_f", vlSpec, {"actions":false});
     }
