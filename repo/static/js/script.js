@@ -1,5 +1,10 @@
 $(function () {
 
+    var picker = new Pikaday({
+        field: document.getElementById('datepicker'),
+        format: 'DD.MM.YYYY'
+    });
+
     var startDatePicker = $('#start_date').pikaday({
         format: 'DD.MM.YYYY',
         firstDay: 1,
