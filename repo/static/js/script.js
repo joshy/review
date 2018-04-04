@@ -62,6 +62,8 @@ $(function () {
         draw_grouped();
         draw_add_delete();
         draw_add_delete_absolute();
+        draw_hist_g_f();
+        draw_hist_s_f();
     }
 
     function data_url() {
@@ -70,6 +72,66 @@ $(function () {
         var data_url = 'dashboard/data/' + writer + '/' + last_exams;
         return data_url;
     }
+
+
+    function draw_hist_g_f() {
+        // Assign the specification to a local variable vlSpec.
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "mark": "bar",
+            "encoding": {
+              "x": {
+                  "bin": true,
+                  "field": "jaccard_g_f",
+                  "type": "nominal",
+                  "axis": {
+                      "title": "G->F distribution"
+                   }
+                },
+              "y": {
+                "aggregate": "count", "type": "quantitative",
+                "axis": {
+                  "title": "#Reports"
+                }
+              },
+              "color": {"value":"#ff8c00"}
+            }
+          };
+
+          // Embed the visualization in the container with id `vis`
+          vegaEmbed("#vis_g_f", vlSpec, {"actions":false});
+    }
+
+    function draw_hist_s_f() {
+        // Assign the specification to a local variable vlSpec.
+        var vlSpec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+            "data": {"url": data_url(), "format":{"type":"csv"}},
+            "mark": "bar",
+            "encoding": {
+              "x": {
+                  "bin": true,
+                  "field": "jaccard_s_f",
+                  "type": "nominal",
+                  "axis": {
+                      "title": "S->F distribution"
+                   }
+                },
+              "y": {
+                "aggregate": "count", "type": "quantitative",
+                "axis": {
+                  "title": "#Reports"
+                }
+              },
+              "color": {"value":"#6b486b"}
+            }
+          };
+
+          // Embed the visualization in the container with id `vis`
+          vegaEmbed("#vis_s_f", vlSpec, {"actions":false});
+    }
+
 
     function draw_grouped() {
         var svg = d3.select("#grouped"),
