@@ -90,8 +90,13 @@ $(function () {
         var last_exams = document.getElementById('last_exams').value;
         var start_date = document.getElementById('start_date').value;
         var end_date = document.getElementById('end_date').value;
-        param = {'last_exams': last_exams, 'start_date': start_date, 'end_date': end_date}
-        var data_url = 'dashboard/data/' + writer + '?' + $.param(param)
+        param = {
+            'w': writer,
+            'last_exams': last_exams,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+        var data_url = 'dashboard/data?' + $.param(param)
         return data_url;
     }
 

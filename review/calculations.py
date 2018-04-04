@@ -7,4 +7,5 @@ def relative(df):
 
 
 def _relative(total, changes):
-    return (changes) / total
+    t = total or 1.0
+    return (changes) / t

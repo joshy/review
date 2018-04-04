@@ -110,13 +110,14 @@ def dashboard():
         start_date=start_date, end_date=end_date, version=version)
 
 
-@app.route('/review/dashboard/data/<writer>')
-def data(writer):
+@app.route('/review/dashboard/data')
+def data():
+    writer = request.args.get('w', '')
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_data(writer, last_exams, start_date, end_date)
-
+    logging.debug(rows)
     if len(rows) > 0:
         df = pd.DataFrame(rows)
         df = relative(df).sort_values('unters_beginn')
