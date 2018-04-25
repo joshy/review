@@ -37,7 +37,8 @@ REVIEW_DB_SETTINGS = {
     'dbname': app.config['REVIEW_DB_NAME'],
     'user': app.config['REVIEW_DB_USER'],
     'password': app.config['REVIEW_DB_PASSWORD'],
-    'host': 'localhost'
+    'host': 'localhost',
+    'port': app.config['REVIEW_DB_PORT']
 }
 
 REPORTS_FOLDER = 'reports'
