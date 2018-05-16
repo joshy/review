@@ -79,10 +79,9 @@ $(function () {
         draw_add_delete();
         draw_add_delete_absolute();
         d3.csv(data_url(), function(data) {
-            draw_hist_g_f(data);
-            draw_hist_s_f(data);
-            draw_hist_words_added(data);
-            draw_hist_words_deleted(data);
+            draw_hist(data);
+           /* draw_hist_words_added(data);
+            draw_hist_words_deleted(data);*/
             draw_exp(data);
          });
 
@@ -98,9 +97,8 @@ $(function () {
             'last_exams': last_exams,
             'start_date': start_date,
             'end_date': end_date
-        }
-        var data_url = 'dashboard/data?' + $.param(param)
-        return data_url;
+        };
+        return 'dashboard/data?' + $.param(param)
     }
 
 
@@ -126,12 +124,6 @@ $(function () {
                   "title": "Similarity G->F"
                 }
               },
-              "y2": {
-                "field": "jaccard_s_f", "type": "quantitative",
-                "axis": {
-                  "title": "Similarity G->F"
-                }
-              },
               "color": {"value":"#ff8c00"}
             }
           };
@@ -148,15 +140,15 @@ $(function () {
             "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
-              "x": {
-                  "bin": true,
+              "y": {
+                  "bin": {"step": 0.2},
                   "field": "words_added_g_f",
-                  "type": "nominal",
+                  "type": "quantitative",
                   "axis": {
                       "title": "G->F words added"
                    }
                 },
-              "y": {
+              "x": {
                 "aggregate": "count", "type": "quantitative",
                 "axis": {
                   "title": "#Reports"
@@ -177,15 +169,15 @@ $(function () {
             "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
-              "x": {
-                  "bin": true,
+              "y": {
+                  "bin": {"step": 0.2},
                   "field": "words_deleted_g_f",
-                  "type": "nominal",
+                  "type": "quantitative",
                   "axis": {
                       "title": "G->F words deleted"
                    }
                 },
-              "y": {
+              "x": {
                 "aggregate": "count", "type": "quantitative",
                 "axis": {
                   "title": "#Reports"
@@ -199,51 +191,22 @@ $(function () {
           vegaEmbed("#vis_w_d", vlSpec, {"actions":false});
     }
 
-    function draw_hist_g_f(data) {
+    function draw_hist(data) {
         // Assign the specification to a local variable vlSpec.
         var vlSpec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
             "data": {"values": data, "format": "csv"},
             "mark": "bar",
             "encoding": {
-              "x": {
-                  "bin": true,
-                  "field": "jaccard_g_f",
-                  "type": "nominal",
-                  "axis": {
-                      "title": "G->F similarity"
-                   }
-                },
               "y": {
-                "aggregate": "count", "type": "quantitative",
-                "axis": {
-                  "title": "#Reports"
-                }
-              },
-              "color": {"value":"#ff8c00"}
-            }
-          };
-
-          // Embed the visualization in the container with id `vis`
-          vegaEmbed("#vis_g_f", vlSpec, {"actions":false});
-    }
-
-    function draw_hist_s_f(data) {
-        // Assign the specification to a local variable vlSpec.
-        var vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"values": data, "format": "csv"},
-            "mark": "bar",
-            "encoding": {
-              "x": {
-                  "bin": true,
+                  "bin": {"step": 0.2},
                   "field": "jaccard_s_f",
-                  "type": "nominal",
+                  "type": "quantitative",
                   "axis": {
                       "title": "S->F similarity"
                    }
                 },
-              "y": {
+              "x": {
                 "aggregate": "count", "type": "quantitative",
                 "axis": {
                   "title": "#Reports"
@@ -264,7 +227,94 @@ $(function () {
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var x0 = d3.scaleBand()
+
+
+
+        var x = d3.scaleLinear().range([0, width]).domain([0, 10]),
+          y = d3.scaleLinear().range([height, 0]).domain([0, 5]);
+
+        // Add the X Axis
+        g.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+
+        // Add the Y Axis
+        g.append("g")
+          .call(d3.axisLeft(y));
+
+         d3.csv(data_url(), function (data, columns) {
+            for (var i = 1, n = columns.length; i < n; ++i) {
+             console.log(columns);
+            }
+            return data;
+        }, function (error, data) {
+            if (error) throw error;
+
+        g.selectAll(".point")
+          .data(data)
+          .enter()
+          .append("circle")
+          .attr("cx", function(d) {
+            return x(d[0]);
+          })
+          .attr("cy", function(d) {
+            return y(d[1]);
+          })
+          .attr("r", 4)
+          .style("fill", "steelblue")
+          .style("stroke", "lightgray");
+
+        // right histogram
+        var gRight = svg.append("g")
+          .attr("transform",
+            "translate(" + (margin.left + width) + "," + margin.top + ")");
+
+        var yBins = d3.histogram()
+          .domain(y.domain())
+          .thresholds(y.ticks(5))
+          .value(function(d) {
+            return d[1];
+          })(data);
+
+        var yx = d3.scaleLinear()
+          .domain([0, d3.max(yBins, function(d) {
+            return d.length;
+          })])
+          .range([0, margin.right]);
+
+        var yBar = gRight.selectAll(".bar")
+          .data(yBins)
+          .enter().append("g")
+          .attr("class", "bar")
+          .attr("transform", function(d) {
+            return "translate(" + 0 + "," + y(d.x1) + ")";
+          });
+
+        var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
+        yBar.append("rect")
+          .attr("y", 1)
+          .attr("width", function(d){
+            return yx(d.length);
+          })
+          .attr("height", bWidth)
+          .style("fill", "steelblue");
+
+        yBar.append("text")
+          .attr("dx", "-.75em")
+          .attr("y", bWidth / 2 + 1)
+          .attr("x", function(d){
+            return yx(d.length);
+          })
+          .attr("text-anchor", "middle")
+          .text(function(d) {
+            return d.length < 4 ? "" : d.length;
+          })
+          .style("fill", "white")
+          .style("font", "9px sans-serif");
+        });
+
+
+       /* var x0 = d3.scaleBand()
             .rangeRound([0, width])
             .paddingInner(0.1);
 
@@ -381,7 +431,7 @@ $(function () {
                         return 'Gegengelesen vs Final'
                     }
                 });
-        });
+        });*/
     }
 
     function draw_add_delete() {
@@ -405,7 +455,7 @@ $(function () {
             .range(["#2CA02C", "#d62728"]);
 
         d3.csv(data_url(), function (d, i, columns) {
-            for (var i = 1, n = columns.length; i < n; ++i) {
+            for (i = 1, n = columns.length; i < n; ++i) {
                 if (columns[i] === 'unters_beginn') {
                     d[columns[i]] = new Date(d[columns[i]]);
                 } else {
@@ -416,7 +466,7 @@ $(function () {
             return d;
         }, function (error, data) {
             if (error) throw error;
-            var keys = ['words_added_g_f_relative', 'words_deleted_g_f_relative']
+            var keys = ['words_added_g_f_relative', 'words_deleted_g_f_relative'];
             x0.domain(data.map(function (d) { return d.unters_beginn; }));
             x1.domain(keys).rangeRound([0, x0.bandwidth()]);
             y.domain([0, d3.max(data, function (d) {
