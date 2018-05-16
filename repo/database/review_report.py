@@ -38,7 +38,11 @@ def query_review_reports(cursor, day, writer):
             a.gegenleser,
             a.pat_name,
             a.pat_vorname,
-            a.untart_name
+            a.untart_name,
+            a.jaccard_g_f,
+            a.jaccard_s_f,
+            a.words_added_g_f,
+            a.words_deleted_g_f
           FROM
             reports a
           WHERE

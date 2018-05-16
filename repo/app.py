@@ -23,6 +23,7 @@ from repo.report import get_as_txt, get_as_rtf, get_with_file, q
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 version = app.config['VERSION'] = '3.0.4'
 
 RIS_DB_SETTINGS = {
