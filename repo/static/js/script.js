@@ -144,7 +144,9 @@ $(function () {
                 data.unters_beginn = new Date(data.unters_beginn);
             });
 
-            x.domain(d3.extent(data, function(d) { return d.unters_beginn; }));
+            x.domain(d3.extent(data, function (d) {
+                return d.unters_beginn;
+            }));
 
             g.selectAll("circle")
                 .data(data)
@@ -156,9 +158,58 @@ $(function () {
                 .attr("cy", function (d) {
                     return y(d.jaccard_s_f);
                 })
-                .attr("r", 3)
+                .attr("r", 4)
                 .style("fill", "steelblue")
                 .style("stroke", "lightgray");
+
+
+            var gRight = svg.append("g")
+                .attr("transform",
+                    "translate(" + (margin.left + width) + "," + margin.top + ")");
+
+            var yBins = d3.histogram()
+                .domain(y.domain())
+                .thresholds(y.ticks(6))
+                .value(function (d) {
+                    return d.jaccard_s_f;
+                })(data);
+
+            var yx = d3.scaleLinear()
+                .domain([0, d3.max(yBins, function (d) {
+                    return d.length;
+                })])
+                .range([0, margin.right]);
+
+            var yBar = gRight.selectAll(".bar")
+                .data(yBins)
+                .enter().append("g")
+                .attr("class", "bar")
+                .attr("transform", function (d) {
+                    return "translate(" + 0 + "," + y(d.x1) + ")";
+                });
+
+            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
+            yBar.append("rect")
+                .attr("y", 1)
+                .attr("width", function (d) {
+                    return yx(d.length);
+                })
+                .attr("height", bWidth)
+                .style("fill", "steelblue");
+
+            yBar.append("text")
+                .attr("dx", "-.75em")
+                .attr("y", bWidth / 2 + 1)
+                .attr("x", function (d) {
+                    return yx(d.length);
+                })
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d.length < 4 ? "" : d.length;
+                })
+                .style("fill", "white")
+                .style("font", "9px sans-serif");
+
 
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
