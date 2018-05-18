@@ -95,12 +95,10 @@ ENV/
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
+*.xml
 
 # application logs
 logs/
-
-# instance configuration
-instance
 
 # downloaded reports
 reports
