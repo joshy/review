@@ -14,12 +14,22 @@ div.tooltip {
 
 .bar {
     fill: steelblue;
-  }
+}
 
-  .bar:hover {
+.bar:hover {
     fill: brown;
-  }
+}
 
-  .axis--x path {
+.axis--x path {
     display: none;
-  }
+}
+
+.grid line {
+  stroke: lightgrey;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}

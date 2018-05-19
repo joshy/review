@@ -75,9 +75,7 @@ $(function () {
 
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
-        draw_grouped();
-        draw_add_delete();
-        draw_add_delete_absolute();
+        draw_SimilarityGraph();
         d3.csv(data_url(), function (data) {
             draw_hist(data);
         });
@@ -127,18 +125,46 @@ $(function () {
     }
 
 
-    function draw_grouped() {
+    function draw_SimilarityGraph() {
         var svg = d3.select("#grouped"),
             margin = {top: 20, right: 20, bottom: 20, left: 40},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
-            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            gap = 170;
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var x = d3.scaleTime().range([0, width]),
-            y = d3.scaleLinear().range([height, 0]).domain([0, 1]);
+        //Define Axes
+        var x = d3.scaleTime().range([gap + 20, width]),
+            y = d3.scaleLinear().range([height, 0]).domain([0, 1]),
+            yx = d3.scaleLinear().range([0, gap]);
 
+        //Define Gridlines
+        function make_yAxis_gridlines() {
+            return d3.axisLeft(y)
+                .ticks(4)
+        }
+
+        function make_xAxis_gridlines() {
+            return d3.axisBottom(yx)
+        }
+
+        //Draw Gridlines
+        g.append("g")
+            .attr("class", "grid")
+            .call(make_yAxis_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            );
+
+        //Define Histogramm
+        var gLeft = svg.append("g")
+            .attr("transform",
+                "translate(" + (margin.left) + "," + margin.top + ")");
+
+
+        //Get Data
         d3.csv(data_url(), function (error, data) {
-
+            if (error) throw error;
             data.forEach(function (data) {
                 data.jaccard_s_f = +data.jaccard_s_f;
                 data.unters_beginn = new Date(data.unters_beginn);
@@ -148,6 +174,7 @@ $(function () {
                 return d.unters_beginn;
             }));
 
+            //Draw Circles
             g.selectAll("circle")
                 .data(data)
                 .enter()
@@ -158,14 +185,9 @@ $(function () {
                 .attr("cy", function (d) {
                     return y(d.jaccard_s_f);
                 })
-                .attr("r", 4)
+                .attr("r", 3.5)
                 .style("fill", "steelblue")
                 .style("stroke", "lightgray");
-
-
-            var gRight = svg.append("g")
-                .attr("transform",
-                    "translate(" + (margin.left + width) + "," + margin.top + ")");
 
             var yBins = d3.histogram()
                 .domain(y.domain())
@@ -174,13 +196,19 @@ $(function () {
                     return d.jaccard_s_f;
                 })(data);
 
-            var yx = d3.scaleLinear()
-                .domain([0, d3.max(yBins, function (d) {
-                    return d.length;
-                })])
-                .range([0, margin.right]);
+            yx.domain([0, d3.max(yBins, function (d) {
+                return d.length;
+            })]).nice();
 
-            var yBar = gRight.selectAll(".bar")
+            g.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(make_xAxis_gridlines()
+                    .tickSize(-height)
+                    .tickFormat("")
+                );
+
+            var yBar = gLeft.selectAll(".bar")
                 .data(yBins)
                 .enter().append("g")
                 .attr("class", "bar")
@@ -189,6 +217,7 @@ $(function () {
                 });
 
             var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
+
             yBar.append("rect")
                 .attr("y", 1)
                 .attr("width", function (d) {
@@ -197,20 +226,7 @@ $(function () {
                 .attr("height", bWidth)
                 .style("fill", "steelblue");
 
-            yBar.append("text")
-                .attr("dx", "-.75em")
-                .attr("y", bWidth / 2 + 1)
-                .attr("x", function (d) {
-                    return yx(d.length);
-                })
-                .attr("text-anchor", "middle")
-                .text(function (d) {
-                    return d.length < 4 ? "" : d.length;
-                })
-                .style("fill", "white")
-                .style("font", "9px sans-serif");
-
-
+            //Draw Axes
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x));
@@ -218,6 +234,11 @@ $(function () {
             g.append("g")
                 .call(d3.axisLeft(y)
                     .ticks(6));
+
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(yx)
+                    .ticks(5));
         });
     }
 
