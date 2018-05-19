@@ -17,7 +17,7 @@ div.tooltip {
 }
 
 .bar:hover {
-    fill: brown;
+    fill: red;
 }
 
 .axis--x path {
@@ -32,4 +32,13 @@ div.tooltip {
 
 .grid path {
   stroke-width: 0;
+}
+
+.circle {
+    fill: steelblue;
+    stroke: lightgray;
+}
+
+.circle:hover {
+	fill: red;
 }

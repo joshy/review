@@ -146,6 +146,7 @@ $(function () {
 
         function make_xAxis_gridlines() {
             return d3.axisBottom(yx)
+                .ticks(3)
         }
 
         //Draw Gridlines
@@ -179,26 +180,25 @@ $(function () {
                 .data(data)
                 .enter()
                 .append("circle")
+                .attr("class", "circle")
                 .attr("cx", function (d) {
                     return x(d.unters_beginn);
                 })
                 .attr("cy", function (d) {
                     return y(d.jaccard_s_f);
                 })
-                .attr("r", 3.5)
-                .style("fill", "steelblue")
-                .style("stroke", "lightgray");
+                .attr("r", 4);
 
             var yBins = d3.histogram()
                 .domain(y.domain())
-                .thresholds(y.ticks(6))
+                .thresholds(d3.range(0,  y.domain()[1], (y.domain()[1])/5))
                 .value(function (d) {
                     return d.jaccard_s_f;
                 })(data);
 
             yx.domain([0, d3.max(yBins, function (d) {
                 return d.length;
-            })]).nice();
+            })]);
 
             g.append("g")
                 .attr("class", "grid")
@@ -216,15 +216,31 @@ $(function () {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
 
+            console.log(yBins);
+
             var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
             yBar.append("rect")
                 .attr("y", 1)
+                .attr("class", "bar")
                 .attr("width", function (d) {
                     return yx(d.length);
                 })
-                .attr("height", bWidth)
-                .style("fill", "steelblue");
+                .attr("height", bWidth);
+
+            yBar.append("text")
+                .attr("dx", "-.75em")
+                .attr("y", bWidth / 2 + 1)
+                .attr("x", function (d) {
+                    return yx(d.length);
+                })
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d.length
+                })
+                .style("fill", "white")
+                .style("font", "9px sans-serif");
+
 
             //Draw Axes
             g.append("g")
@@ -238,7 +254,7 @@ $(function () {
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
-                    .ticks(5));
+                    .ticks(3));
         });
     }
 
