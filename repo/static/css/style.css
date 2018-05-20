@@ -6,8 +6,8 @@ div.tooltip {
     padding: 4px;
     font: 12px sans-serif;
     background: rgb(224, 228, 233);
-    border: 0px;
-    border-radius: 0px;
+    border: 0;
+    border-radius: 0;
     pointer-events: none;
     color: black;
 }
@@ -25,13 +25,13 @@ div.tooltip {
 }
 
 .grid line {
-  stroke: lightgrey;
-  stroke-opacity: 0.7;
-  shape-rendering: crispEdges;
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
 }
 
 .grid path {
-  stroke-width: 0;
+    stroke-width: 0;
 }
 
 .circle {
@@ -39,12 +39,12 @@ div.tooltip {
     stroke: lightgray;
 }
 
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
+div.tooltip {
+    position: absolute;
+    text-align: left;
+    font: 12px sans-serif;
+    background: gainsboro;
+    border: 2px;
+    border-radius: 8px;
 }
 

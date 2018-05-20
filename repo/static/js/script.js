@@ -76,10 +76,6 @@ $(function () {
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
         draw_SimilarityGraph();
-        d3.csv(data_url(), function (data) {
-            draw_hist(data);
-        });
-
     }
 
     function data_url() {
@@ -96,42 +92,15 @@ $(function () {
         return 'dashboard/data?' + $.param(param)
     }
 
-    function draw_hist(data) {
-        // Assign the specification to a local variable vlSpec.
-        var vlSpec = {
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-            "data": {"values": data, "format": "csv"},
-            "mark": "bar",
-            "encoding": {
-                "y": {
-                    "bin": {"step": 0.2},
-                    "field": "jaccard_s_f",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "S->F similarity"
-                    }
-                },
-                "x": {
-                    "aggregate": "count", "type": "quantitative",
-                    "axis": {
-                        "title": "#Reports"
-                    }
-                },
-                "color": {"value": "#6b486b"}
-            }
-        };
-        // Embed the visualization in the container with id `vis`
-        vegaEmbed("#vis_s_f", vlSpec, {"actions": false});
-    }
-
-
     function draw_SimilarityGraph() {
         var svg = d3.select("#grouped"),
-            margin = {top: 20, right: 20, bottom: 20, left: 40},
+            margin = {top: 20, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170;
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var formatTime = d3.timeFormat("%d.%m.%Y");
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
@@ -162,6 +131,11 @@ $(function () {
             .attr("transform",
                 "translate(" + (margin.left) + "," + margin.top + ")");
 
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
         //Get Data
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
@@ -187,15 +161,31 @@ $(function () {
                     return y(d.jaccard_s_f);
                 })
                 .attr("r", 4)
-                .on("mouseover", function () {
+                .on("mouseover", function (d) {
                     d3.select(this)
                         .attr("r", 7)
-                        .style("fill", "red")
+                        .style("fill", "red");
+
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(d.untart_name + "<br/>" + "Date: " +
+                        formatTime(d.unters_beginn) + "<br/>" +
+                        "Similarity: " + d.jaccard_s_f)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 40) + "px");
                 })
-                .on("mouseout", function () {
+                .on("mouseout", function (d) {
                     d3.select(this)
                         .attr("r", 4)
                         .style("fill", "steelblue");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .on("click", function (d) {
+                    console.log("on Diff-Viewer Page: " + d.befund_schluessel);
+                    window.location = 'diff/' + d.befund_schluessel;
                 });
 
             //Histogram
@@ -241,28 +231,23 @@ $(function () {
                             return d.jaccard_s_f >= data.x0 && d.jaccard_s_f <= data.x1;
                         })
                         .attr("r", 7)
-                        .style("fill", "red")
+                        .style("fill", "red");
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(data.length)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY) + "px");
                 })
                 .on("mouseout", function () {
                     g.selectAll("circle")
                         .data(data)
                         .attr("r", 4)
                         .style("fill", "steelblue");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
                 });
-
-            yBar.append("text")
-                .attr("dx", "-.75em")
-                .attr("y", bWidth / 2 + 1)
-                .attr("x", function (d) {
-                    return yx(d.length);
-                })
-                .attr("text-anchor", "middle")
-                .text(function (d) {
-                    return d.length
-                })
-                .style("fill", "white")
-                .style("font", "9px sans-serif");
-
 
             //Draw Axes
             g.append("g")
@@ -273,249 +258,39 @@ $(function () {
                 .call(d3.axisLeft(y)
                     .ticks(6));
 
+            g.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left-3)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-size", "15px")
+                .style("font-weight", "bold")
+                .text("Similarity");
+
+            g.append("text")
+                .attr("transform",
+                    "translate(" + (width / 12) + " ," +
+                    (height + margin.top+12) + ")")
+                .style("text-anchor", "middle")
+                .style("font-size", "15px")
+                .style("font-weight", "bold")
+                .text("#Reports");
+
+            g.append("text")
+                .attr("transform",
+                    "translate(" + (width / 1.7) + " ," +
+                    (height + margin.top+12) + ")")
+                .style("text-anchor", "middle")
+                .style("font-size", "15px")
+                .style("font-weight", "bold")
+                .text("Date");
+
+
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
                     .ticks(3));
         });
     }
-
-    function draw_add_delete() {
-        var svg = d3.select("#add_delete"),
-            margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = +svg.attr("width") - margin.left - margin.right,
-            height = +svg.attr("height") - margin.top - margin.bottom,
-            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var x0 = d3.scaleBand()
-            .rangeRound([0, width])
-            .paddingInner(0.1);
-
-        var x1 = d3.scaleBand()
-            .padding(0.05);
-
-        var y = d3.scaleLinear()
-            .rangeRound([height, 0]);
-
-        var z = d3.scaleOrdinal()
-            .range(["#2CA02C", "#d62728"]);
-
-        d3.csv(data_url(), function (d, i, columns) {
-            for (i = 1, n = columns.length; i < n; ++i) {
-                if (columns[i] === 'unters_beginn') {
-                    d[columns[i]] = new Date(d[columns[i]]);
-                } else {
-                    var number = +d[columns[i]];
-                    d[columns[i]] = isNaN(+d[columns[i]]) ? d[columns[i]] : +d[columns[i]];
-                }
-            }
-            return d;
-        }, function (error, data) {
-            if (error) throw error;
-            var keys = ['words_added_g_f_relative', 'words_deleted_g_f_relative'];
-            x0.domain(data.map(function (d) {
-                return d.unters_beginn;
-            }));
-            x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-            y.domain([0, d3.max(data, function (d) {
-                return d3.max(keys, function (key) {
-                    return d[key];
-                });
-            })]).nice();
-
-            g.append("g")
-                .selectAll("g")
-                .data(data)
-                .enter().append("g")
-                .attr("transform", function (d) {
-                    return "translate(" + x0(d.unters_beginn) + ",0)";
-                })
-                .selectAll("rect")
-                .data(function (d) {
-                    return keys.map(function (key) {
-                        return {key: key, value: d[key]};
-                    });
-                })
-                .enter().append("rect")
-                .attr("x", function (d) {
-                    return x1(d.key);
-                })
-                .attr("y", function (d) {
-                    return y(d.value);
-                })
-                .attr("width", x1.bandwidth())
-                .attr("height", function (d) {
-                    return height - y(d.value);
-                })
-                .attr("fill", function (d) {
-                    return z(d.key);
-                });
-
-            g.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0).tickFormat(d3.timeFormat('%d.%m')));
-
-            g.append("g")
-                .attr("class", "axis")
-                .call(d3.axisLeft(y).ticks(8, ".0%"))
-                .append("text")
-                .attr("x", 5)
-                .attr("y", y(y.ticks().pop()) + 0.5)
-                .attr("dy", "0.32em")
-                .attr("fill", "#000")
-                .attr("font-weight", "bold")
-                .attr("text-anchor", "start")
-                .text("Relative additions/deletions of words");
-
-            var legend = g.append("g")
-                .attr("font-family", "sans-serif")
-                .attr("font-size", 10)
-                .attr("text-anchor", "end")
-                .selectAll("g")
-                .data(keys.slice().reverse())
-                .enter().append("g")
-                .attr("transform", function (d, i) {
-                    return "translate(0," + i * 20 + ")";
-                });
-
-            legend.append("rect")
-                .attr("x", width - 19)
-                .attr("width", 19)
-                .attr("height", 19)
-                .attr("fill", z);
-
-            legend.append("text")
-                .attr("x", width - 24)
-                .attr("y", 9.5)
-                .attr("dy", "0.32em")
-                .text(function (d) {
-                    if (d === 'words_added_g_f_relative') {
-                        return 'Words added after Gegengelesen (relativ)';
-                    } else if (d === 'words_deleted_g_f_relative') {
-                        return 'Words deleted after Gegengelesen (relativ)'
-                    }
-                });
-        });
-    }
-
-    function draw_add_delete_absolute() {
-        var svg = d3.select("#add_delete_absolute"),
-            margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = +svg.attr("width") - margin.left - margin.right,
-            height = +svg.attr("height") - margin.top - margin.bottom,
-            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var x0 = d3.scaleBand()
-            .rangeRound([0, width])
-            .paddingInner(0.1);
-
-        var x1 = d3.scaleBand()
-            .padding(0.05);
-
-        var y = d3.scaleLinear()
-            .rangeRound([height, 0]);
-
-        var z = d3.scaleOrdinal()
-            .range(["#2CA02C", "#d62728"]);
-
-        d3.csv(data_url(), function (d, i, columns) {
-            for (var i = 1, n = columns.length; i < n; ++i) {
-                if (columns[i] === 'unters_beginn') {
-                    d[columns[i]] = new Date(d[columns[i]]);
-                } else {
-                    var number = +d[columns[i]];
-                    d[columns[i]] = isNaN(+d[columns[i]]) ? d[columns[i]] : +d[columns[i]];
-                }
-            }
-            return d;
-        }, function (error, data) {
-            if (error) throw error;
-            var keys = ['words_added_g_f', 'words_deleted_g_f']
-            x0.domain(data.map(function (d) {
-                return d.unters_beginn;
-            }));
-            x1.domain(keys).rangeRound([0, x0.bandwidth()]);
-            y.domain([0, d3.max(data, function (d) {
-                return d3.max(keys, function (key) {
-                    return d[key];
-                });
-            })]).nice();
-
-            g.append("g")
-                .selectAll("g")
-                .data(data)
-                .enter().append("g")
-                .attr("transform", function (d) {
-                    return "translate(" + x0(d.unters_beginn) + ",0)";
-                })
-                .selectAll("rect")
-                .data(function (d) {
-                    return keys.map(function (key) {
-                        return {key: key, value: d[key]};
-                    });
-                })
-                .enter().append("rect")
-                .attr("x", function (d) {
-                    return x1(d.key);
-                })
-                .attr("y", function (d) {
-                    return y(d.value);
-                })
-                .attr("width", x1.bandwidth())
-                .attr("height", function (d) {
-                    return height - y(d.value);
-                })
-                .attr("fill", function (d) {
-                    return z(d.key);
-                });
-
-            g.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x0).tickFormat(d3.timeFormat('%d.%m')));
-
-            g.append("g")
-                .attr("class", "axis")
-                .call(d3.axisLeft(y).ticks(8))
-                .append("text")
-                .attr("x", 5)
-                .attr("y", y(y.ticks().pop()) + 0.5)
-                .attr("dy", "0.32em")
-                .attr("fill", "#000")
-                .attr("font-weight", "bold")
-                .attr("text-anchor", "start")
-                .text("Absolute additions/deletions of words");
-
-            var legend = g.append("g")
-                .attr("font-family", "sans-serif")
-                .attr("font-size", 10)
-                .attr("text-anchor", "end")
-                .selectAll("g")
-                .data(keys.slice().reverse())
-                .enter().append("g")
-                .attr("transform", function (d, i) {
-                    return "translate(0," + i * 20 + ")";
-                });
-
-            legend.append("rect")
-                .attr("x", width - 19)
-                .attr("width", 19)
-                .attr("height", 19)
-                .attr("fill", z);
-
-            legend.append("text")
-                .attr("x", width - 24)
-                .attr("y", 9.5)
-                .attr("dy", "0.32em")
-                .text(function (d) {
-                    if (d === 'words_added_g_f') {
-                        return 'Words added after Gegengelesen (absolute)';
-                    } else if (d === 'words_deleted_g_f') {
-                        return 'Words deleted after Gegengelesen (absolute)'
-                    }
-                });
-        });
-    }
-
 });
