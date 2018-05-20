@@ -162,7 +162,6 @@ $(function () {
             .attr("transform",
                 "translate(" + (margin.left) + "," + margin.top + ")");
 
-
         //Get Data
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
@@ -187,11 +186,22 @@ $(function () {
                 .attr("cy", function (d) {
                     return y(d.jaccard_s_f);
                 })
-                .attr("r", 4);
+                .attr("r", 4)
+                .on("mouseover", function () {
+                    d3.select(this)
+                        .attr("r", 7)
+                        .style("fill", "red")
+                })
+                .on("mouseout", function () {
+                    d3.select(this)
+                        .attr("r", 4)
+                        .style("fill", "steelblue");
+                });
 
+            //Histogram
             var yBins = d3.histogram()
                 .domain(y.domain())
-                .thresholds(d3.range(0,  y.domain()[1], (y.domain()[1])/5))
+                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
                 .value(function (d) {
                     return d.jaccard_s_f;
                 })(data);
@@ -216,8 +226,6 @@ $(function () {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
 
-            console.log(yBins);
-
             var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
             yBar.append("rect")
@@ -226,7 +234,21 @@ $(function () {
                 .attr("width", function (d) {
                     return yx(d.length);
                 })
-                .attr("height", bWidth);
+                .attr("height", bWidth)
+                .on("mouseover", function (data) {
+                    g.selectAll("circle")
+                        .filter(function (d) {
+                            return d.jaccard_s_f >= data.x0 && d.jaccard_s_f <= data.x1;
+                        })
+                        .attr("r", 7)
+                        .style("fill", "red")
+                })
+                .on("mouseout", function () {
+                    g.selectAll("circle")
+                        .data(data)
+                        .attr("r", 4)
+                        .style("fill", "steelblue");
+                });
 
             yBar.append("text")
                 .attr("dx", "-.75em")
