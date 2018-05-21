@@ -76,6 +76,7 @@ $(function () {
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
         draw_SimilarityGraph();
+        draw_MedianDougnut();
     }
 
     function data_url() {
@@ -93,7 +94,7 @@ $(function () {
     }
 
     function draw_SimilarityGraph() {
-        var svg = d3.select("#grouped"),
+        var svg = d3.select("#SimilarityGraph"),
             margin = {top: 20, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
@@ -260,7 +261,7 @@ $(function () {
 
             g.append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left-3)
+                .attr("y", 0 - margin.left - 3)
                 .attr("x", 0 - (height / 2))
                 .attr("dy", "1em")
                 .style("text-anchor", "middle")
@@ -271,7 +272,7 @@ $(function () {
             g.append("text")
                 .attr("transform",
                     "translate(" + (width / 12) + " ," +
-                    (height + margin.top+12) + ")")
+                    (height + margin.top + 12) + ")")
                 .style("text-anchor", "middle")
                 .style("font-size", "15px")
                 .style("font-weight", "bold")
@@ -280,7 +281,7 @@ $(function () {
             g.append("text")
                 .attr("transform",
                     "translate(" + (width / 1.7) + " ," +
-                    (height + margin.top+12) + ")")
+                    (height + margin.top + 12) + ")")
                 .style("text-anchor", "middle")
                 .style("font-size", "15px")
                 .style("font-weight", "bold")
@@ -292,5 +293,81 @@ $(function () {
                 .call(d3.axisBottom(yx)
                     .ticks(3));
         });
+    }
+
+    function draw_MedianDougnut() {
+
+        var medianValue = 0.0;
+        var pieSegments = [
+            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+            {name: 'medianValue', value: 0.0, color: 'steelblue'},
+        ];
+
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            var similarityList = data.map(function (d) {
+                return parseFloat(d.jaccard_s_f);
+            });
+            medianValue = median(similarityList);
+            pieSegments[0].value = 1.0 - medianValue;
+            pieSegments[1].value = medianValue;
+            console.log(pieSegments[1]);
+
+            var width = 400,
+                height = 400,
+                radius = 150;
+
+            var arc = d3.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(100);
+
+            var pie = d3.pie()
+                .sort(null)
+                .value(function(d) { return d.value; });
+
+            var svg = d3.select("#MedianDoughnut")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            var g = svg.selectAll(".arc")
+                .data(pie(pieSegments))
+                .enter()
+                .append("g");
+
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function (d, i) {
+                    return d.data.color;
+                });
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr('font-size', '4em')
+                .attr('y', 20)
+                .text(medianValue.toPrecision(1));
+
+        });
+    }
+
+    function median(values) {
+
+         if (values.length === 0) {
+            return 0;
+        }
+
+        values.sort(function (a, b) {
+            return a - b;
+        });
+
+        var half = Math.floor(values.length / 2);
+
+        if (values.length % 2) {
+            return values[half];
+        }
+        else {
+            return (values[half - 1] + values[half]) / 2.0;
+        }
     }
 });
