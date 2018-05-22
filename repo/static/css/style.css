@@ -48,3 +48,12 @@ div.tooltip {
     border-radius: 8px;
 }
 
+.doughnutFontSingle {
+    font: 50px sans-serif;
+    fill: steelblue;
+}
+
+.doughnutFontAll {
+    font: 50px sans-serif;
+    fill: red;
+}

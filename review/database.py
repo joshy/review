@@ -224,3 +224,28 @@ def query_by_writer_and_date(cursor, writer, start_date, end_date):
           """
     cursor.execute(sql, (writer.upper(), start_date, end_date))
     return cursor.fetchall()
+
+def query_calculations(cursor):
+    """
+    Query all reports in the review db which have status final
+    """
+    sql = """
+          SELECT
+            a.jaccard_s_f,
+            a.jaccard_g_f,
+            a.words_added_s_f,
+            a.words_added_g_f,
+            a.words_deleted_s_f,
+            a.words_deleted_g_f,
+            a.total_words_s,
+            a.total_words_g,
+            a.total_words_f
+          FROM
+            reports a
+          WHERE
+              a.befund_status = 'f'
+          ORDER BY
+              a.unters_beginn desc
+          """
+    cursor.execute(sql)
+    return cursor.fetchall()

@@ -4,13 +4,14 @@ from datetime import datetime, timedelta
 
 import psycopg2
 import schedule
+import numpy as np
 import pandas as pd
 from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer, query_by_writer_and_date
-from review.calculations import relative
+from review.database import query_by_writer, query_by_writer_and_date, query_calculations
+from review.calculations import relative, calculate_median
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -78,7 +79,7 @@ def review():
     day = request.args.get('day', now)
     writer = request.args.get('writer', '')
     dd = datetime.strptime(day, '%d.%m.%Y')
-    con =  get_review_db()
+    con = get_review_db()
     rows = query_review_reports(con.cursor(), dd, writer)
     day = dd.strftime('%d.%m.%Y')
     return render_template('review.html',
@@ -87,7 +88,7 @@ def review():
 
 @app.route('/review/diff/<id>')
 def diff(id):
-    con =  get_review_db()
+    con = get_review_db()
     row = query_review_report(con.cursor(), id)
     cases = ['befund_s', 'befund_g', 'befund_f']
     for c in cases:
@@ -106,10 +107,13 @@ def dashboard():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_data(writer, last_exams, start_date, end_date)
-
+    calculations = load_all_data()
+    similarity_s_f = [x['jaccard_s_f'] for x in calculations]
+    median_s_f = calculate_median(similarity_s_f)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
-        start_date=start_date, end_date=end_date, version=version)
+        start_date=start_date, end_date=end_date, version=version,
+        median_s_f=median_s_f)
 
 
 @app.route('/review/dashboard/data')
@@ -138,6 +142,10 @@ def load_data(writer, last_exams, start_date, end_date):
         rows = query_by_writer(cursor, writer, last_exams)
     return rows
 
+def load_all_data():
+    con = get_review_db()
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    return query_calculations(cursor)
 
 @app.route('/cm')
 def cm():

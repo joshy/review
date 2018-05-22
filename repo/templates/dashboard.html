@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@3.2.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@2.3.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.4.0"></script>
+    <script type="text/javascript"> var median_s_f = {{ median_s_f }};</script>
 </head>
 
 <body class="w-100 sans-serif" data-page="dashboard">
@@ -19,14 +20,13 @@
     <p>
         This is a personal dashboard which should help the assistant to improve on writing radiology reports.
     </p>
-
     {% include 'partials/exam-list.html' %}
-
     <h1 class="f5">Similarity</h1>
     <svg id="SimilarityGraph" width="960" height="330"></svg>
-    <svg id="MedianDoughnut" width="960" height="330"></svg>
+    <svg id="MedianDoughnutSingle"></svg>
+    <svg id="MedianDoughnutAll"></svg>
+    <div id="median" data-median="{{ median_s_f }}"></div>
     <h1 class="f5">Document changes</h1>
-    <svg id="add_delete_absolute" width="960" height="330"></svg>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>

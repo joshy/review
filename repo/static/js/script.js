@@ -52,23 +52,23 @@ $(function () {
     }
 
     $('input[type=radio][name=befund_text]').change(function () {
-        var writing = $('#writing')
-        var x = document.getElementById(this.value).textContent
-        writing.text(x)
+        var writing = $('#writing');
+        var x = document.getElementById(this.value).textContent;
+        writing.text(x);
         diff();
         if (this.value === 'befund_s') {
-            $('#words_added_g_f').addClass('dn')
-            $('#words_deleted_g_f').addClass('dn')
-            $('#jaccard_g_f').addClass('dn')
-            $('#words_added_s_f').removeClass('dn')
-            $('#words_deleted_s_f').removeClass('dn')
+            $('#words_added_g_f').addClass('dn');
+            $('#words_deleted_g_f').addClass('dn');
+            $('#jaccard_g_f').addClass('dn');
+            $('#words_added_s_f').removeClass('dn');
+            $('#words_deleted_s_f').removeClass('dn');
             $('#jaccard_s_f').removeClass('dn')
         } else if (this.value === 'befund_g') {
-            $('#words_added_g_f').removeClass('dn')
-            $('#words_deleted_g_f').removeClass('dn')
-            $('#jaccard_g_f').removeClass('dn')
-            $('#words_added_s_f').addClass('dn')
-            $('#words_deleted_s_f').addClass('dn')
+            $('#words_added_g_f').removeClass('dn');
+            $('#words_deleted_g_f').removeClass('dn');
+            $('#jaccard_g_f').removeClass('dn');
+            $('#words_added_s_f').addClass('dn');
+            $('#words_deleted_s_f').addClass('dn');
             $('#jaccard_s_f').addClass('dn')
         }
     });
@@ -76,7 +76,8 @@ $(function () {
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
         draw_SimilarityGraph();
-        draw_MedianDougnut();
+        draw_MedianDoughnutSingle();
+        draw_MedianDoughnutAll();
     }
 
     function data_url() {
@@ -133,7 +134,8 @@ $(function () {
                 "translate(" + (margin.left) + "," + margin.top + ")");
 
         // Define the div for the tooltip
-        var div = d3.select("body").append("div")
+        var div = d3.select("body")
+            .append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
@@ -211,7 +213,8 @@ $(function () {
 
             var yBar = gLeft.selectAll(".bar")
                 .data(yBins)
-                .enter().append("g")
+                .enter()
+                .append("g")
                 .attr("class", "bar")
                 .attr("transform", function (d) {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
@@ -249,6 +252,13 @@ $(function () {
                         .duration(500)
                         .style("opacity", 0);
                 });
+
+         /*   g.append("line")
+                .attr("x1", 0)
+                .attr("y1", median_s_f)
+                .attr("x2", width)
+                .attr("y2", median_s_f)
+                .style("stroke", "black");*/
 
             //Draw Axes
             g.append("g")
@@ -295,12 +305,12 @@ $(function () {
         });
     }
 
-    function draw_MedianDougnut() {
+    function draw_MedianDoughnutSingle() {
 
         var medianValue = 0.0;
         var pieSegments = [
-            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
             {name: 'medianValue', value: 0.0, color: 'steelblue'},
+            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
         d3.csv(data_url(), function (error, data) {
@@ -308,13 +318,13 @@ $(function () {
             var similarityList = data.map(function (d) {
                 return parseFloat(d.jaccard_s_f);
             });
-            medianValue = median(similarityList);
-            pieSegments[0].value = 1.0 - medianValue;
-            pieSegments[1].value = medianValue;
-            console.log(pieSegments[1]);
 
-            var width = 400,
-                height = 400,
+            medianValue = median(similarityList);
+            pieSegments[0].value = medianValue;
+            pieSegments[1].value = 1.0 - medianValue;
+
+            var width = 480,
+                height = 480,
                 radius = 150;
 
             var arc = d3.arc()
@@ -323,13 +333,15 @@ $(function () {
 
             var pie = d3.pie()
                 .sort(null)
-                .value(function(d) { return d.value; });
+                .value(function (d) {
+                    return d.value;
+                });
 
-            var svg = d3.select("#MedianDoughnut")
+            var svg = d3.select("#MedianDoughnutSingle")
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
-                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+                .attr("transform", "translate(300,200)");
 
             var g = svg.selectAll(".arc")
                 .data(pie(pieSegments))
@@ -338,22 +350,80 @@ $(function () {
 
             g.append("path")
                 .attr("d", arc)
-                .style("fill", function (d, i) {
+                .style("fill", function (d) {
                     return d.data.color;
                 });
 
             g.append("text")
+                .attr("class", "doughnutFontSingle")
                 .attr("text-anchor", "middle")
-                .attr('font-size', '4em')
                 .attr('y', 20)
-                .text(medianValue.toPrecision(1));
+                .text(medianValue.toPrecision(2));
+
+        });
+    }
+
+    function draw_MedianDoughnutAll() {
+
+
+        var pieSegments = [
+            {name: 'medianValue', value: 0.0, color: 'red'},
+            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+        ];
+
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            var similarityList = data.map(function (d) {
+                return parseFloat(d.jaccard_s_f);
+            });
+
+            var medianValue = median_s_f;
+            pieSegments[0].value = medianValue;
+            pieSegments[1].value = 1.0 - medianValue;
+
+            var width = 480,
+                height = 480,
+                radius = 150;
+
+            var arc = d3.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(100);
+
+            var pie = d3.pie()
+                .sort(null)
+                .value(function (d) {
+                    return d.value;
+                });
+
+            var svg = d3.select("#MedianDoughnutAll")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(200,200)");
+
+            var g = svg.selectAll(".arc")
+                .data(pie(pieSegments))
+                .enter()
+                .append("g");
+
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function (d) {
+                    return d.data.color;
+                });
+
+            g.append("text")
+                .attr("class", "doughnutFontAll")
+                .attr("text-anchor", "middle")
+                .attr('y', 20)
+                .text(medianValue.toPrecision(2));
 
         });
     }
 
     function median(values) {
 
-         if (values.length === 0) {
+        if (values.length === 0) {
             return 0;
         }
 
