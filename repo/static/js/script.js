@@ -253,12 +253,21 @@ $(function () {
                         .style("opacity", 0);
                 });
 
-         /*   g.append("line")
+            //Draw Median Line single
+            g.append("line")
+                .attr("class", "medianLineSingle")
                 .attr("x1", 0)
-                .attr("y1", median_s_f)
+                .attr("y1", y(median_s_f_single))
                 .attr("x2", width)
-                .attr("y2", median_s_f)
-                .style("stroke", "black");*/
+                .attr("y2", y(median_s_f_single));
+
+            //Draw Median Line overall
+            g.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", 0)
+                .attr("y1", y(median_s_f_all))
+                .attr("x2", width)
+                .attr("y2", y(median_s_f_all));
 
             //Draw Axes
             g.append("g")
@@ -297,7 +306,6 @@ $(function () {
                 .style("font-weight", "bold")
                 .text("Date");
 
-
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
@@ -306,8 +314,6 @@ $(function () {
     }
 
     function draw_MedianDoughnutSingle() {
-
-        var medianValue = 0.0;
         var pieSegments = [
             {name: 'medianValue', value: 0.0, color: 'steelblue'},
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
@@ -319,7 +325,7 @@ $(function () {
                 return parseFloat(d.jaccard_s_f);
             });
 
-            medianValue = median(similarityList);
+            var medianValue = median_s_f_single;
             pieSegments[0].value = medianValue;
             pieSegments[1].value = 1.0 - medianValue;
 
@@ -359,13 +365,10 @@ $(function () {
                 .attr("text-anchor", "middle")
                 .attr('y', 20)
                 .text(medianValue.toPrecision(2));
-
         });
     }
 
     function draw_MedianDoughnutAll() {
-
-
         var pieSegments = [
             {name: 'medianValue', value: 0.0, color: 'red'},
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
@@ -377,7 +380,7 @@ $(function () {
                 return parseFloat(d.jaccard_s_f);
             });
 
-            var medianValue = median_s_f;
+            var medianValue = median_s_f_all;
             pieSegments[0].value = medianValue;
             pieSegments[1].value = 1.0 - medianValue;
 
@@ -421,7 +424,7 @@ $(function () {
         });
     }
 
-    function median(values) {
+    /*function median(values) {
 
         if (values.length === 0) {
             return 0;
@@ -439,5 +442,5 @@ $(function () {
         else {
             return (values[half - 1] + values[half]) / 2.0;
         }
-    }
+    }*/
 });

@@ -107,13 +107,15 @@ def dashboard():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_data(writer, last_exams, start_date, end_date)
+    similarity_s_f_single = [x['jaccard_s_f'] for x in rows]
+    median_s_f_single = calculate_median(similarity_s_f_single)
     calculations = load_all_data()
-    similarity_s_f = [x['jaccard_s_f'] for x in calculations]
-    median_s_f = calculate_median(similarity_s_f)
+    similarity_s_f_all = [x['jaccard_s_f'] for x in calculations]
+    median_s_f_all = calculate_median(similarity_s_f_all)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
         start_date=start_date, end_date=end_date, version=version,
-        median_s_f=median_s_f)
+        median_s_f_single=median_s_f_single, median_s_f_all=median_s_f_all)
 
 
 @app.route('/review/dashboard/data')

@@ -39,15 +39,6 @@ div.tooltip {
     stroke: lightgray;
 }
 
-div.tooltip {
-    position: absolute;
-    text-align: left;
-    font: 12px sans-serif;
-    background: gainsboro;
-    border: 2px;
-    border-radius: 8px;
-}
-
 .doughnutFontSingle {
     font: 50px sans-serif;
     fill: steelblue;
@@ -57,3 +48,16 @@ div.tooltip {
     font: 50px sans-serif;
     fill: red;
 }
+
+.medianLineSingle {
+    stroke-width: 1px;
+    stroke: steelblue;
+    stroke-dasharray: 5,5;
+}
+
+.medianLineAll {
+    stroke-width: 1px;
+    stroke: red;
+    stroke-dasharray: 5,5;
+}
+
