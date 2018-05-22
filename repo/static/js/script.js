@@ -278,38 +278,62 @@ $(function () {
                 .call(d3.axisLeft(y)
                     .ticks(6));
 
-            g.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left - 3)
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .style("font-size", "15px")
-                .style("font-weight", "bold")
-                .text("Similarity");
-
-            g.append("text")
-                .attr("transform",
-                    "translate(" + (width / 12) + " ," +
-                    (height + margin.top + 12) + ")")
-                .style("text-anchor", "middle")
-                .style("font-size", "15px")
-                .style("font-weight", "bold")
-                .text("#Reports");
-
-            g.append("text")
-                .attr("transform",
-                    "translate(" + (width / 1.7) + " ," +
-                    (height + margin.top + 12) + ")")
-                .style("text-anchor", "middle")
-                .style("font-size", "15px")
-                .style("font-weight", "bold")
-                .text("Date");
-
             g.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
                     .ticks(3));
+            //add Annotation of Axes
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left - 3)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .text("Similarity");
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 12) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("#Reports");
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 1.7) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("Date");
+
+            //add legend
+            var legend = svg.append("g")
+                .attr("class", "legend");
+
+            legend.append("line")
+                .attr("class", "medianLineSingle")
+                .attr("x1", width / 2)
+                .attr("x2", width / 2 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+              legend.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", width / 1.6)
+                .attr("x2", width / 1.6 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+            legend.append("text")
+                .attr("x", width / 2 + 100)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("personal Median");
+
+            legend.append("text")
+                .attr("x", width / 1.6 + 95)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("overall Median")
         });
     }
 
