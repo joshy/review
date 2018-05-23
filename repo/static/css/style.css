@@ -16,8 +16,16 @@ div.tooltip {
     fill: steelblue;
 }
 
-.bar:hover {
+.barWordsAdded {
+    fill: green;
+}
+
+.barWordsDeleted {
     fill: red;
+}
+
+.bar:hover, .barWordsAdded:hover, .barWordsDeleted:hover {
+    fill: #666967;
 }
 
 .axis--x path {
@@ -45,14 +53,34 @@ div.tooltip {
     stroke: lightgray;
 }
 
+.circleWordsAdded {
+    fill: green;
+    stroke: lightgray;
+}
+
+.circleWordsDeleted {
+    fill: red;
+    stroke: lightgray;
+}
+
 .doughnutFontSingle {
     font: 50px sans-serif;
     fill: steelblue;
 }
 
-.doughnutFontAll {
+.doughnutFontSingleWordsAdded {
+    font: 50px sans-serif;
+    fill: green;
+}
+
+.doughnutFontSingleWordsDeleted {
     font: 50px sans-serif;
     fill: red;
+}
+
+.doughnutFontAll {
+    font: 50px sans-serif;
+    fill: #e4d653;
 }
 
 .medianLineSingle {
@@ -61,9 +89,21 @@ div.tooltip {
     stroke-dasharray: 5, 5;
 }
 
-.medianLineAll {
+.medianLineSingleWordsAdded {
+    stroke-width: 1px;
+    stroke: green;
+    stroke-dasharray: 5, 5;
+}
+
+.medianLineSingleWordsDeleted {
     stroke-width: 1px;
     stroke: red;
+    stroke-dasharray: 5, 5;
+}
+
+.medianLineAll {
+    stroke-width: 1px;
+    stroke: #e4d653;
     stroke-dasharray: 5, 5;
 }
 

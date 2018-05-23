@@ -78,9 +78,12 @@ $(function () {
         drawSimilarityGraph();
         drawSimilarityDoughnutSingle();
         drawSimilarityDoughnutAll();
-        /*drawWordsAddedGraph();*/
+        drawWordsAddedGraph();
         drawDoughnutWordsAddedSingle();
         drawDoughnutWordsAddedAll();
+        drawWordsDeletedGraph();
+        drawDoughnutWordsDeletedSingle();
+        drawDoughnutWordsDeletedAll()
     }
 
     function data_url() {
@@ -103,7 +106,7 @@ $(function () {
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170;
-        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
 
@@ -132,9 +135,7 @@ $(function () {
             );
 
         //Define Histogramm
-        var gLeft = svg.append("g")
-            .attr("transform",
-                "translate(" + (margin.left) + "," + margin.top + ")");
+        var gLeft = g.append("g");
 
         // Define the div for the tooltip
         var div = d3.select("body")
@@ -170,7 +171,7 @@ $(function () {
                 .on("mouseover", function (d) {
                     d3.select(this)
                         .attr("r", 7)
-                        .style("fill", "red");
+                        .style("fill", "#666967");
 
                     div.transition()
                         .duration(200)
@@ -237,7 +238,7 @@ $(function () {
                             return d.jaccard_s_f >= data.x0 && d.jaccard_s_f <= data.x1;
                         })
                         .attr("r", 7)
-                        .style("fill", "red");
+                        .style("fill", "#666967");
                     div.transition()
                         .duration(200)
                         .style("opacity", 1);
@@ -404,7 +405,7 @@ $(function () {
             radius = 150;
 
         var pieSegments = [
-            {name: 'medianValue', value: 0.0, color: 'red'},
+            {name: 'medianValue', value: 0.0, color: '#e4d653'},
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
@@ -456,13 +457,14 @@ $(function () {
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170;
-        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
+        var maxIntervallValue = 250;
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
-            y = d3.scaleLinear().range([height, 0]).domain([0, 50]),
+            y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervallValue]),
             yx = d3.scaleLinear().range([0, gap]);
 
         //Define Gridlines
@@ -485,9 +487,7 @@ $(function () {
             );
 
         //Define Histogramm
-        var gLeft = svg.append("g")
-            .attr("transform",
-                "translate(" + (margin.left) + "," + margin.top + ")");
+        var gLeft = g.append("g");
 
         // Define the div for the tooltip
         var div = d3.select("body")
@@ -512,7 +512,7 @@ $(function () {
                 .data(data)
                 .enter()
                 .append("circle")
-                .attr("class", "circle")
+                .attr("class", "circleWordsAdded")
                 .attr("cx", function (d) {
                     return x(d.unters_beginn);
                 })
@@ -523,7 +523,7 @@ $(function () {
                 .on("mouseover", function (d) {
                     d3.select(this)
                         .attr("r", 7)
-                        .style("fill", "red");
+                        .style("fill", "lightslategray");
 
                     div.transition()
                         .duration(200)
@@ -537,7 +537,7 @@ $(function () {
                 .on("mouseout", function (d) {
                     d3.select(this)
                         .attr("r", 4)
-                        .style("fill", "steelblue");
+                        .style("fill", "green");
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
@@ -571,7 +571,7 @@ $(function () {
                 .data(yBins)
                 .enter()
                 .append("g")
-                .attr("class", "bar")
+                .attr("class", "barWordsAdded")
                 .attr("transform", function (d) {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
@@ -580,7 +580,7 @@ $(function () {
 
             yBar.append("rect")
                 .attr("y", 1)
-                .attr("class", "bar")
+                .attr("class", "barWordsAdded")
                 .attr("width", function (d) {
                     return yx(d.length);
                 })
@@ -588,10 +588,15 @@ $(function () {
                 .on("mouseover", function (data) {
                     g.selectAll("circle")
                         .filter(function (d) {
-                            return d.words_added_s_f >= data.x0 && d.words_added_s_f <= data.x1;
+                            if (data.x1 === maxIntervallValue) {
+                                return d.words_added_s_f >= data.x0;
+                            }
+                            else {
+                                return d.words_added_s_f >= data.x0 && d.words_added_s_f <= data.x1;
+                            }
                         })
                         .attr("r", 7)
-                        .style("fill", "red");
+                        .style("fill", "#666967");
                     div.transition()
                         .duration(200)
                         .style("opacity", 1);
@@ -603,18 +608,18 @@ $(function () {
                     g.selectAll("circle")
                         .data(data)
                         .attr("r", 4)
-                        .style("fill", "steelblue");
+                        .style("fill", "green");
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
                 });
 
-            var medianValueSingle = median_single["jaccard_s_f"];
-            var medianValueAll = median_all["jaccard_s_f"];
+            var medianValueSingle = median_single["words_added_s_f"];
+            var medianValueAll = median_all["words_added_s_f"];
 
             //Draw Median Line single
             g.append("line")
-                .attr("class", "medianLineSingle")
+                .attr("class", "medianLineSingleWordsAdded")
                 .attr("x1", 0)
                 .attr("y1", y(medianValueSingle))
                 .attr("x2", width)
@@ -648,7 +653,7 @@ $(function () {
                 .attr("y", 0 - margin.left - 3)
                 .attr("x", 0 - (height / 2))
                 .attr("dy", "1em")
-                .text("Similarity");
+                .text("Words");
 
             g.append("text")
                 .attr("class", "axisAnnotation")
@@ -669,7 +674,7 @@ $(function () {
                 .attr("class", "legend");
 
             legend.append("line")
-                .attr("class", "medianLineSingle")
+                .attr("class", "medianLineSingleWordsAdded")
                 .attr("x1", width / 2)
                 .attr("x2", width / 2 + 20)
                 .attr("y1", 5)
@@ -704,14 +709,14 @@ $(function () {
             radius = 150;
 
         var pieSegments = [
-            {name: 'medianValue', value: 0.0, color: 'steelblue'},
-            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+            {name: 'medianValue', value: 0, color: 'green'},
+            {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
         var medianValueSingle = median_single["words_added_s_f"];
 
         pieSegments[0].value = medianValueSingle;
-        pieSegments[1].value = 1.0 - medianValueSingle;
+        pieSegments[1].value = 50 - medianValueSingle;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -737,7 +742,7 @@ $(function () {
             });
 
         g.append("text")
-            .attr("class", "doughnutFontSingle")
+            .attr("class", "doughnutFontSingleWordsAdded")
             .attr("text-anchor", "middle")
             .attr('y', 20)
             .text(Math.round(medianValueSingle));
@@ -758,13 +763,13 @@ $(function () {
             radius = 150;
 
         var pieSegments = [
-            {name: 'medianValue', value: 0.0, color: 'red'},
-            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+            {name: 'medianValue', value: 0, color: '#e4d653'},
+            {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
         var medianValueAll = median_all["words_added_s_f"];
         pieSegments[0].value = medianValueAll;
-        pieSegments[1].value = 1.0 - medianValueAll;
+        pieSegments[1].value = 50 - medianValueAll;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -801,26 +806,362 @@ $(function () {
                 "translate(" + (width / 10 - margin.right) + " ," +
                 (height / 3 + margin.bottom) + ")")
             .text("overall Median");
-
     }
 
-    /*function median(values) {
+    function drawWordsDeletedGraph() {
+        var svg = d3.select("#WordsDeletedGraph"),
+            margin = {top: 20, right: 20, bottom: 40, left: 45},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            gap = 170;
+        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (values.length === 0) {
-            return 0;
+        var formatTime = d3.timeFormat("%d.%m.%Y");
+        var maxIntervallValue = 250;
+
+        //Define Axes
+        var x = d3.scaleTime().range([gap + 20, width]),
+            y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervallValue]),
+            yx = d3.scaleLinear().range([0, gap]);
+
+        //Define Gridlines
+        function make_yAxis_gridlines() {
+            return d3.axisLeft(y)
+                .ticks(4)
         }
 
-        values.sort(function (a, b) {
-            return a - b;
+        function make_xAxis_gridlines() {
+            return d3.axisBottom(yx)
+                .ticks(3)
+        }
+
+        //Draw Gridlines
+        g.append("g")
+            .attr("class", "grid")
+            .call(make_yAxis_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            );
+
+        //Define Histogramm
+        var gLeft = g.append("g");
+
+        // Define the div for the tooltip
+        var div = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        //Get Data
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            data.forEach(function (data) {
+                data.words_deleted_s_f = +data.words_deleted_s_f;
+                data.unters_beginn = new Date(data.unters_beginn);
+            });
+
+            x.domain(d3.extent(data, function (d) {
+                return d.unters_beginn;
+            }));
+
+            //Draw Circles
+            g.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("class", "circleWordsDeleted")
+                .attr("cx", function (d) {
+                    return x(d.unters_beginn);
+                })
+                .attr("cy", function (d) {
+                    return y(d.words_deleted_s_f);
+                })
+                .attr("r", 4)
+                .on("mouseover", function (d) {
+                    d3.select(this)
+                        .attr("r", 7)
+                        .style("fill", "lightslategray");
+
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(d.untart_name + "<br/>" + "Date: " +
+                        formatTime(d.unters_beginn) + "<br/>" +
+                        "Words deleted: " + d.words_deleted_s_f)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 40) + "px");
+                })
+                .on("mouseout", function (d) {
+                    d3.select(this)
+                        .attr("r", 4)
+                        .style("fill", "red");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .on("click", function (d) {
+                    console.log("on Diff-Viewer Page: " + d.befund_schluessel);
+                    window.location = 'diff/' + d.befund_schluessel;
+                });
+
+            //Histogram
+            var yBins = d3.histogram()
+                .domain(y.domain())
+                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
+                .value(function (d) {
+                    return d.words_deleted_s_f;
+                })(data);
+
+            yx.domain([0, d3.max(yBins, function (d) {
+                return d.length;
+            })]);
+
+            g.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(make_xAxis_gridlines()
+                    .tickSize(-height)
+                    .tickFormat("")
+                );
+
+            var yBar = gLeft.selectAll(".bar")
+                .data(yBins)
+                .enter()
+                .append("g")
+                .attr("class", "barWordsDeleted")
+                .attr("transform", function (d) {
+                    return "translate(" + 0 + "," + y(d.x1) + ")";
+                });
+
+            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
+
+            yBar.append("rect")
+                .attr("y", 1)
+                .attr("class", "barWordsDeleted")
+                .attr("width", function (d) {
+                    return yx(d.length);
+                })
+                .attr("height", bWidth)
+                .on("mouseover", function (data) {
+                    g.selectAll("circle")
+                        .filter(function (d) {
+                            if (data.x1 === maxIntervallValue) {
+                                return d.words_deleted_s_f >= data.x0;
+                            }
+                            else {
+                                return d.words_deleted_s_f >= data.x0 && d.words_deleted_s_f <= data.x1;
+                            }
+                        })
+                        .attr("r", 7)
+                        .style("fill", "#666967");
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(data.length)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY) + "px");
+                })
+                .on("mouseout", function () {
+                    g.selectAll("circle")
+                        .data(data)
+                        .attr("r", 4)
+                        .style("fill", "red");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+
+            var medianValueSingle = median_single["words_deleted_s_f"];
+            var medianValueAll = median_all["words_deleted_s_f"];
+
+            //Draw Median Line single
+            g.append("line")
+                .attr("class", "medianLineSingleWordsDeleted")
+                .attr("x1", 0)
+                .attr("y1", y(medianValueSingle))
+                .attr("x2", width)
+                .attr("y2", y(medianValueSingle));
+
+            //Draw Median Line overall
+            g.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", 0)
+                .attr("y1", y(medianValueAll))
+                .attr("x2", width)
+                .attr("y2", y(medianValueAll));
+
+            //Draw Axes
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            g.append("g")
+                .call(d3.axisLeft(y)
+                    .ticks(6));
+
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(yx)
+                    .ticks(3));
+            //add Annotation of Axes
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left - 3)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .text("Words");
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 12) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("#Reports");
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 1.7) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("Date");
+
+            //add legend
+            var legend = svg.append("g")
+                .attr("class", "legend");
+
+            legend.append("line")
+                .attr("class", "medianLineSingleWordsDeleted")
+                .attr("x1", width / 2)
+                .attr("x2", width / 2 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+            legend.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", width / 1.6)
+                .attr("x2", width / 1.6 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+            legend.append("text")
+                .attr("x", width / 2 + 100)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("personal Median");
+
+            legend.append("text")
+                .attr("x", width / 1.6 + 95)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("overall Median")
         });
+    }
 
-        var half = Math.floor(values.length / 2);
+    function drawDoughnutWordsDeletedSingle() {
+        var svg = d3.select("#WordsDeletedDoughnutSingle"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
 
-        if (values.length % 2) {
-            return values[half];
-        }
-        else {
-            return (values[half - 1] + values[half]) / 2.0;
-        }
-    }*/
+        var pieSegments = [
+            {name: 'medianValue', value: 0, color: 'red'},
+            {name: 'maxValue', value: 0, color: 'lightgrey'},
+        ];
+
+        var medianValueSingle = median_single["words_deleted_s_f"];
+
+        pieSegments[0].value = medianValueSingle;
+        pieSegments[1].value = 50 - medianValueSingle;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
+
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
+
+        g.append("text")
+            .attr("class", "doughnutFontSingleWordsDeleted")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(Math.round(medianValueSingle));
+
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("personal Median");
+    }
+
+    function drawDoughnutWordsDeletedAll() {
+        var svg = d3.select("#WordsDeletedDoughnutAll"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
+
+        var pieSegments = [
+            {name: 'medianValue', value: 0, color: '#e4d653'},
+            {name: 'maxValue', value: 0, color: 'lightgrey'},
+        ];
+
+        var medianValueAll = median_all["words_deleted_s_f"];
+        pieSegments[0].value = medianValueAll;
+        pieSegments[1].value = 50 - medianValueAll;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
+
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
+
+        g.append("text")
+            .attr("class", "doughnutFontAll")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(Math.round(medianValueAll));
+
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("overall Median");
+    }
 });
