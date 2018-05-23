@@ -11,7 +11,7 @@ from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer, query_by_writer_and_date, query_calculations
-from review.calculations import relative, calculate_median
+from review.calculations import relative, prepare_values
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -107,15 +107,13 @@ def dashboard():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_data(writer, last_exams, start_date, end_date)
-    similarity_s_f_single = [x['jaccard_s_f'] for x in rows]
-    median_s_f_single = calculate_median(similarity_s_f_single)
-    calculations = load_all_data()
-    similarity_s_f_all = [x['jaccard_s_f'] for x in calculations]
-    median_s_f_all = calculate_median(similarity_s_f_all)
+    all_rows = load_all_data()
+    median_single = prepare_values(rows)
+    median_all = prepare_values(all_rows)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
         start_date=start_date, end_date=end_date, version=version,
-        median_s_f_single=median_s_f_single, median_s_f_all=median_s_f_all)
+        median_single=median_single, median_all=median_all)
 
 
 @app.route('/review/dashboard/data')
@@ -144,10 +142,12 @@ def load_data(writer, last_exams, start_date, end_date):
         rows = query_by_writer(cursor, writer, last_exams)
     return rows
 
+
 def load_all_data():
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     return query_calculations(cursor)
+
 
 @app.route('/cm')
 def cm():

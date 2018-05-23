@@ -255,21 +255,24 @@ $(function () {
                         .style("opacity", 0);
                 });
 
+            var medianValueSingle = median_single["jaccard_s_f"];
+            var medianValueAll = median_all["jaccard_s_f"];
+
             //Draw Median Line single
             g.append("line")
                 .attr("class", "medianLineSingle")
                 .attr("x1", 0)
-                .attr("y1", y(median_s_f_single))
+                .attr("y1", y(medianValueSingle))
                 .attr("x2", width)
-                .attr("y2", y(median_s_f_single));
+                .attr("y2", y(medianValueSingle));
 
             //Draw Median Line overall
             g.append("line")
                 .attr("class", "medianLineAll")
                 .attr("x1", 0)
-                .attr("y1", y(median_s_f_all))
+                .attr("y1", y(medianValueAll))
                 .attr("x2", width)
-                .attr("y2", y(median_s_f_all));
+                .attr("y2", y(medianValueAll));
 
             //Draw Axes
             g.append("g")
@@ -351,9 +354,10 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        var medianValue = median_s_f_single;
-        pieSegments[0].value = medianValue;
-        pieSegments[1].value = 1.0 - medianValue;
+        var medianValueSingle = median_single["jaccard_s_f"];
+
+        pieSegments[0].value = medianValueSingle;
+        pieSegments[1].value = 1.0 - medianValueSingle;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -382,7 +386,7 @@ $(function () {
             .attr("class", "doughnutFontSingle")
             .attr("text-anchor", "middle")
             .attr('y', 20)
-            .text(medianValue.toPrecision(2));
+            .text(medianValueSingle.toPrecision(2));
 
         g.append("text")
             .attr("class", "axisAnnotation")
@@ -404,10 +408,10 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
+        var medianValueAll = median_all["jaccard_s_f"];
 
-        var medianValue = median_s_f_all;
-        pieSegments[0].value = medianValue;
-        pieSegments[1].value = 1.0 - medianValue;
+        pieSegments[0].value = medianValueAll;
+        pieSegments[1].value = 1.0 - medianValueAll;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -436,7 +440,7 @@ $(function () {
             .attr("class", "doughnutFontAll")
             .attr("text-anchor", "middle")
             .attr('y', 20)
-            .text(medianValue.toPrecision(2));
+            .text(medianValueAll.toPrecision(2));
 
         g.append("text")
             .attr("class", "axisAnnotation")
@@ -605,21 +609,24 @@ $(function () {
                         .style("opacity", 0);
                 });
 
+            var medianValueSingle = median_single["jaccard_s_f"];
+            var medianValueAll = median_all["jaccard_s_f"];
+
             //Draw Median Line single
             g.append("line")
                 .attr("class", "medianLineSingle")
                 .attr("x1", 0)
-                .attr("y1", y(median_s_f_single))
+                .attr("y1", y(medianValueSingle))
                 .attr("x2", width)
-                .attr("y2", y(median_s_f_single));
+                .attr("y2", y(medianValueSingle));
 
             //Draw Median Line overall
             g.append("line")
                 .attr("class", "medianLineAll")
                 .attr("x1", 0)
-                .attr("y1", y(median_s_f_all))
+                .attr("y1", y(medianValueAll))
                 .attr("x2", width)
-                .attr("y2", y(median_s_f_all));
+                .attr("y2", y(medianValueAll));
 
             //Draw Axes
             g.append("g")
@@ -701,9 +708,10 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        var medianValue = median_s_f_single;
-        pieSegments[0].value = medianValue;
-        pieSegments[1].value = 1.0 - medianValue;
+        var medianValueSingle = median_single["words_added_s_f"];
+
+        pieSegments[0].value = medianValueSingle;
+        pieSegments[1].value = 1.0 - medianValueSingle;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -732,7 +740,7 @@ $(function () {
             .attr("class", "doughnutFontSingle")
             .attr("text-anchor", "middle")
             .attr('y', 20)
-            .text(medianValue.toPrecision(2));
+            .text(Math.round(medianValueSingle));
 
         g.append("text")
             .attr("class", "axisAnnotation")
@@ -754,9 +762,9 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        var medianValue = median_s_f_all;
-        pieSegments[0].value = medianValue;
-        pieSegments[1].value = 1.0 - medianValue;
+        var medianValueAll = median_all["words_added_s_f"];
+        pieSegments[0].value = medianValueAll;
+        pieSegments[1].value = 1.0 - medianValueAll;
 
         var arc = d3.arc()
             .outerRadius(radius - 10)
@@ -785,7 +793,7 @@ $(function () {
             .attr("class", "doughnutFontAll")
             .attr("text-anchor", "middle")
             .attr('y', 20)
-            .text(medianValue.toPrecision(2));
+            .text(Math.round(medianValueAll));
 
         g.append("text")
             .attr("class", "axisAnnotation")
