@@ -316,7 +316,7 @@ $(function () {
                 .attr("y1", 5)
                 .attr("y2", 5);
 
-              legend.append("line")
+            legend.append("line")
                 .attr("class", "medianLineAll")
                 .attr("x1", width / 1.6)
                 .attr("x2", width / 1.6 + 20)
@@ -338,6 +338,12 @@ $(function () {
     }
 
     function draw_MedianDoughnutSingle() {
+        var svg = d3.select("#MedianDoughnutSingle"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
+
         var pieSegments = [
             {name: 'medianValue', value: 0.0, color: 'steelblue'},
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
@@ -353,10 +359,6 @@ $(function () {
             pieSegments[0].value = medianValue;
             pieSegments[1].value = 1.0 - medianValue;
 
-            var width = 480,
-                height = 480,
-                radius = 150;
-
             var arc = d3.arc()
                 .outerRadius(radius - 10)
                 .innerRadius(100);
@@ -367,16 +369,12 @@ $(function () {
                     return d.value;
                 });
 
-            var svg = d3.select("#MedianDoughnutSingle")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(300,200)");
-
             var g = svg.selectAll(".arc")
                 .data(pie(pieSegments))
                 .enter()
-                .append("g");
+                .append("g")
+                .attr("transform", "translate(" + width / 2 +
+                    "," + height / 2 + ")");
 
             g.append("path")
                 .attr("d", arc)
@@ -389,10 +387,23 @@ $(function () {
                 .attr("text-anchor", "middle")
                 .attr('y', 20)
                 .text(medianValue.toPrecision(2));
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 10 - margin.right) + " ," +
+                    (height / 3 + margin.bottom) + ")")
+                .text("personal Median");
         });
     }
 
     function draw_MedianDoughnutAll() {
+        var svg = d3.select("#MedianDoughnutAll"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
+
         var pieSegments = [
             {name: 'medianValue', value: 0.0, color: 'red'},
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
@@ -408,10 +419,6 @@ $(function () {
             pieSegments[0].value = medianValue;
             pieSegments[1].value = 1.0 - medianValue;
 
-            var width = 480,
-                height = 480,
-                radius = 150;
-
             var arc = d3.arc()
                 .outerRadius(radius - 10)
                 .innerRadius(100);
@@ -422,16 +429,12 @@ $(function () {
                     return d.value;
                 });
 
-            var svg = d3.select("#MedianDoughnutAll")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(200,200)");
-
             var g = svg.selectAll(".arc")
                 .data(pie(pieSegments))
                 .enter()
-                .append("g");
+                .append("g")
+                .attr("transform", "translate(" + width / 2 +
+                    "," + height / 2 + ")");
 
             g.append("path")
                 .attr("d", arc)
@@ -445,6 +448,12 @@ $(function () {
                 .attr('y', 20)
                 .text(medianValue.toPrecision(2));
 
+             g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 10 - margin.right) + " ," +
+                    (height / 3 + margin.bottom) + ")")
+                .text("overall Median");
         });
     }
 
