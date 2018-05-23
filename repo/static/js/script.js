@@ -75,9 +75,12 @@ $(function () {
 
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
-        draw_SimilarityGraph();
-        draw_MedianDoughnutSingle();
-        draw_MedianDoughnutAll();
+        drawSimilarityGraph();
+        drawSimilarityDoughnutSingle();
+        drawSimilarityDoughnutAll();
+        /*drawWordsAddedGraph();*/
+        drawDoughnutWordsAddedSingle();
+        drawDoughnutWordsAddedAll();
     }
 
     function data_url() {
@@ -94,7 +97,7 @@ $(function () {
         return 'dashboard/data?' + $.param(param)
     }
 
-    function draw_SimilarityGraph() {
+    function drawSimilarityGraph() {
         var svg = d3.select("#SimilarityGraph"),
             margin = {top: 20, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
@@ -207,7 +210,6 @@ $(function () {
                 .attr("class", "grid")
                 .attr("transform", "translate(0," + height + ")")
                 .call(make_xAxis_gridlines()
-                    .tickSize(-height)
                     .tickFormat("")
                 );
 
@@ -337,8 +339,8 @@ $(function () {
         });
     }
 
-    function draw_MedianDoughnutSingle() {
-        var svg = d3.select("#MedianDoughnutSingle"),
+    function drawSimilarityDoughnutSingle() {
+        var svg = d3.select("#SimilarityDoughnutSingle"),
             margin = {top: 20, right: 55, bottom: 50, left: 45},
             width = +svg.attr("width"),
             height = +svg.attr("height"),
@@ -349,56 +351,49 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        d3.csv(data_url(), function (error, data) {
-            if (error) throw error;
-            var similarityList = data.map(function (d) {
-                return parseFloat(d.jaccard_s_f);
+        var medianValue = median_s_f_single;
+        pieSegments[0].value = medianValue;
+        pieSegments[1].value = 1.0 - medianValue;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
             });
 
-            var medianValue = median_s_f_single;
-            pieSegments[0].value = medianValue;
-            pieSegments[1].value = 1.0 - medianValue;
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
 
-            var arc = d3.arc()
-                .outerRadius(radius - 10)
-                .innerRadius(100);
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
 
-            var pie = d3.pie()
-                .sort(null)
-                .value(function (d) {
-                    return d.value;
-                });
+        g.append("text")
+            .attr("class", "doughnutFontSingle")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(medianValue.toPrecision(2));
 
-            var g = svg.selectAll(".arc")
-                .data(pie(pieSegments))
-                .enter()
-                .append("g")
-                .attr("transform", "translate(" + width / 2 +
-                    "," + height / 2 + ")");
-
-            g.append("path")
-                .attr("d", arc)
-                .style("fill", function (d) {
-                    return d.data.color;
-                });
-
-            g.append("text")
-                .attr("class", "doughnutFontSingle")
-                .attr("text-anchor", "middle")
-                .attr('y', 20)
-                .text(medianValue.toPrecision(2));
-
-            g.append("text")
-                .attr("class", "axisAnnotation")
-                .attr("transform",
-                    "translate(" + (width / 10 - margin.right) + " ," +
-                    (height / 3 + margin.bottom) + ")")
-                .text("personal Median");
-        });
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("personal Median");
     }
 
-    function draw_MedianDoughnutAll() {
-        var svg = d3.select("#MedianDoughnutAll"),
+    function drawSimilarityDoughnutAll() {
+        var svg = d3.select("#SimilarityDoughnutAll"),
             margin = {top: 20, right: 55, bottom: 50, left: 45},
             width = +svg.attr("width"),
             height = +svg.attr("height"),
@@ -409,52 +404,396 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        d3.csv(data_url(), function (error, data) {
-            if (error) throw error;
-            var similarityList = data.map(function (d) {
-                return parseFloat(d.jaccard_s_f);
+
+        var medianValue = median_s_f_all;
+        pieSegments[0].value = medianValue;
+        pieSegments[1].value = 1.0 - medianValue;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
             });
 
-            var medianValue = median_s_f_all;
-            pieSegments[0].value = medianValue;
-            pieSegments[1].value = 1.0 - medianValue;
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
 
-            var arc = d3.arc()
-                .outerRadius(radius - 10)
-                .innerRadius(100);
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
 
-            var pie = d3.pie()
-                .sort(null)
-                .value(function (d) {
-                    return d.value;
+        g.append("text")
+            .attr("class", "doughnutFontAll")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(medianValue.toPrecision(2));
+
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("overall Median");
+    }
+
+    function drawWordsAddedGraph() {
+        var svg = d3.select("#WordsAddedGraph"),
+            margin = {top: 20, right: 20, bottom: 40, left: 45},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            gap = 170;
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var formatTime = d3.timeFormat("%d.%m.%Y");
+
+        //Define Axes
+        var x = d3.scaleTime().range([gap + 20, width]),
+            y = d3.scaleLinear().range([height, 0]).domain([0, 50]),
+            yx = d3.scaleLinear().range([0, gap]);
+
+        //Define Gridlines
+        function make_yAxis_gridlines() {
+            return d3.axisLeft(y)
+                .ticks(4)
+        }
+
+        function make_xAxis_gridlines() {
+            return d3.axisBottom(yx)
+                .ticks(3)
+        }
+
+        //Draw Gridlines
+        g.append("g")
+            .attr("class", "grid")
+            .call(make_yAxis_gridlines()
+                .tickSize(-width)
+                .tickFormat("")
+            );
+
+        //Define Histogramm
+        var gLeft = svg.append("g")
+            .attr("transform",
+                "translate(" + (margin.left) + "," + margin.top + ")");
+
+        // Define the div for the tooltip
+        var div = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        //Get Data
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            data.forEach(function (data) {
+                data.words_added_s_f = +data.words_added_s_f;
+                data.unters_beginn = new Date(data.unters_beginn);
+            });
+
+            x.domain(d3.extent(data, function (d) {
+                return d.unters_beginn;
+            }));
+
+            //Draw Circles
+            g.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("class", "circle")
+                .attr("cx", function (d) {
+                    return x(d.unters_beginn);
+                })
+                .attr("cy", function (d) {
+                    return y(d.words_added_s_f);
+                })
+                .attr("r", 4)
+                .on("mouseover", function (d) {
+                    d3.select(this)
+                        .attr("r", 7)
+                        .style("fill", "red");
+
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(d.untart_name + "<br/>" + "Date: " +
+                        formatTime(d.unters_beginn) + "<br/>" +
+                        "Words added: " + d.words_added_s_f)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 40) + "px");
+                })
+                .on("mouseout", function (d) {
+                    d3.select(this)
+                        .attr("r", 4)
+                        .style("fill", "steelblue");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .on("click", function (d) {
+                    console.log("on Diff-Viewer Page: " + d.befund_schluessel);
+                    window.location = 'diff/' + d.befund_schluessel;
                 });
 
-            var g = svg.selectAll(".arc")
-                .data(pie(pieSegments))
+            //Histogram
+            var yBins = d3.histogram()
+                .domain(y.domain())
+                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
+                .value(function (d) {
+                    return d.words_added_s_f;
+                })(data);
+
+            yx.domain([0, d3.max(yBins, function (d) {
+                return d.length;
+            })]);
+
+            g.append("g")
+                .attr("class", "grid")
+                .attr("transform", "translate(0," + height + ")")
+                .call(make_xAxis_gridlines()
+                    .tickSize(-height)
+                    .tickFormat("")
+                );
+
+            var yBar = gLeft.selectAll(".bar")
+                .data(yBins)
                 .enter()
                 .append("g")
-                .attr("transform", "translate(" + width / 2 +
-                    "," + height / 2 + ")");
-
-            g.append("path")
-                .attr("d", arc)
-                .style("fill", function (d) {
-                    return d.data.color;
+                .attr("class", "bar")
+                .attr("transform", function (d) {
+                    return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
 
-            g.append("text")
-                .attr("class", "doughnutFontAll")
-                .attr("text-anchor", "middle")
-                .attr('y', 20)
-                .text(medianValue.toPrecision(2));
+            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
-             g.append("text")
+            yBar.append("rect")
+                .attr("y", 1)
+                .attr("class", "bar")
+                .attr("width", function (d) {
+                    return yx(d.length);
+                })
+                .attr("height", bWidth)
+                .on("mouseover", function (data) {
+                    g.selectAll("circle")
+                        .filter(function (d) {
+                            return d.words_added_s_f >= data.x0 && d.words_added_s_f <= data.x1;
+                        })
+                        .attr("r", 7)
+                        .style("fill", "red");
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 1);
+                    div.html(data.length)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY) + "px");
+                })
+                .on("mouseout", function () {
+                    g.selectAll("circle")
+                        .data(data)
+                        .attr("r", 4)
+                        .style("fill", "steelblue");
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+
+            //Draw Median Line single
+            g.append("line")
+                .attr("class", "medianLineSingle")
+                .attr("x1", 0)
+                .attr("y1", y(median_s_f_single))
+                .attr("x2", width)
+                .attr("y2", y(median_s_f_single));
+
+            //Draw Median Line overall
+            g.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", 0)
+                .attr("y1", y(median_s_f_all))
+                .attr("x2", width)
+                .attr("y2", y(median_s_f_all));
+
+            //Draw Axes
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            g.append("g")
+                .call(d3.axisLeft(y)
+                    .ticks(6));
+
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(yx)
+                    .ticks(3));
+            //add Annotation of Axes
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left - 3)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .text("Similarity");
+
+            g.append("text")
                 .attr("class", "axisAnnotation")
                 .attr("transform",
-                    "translate(" + (width / 10 - margin.right) + " ," +
-                    (height / 3 + margin.bottom) + ")")
-                .text("overall Median");
+                    "translate(" + (width / 12) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("#Reports");
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 1.7) + " ," +
+                    (height + margin.top + 12) + ")")
+                .text("Date");
+
+            //add legend
+            var legend = svg.append("g")
+                .attr("class", "legend");
+
+            legend.append("line")
+                .attr("class", "medianLineSingle")
+                .attr("x1", width / 2)
+                .attr("x2", width / 2 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+            legend.append("line")
+                .attr("class", "medianLineAll")
+                .attr("x1", width / 1.6)
+                .attr("x2", width / 1.6 + 20)
+                .attr("y1", 5)
+                .attr("y2", 5);
+
+            legend.append("text")
+                .attr("x", width / 2 + 100)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("personal Median");
+
+            legend.append("text")
+                .attr("x", width / 1.6 + 95)
+                .attr("y", 5)
+                .attr("dy", "0.32em")
+                .text("overall Median")
         });
+    }
+
+    function drawDoughnutWordsAddedSingle() {
+        var svg = d3.select("#WordsAddedDoughnutSingle"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
+
+        var pieSegments = [
+            {name: 'medianValue', value: 0.0, color: 'steelblue'},
+            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+        ];
+
+        var medianValue = median_s_f_single;
+        pieSegments[0].value = medianValue;
+        pieSegments[1].value = 1.0 - medianValue;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
+
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
+
+        g.append("text")
+            .attr("class", "doughnutFontSingle")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(medianValue.toPrecision(2));
+
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("personal Median");
+    }
+
+    function drawDoughnutWordsAddedAll() {
+        var svg = d3.select("#WordsAddedDoughnutAll"),
+            margin = {top: 20, right: 55, bottom: 50, left: 45},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = 150;
+
+        var pieSegments = [
+            {name: 'medianValue', value: 0.0, color: 'red'},
+            {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+        ];
+
+        var medianValue = median_s_f_all;
+        pieSegments[0].value = medianValue;
+        pieSegments[1].value = 1.0 - medianValue;
+
+        var arc = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(100);
+
+        var pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var g = svg.selectAll(".arc")
+            .data(pie(pieSegments))
+            .enter()
+            .append("g")
+            .attr("transform", "translate(" + width / 2 +
+                "," + height / 2 + ")");
+
+        g.append("path")
+            .attr("d", arc)
+            .style("fill", function (d) {
+                return d.data.color;
+            });
+
+        g.append("text")
+            .attr("class", "doughnutFontAll")
+            .attr("text-anchor", "middle")
+            .attr('y', 20)
+            .text(medianValue.toPrecision(2));
+
+        g.append("text")
+            .attr("class", "axisAnnotation")
+            .attr("transform",
+                "translate(" + (width / 10 - margin.right) + " ," +
+                (height / 3 + margin.bottom) + ")")
+            .text("overall Median");
+
     }
 
     /*function median(values) {
