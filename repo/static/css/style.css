@@ -80,7 +80,7 @@ div.tooltip {
 
 .doughnutFontAll {
     font: 50px sans-serif;
-    fill: #e4d653;
+    fill: #610A23;
 }
 
 .medianLineSingle {
@@ -103,7 +103,7 @@ div.tooltip {
 
 .medianLineAll {
     stroke-width: 1px;
-    stroke: #e4d653;
+    stroke: #610a23;
     stroke-dasharray: 5, 5;
 }
 
