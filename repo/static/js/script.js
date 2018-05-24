@@ -106,11 +106,13 @@ $(function () {
 
     function drawSimilarityGraph(data) {
         var svg = d3.select("#SimilarityGraph"),
-            margin = {top: 20, right: 20, bottom: 40, left: 45},
+            margin = {top: 30, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
-            gap = 170;
-        var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            gap = 170,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        drawButtons(svg, width);
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
 
@@ -1174,5 +1176,81 @@ $(function () {
                 "translate(" + (width / 10 - margin.right) + " ," +
                 (height / 3 + margin.bottom) + ")")
             .text("overall Median");
+    }
+
+    function drawButtons(svg, width) {
+        var allButtons = svg.append("g")
+            .attr("id", "allButtons");
+
+        var labels = ['s', 'g'];
+
+        var defaultColor = "lightgrey";
+        var hoverColor = "#0000ff";
+        var pressedColor = "#000077";
+
+        function updateButtonColors(button, parent) {
+            parent.selectAll("rect")
+                .attr("fill", defaultColor);
+
+            button.select("rect")
+                .attr("fill", pressedColor);
+        }
+
+        var buttonGroups = allButtons.selectAll("g.button")
+            .data(labels)
+            .enter()
+            .append("g")
+            .attr("class", "button")
+            .style("cursor", "pointer")
+            .on("click", function (d) {
+                updateButtonColors(d3.select(this), d3.select(this.parentNode))
+                
+            })
+            .on("mouseover", function () {
+                if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+                    d3.select(this)
+                        .select("rect")
+                        .attr("fill", hoverColor);
+                }
+            })
+            .on("mouseout", function () {
+                if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+                    d3.select(this)
+                        .select("rect")
+                        .attr("fill", defaultColor);
+                }
+            });
+
+        var bWidth = 30;
+        var bHeight = 20;
+        var bSpace = 5;
+        var x0 = width - 20;
+        var y0 = 0;
+
+        buttonGroups.append("rect")
+            .attr("class", "buttonRect")
+            .attr("width", bWidth)
+            .attr("height", bHeight)
+            .attr("x", function (d, i) {
+                return x0 + (bWidth + bSpace) * i;
+            })
+            .attr("y", y0)
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("fill", "lightgrey");
+
+        buttonGroups.append("text")
+            .attr("class", "buttonText")
+            .attr("font-family", "FontAwesome")
+            .attr("x", function (d, i) {
+                return x0 + (bWidth + bSpace) * i + bWidth / 2;
+            })
+            .attr("y", y0 + bHeight / 2)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "central")
+            .attr("fill", "white")
+            .text(function (d) {
+                return d;
+            });
     }
 });
