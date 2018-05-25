@@ -461,7 +461,7 @@ $(function () {
 
     function drawWordsAddedGraph(data) {
         var svg = d3.select("#WordsAddedGraph"),
-            margin = {top: 20, right: 20, bottom: 40, left: 45},
+            margin = {top: 30, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170;
@@ -469,6 +469,8 @@ $(function () {
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
         var maxIntervalValue = 250;
+
+        drawButtons(data, svg, width);
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
@@ -506,7 +508,7 @@ $(function () {
         //Get Data
 
         data.forEach(function (data) {
-            data.words_added_s_f = +data.words_added_s_f;
+            data[words_added] = +data[words_added];
             data.unters_beginn = new Date(data.unters_beginn);
         });
 
@@ -524,11 +526,11 @@ $(function () {
                 return x(d.unters_beginn);
             })
             .attr("cy", function (d) {
-                if (d.words_added_s_f > maxIntervalValue) {
+                if (d[words_added] > maxIntervalValue) {
                     return y(maxIntervalValue)
                 }
                 else {
-                    return y(d.words_added_s_f);
+                    return y(d[words_added]);
                 }
             })
             .attr("r", 4)
@@ -542,7 +544,7 @@ $(function () {
                     .style("opacity", 1);
                 div.html(d.untart_name + "<br/>" + "Date: " +
                     formatTime(d.unters_beginn) + "<br/>" +
-                    "Words added: " + d.words_added_s_f)
+                    "Words added: " + d[words_added])
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 40) + "px");
             })
@@ -564,7 +566,7 @@ $(function () {
             .domain(y.domain())
             .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
             .value(function (d) {
-                return d.words_added_s_f;
+                return d[words_added];
             })(data);
 
         yx.domain([0, d3.max(yBins, function (d) {
@@ -601,10 +603,10 @@ $(function () {
                 g.selectAll("circle")
                     .filter(function (d) {
                         if (data.x1 === maxIntervalValue) {
-                            return d.words_added_s_f >= data.x0;
+                            return d[words_added] >= data.x0;
                         }
                         else {
-                            return d.words_added_s_f >= data.x0 && d.words_added_s_f <= data.x1;
+                            return d[words_added] >= data.x0 && d[words_added] <= data.x1;
                         }
                     })
                     .attr("r", 7)
@@ -626,8 +628,8 @@ $(function () {
                     .style("opacity", 0);
             });
 
-        var medianValueSingle = median_single["words_added_s_f"];
-        var medianValueAll = median_all["words_added_s_f"];
+        var medianValueSingle = median_single[words_added];
+        var medianValueAll = median_all[words_added];
 
         //Draw Median Line single
         g.append("line")
@@ -725,7 +727,7 @@ $(function () {
             {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
-        var medianValueSingle = median_single["words_added_s_f"];
+        var medianValueSingle = median_single[words_added];
 
         pieSegments[0].value = medianValueSingle;
         pieSegments[1].value = 50 - medianValueSingle;
@@ -779,7 +781,7 @@ $(function () {
             {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
-        var medianValueAll = median_all["words_added_s_f"];
+        var medianValueAll = median_all[words_added];
         pieSegments[0].value = medianValueAll;
         pieSegments[1].value = 50 - medianValueAll;
 
@@ -822,7 +824,7 @@ $(function () {
 
     function drawWordsDeletedGraph(data) {
         var svg = d3.select("#WordsDeletedGraph"),
-            margin = {top: 20, right: 20, bottom: 40, left: 45},
+            margin = {top: 30, right: 20, bottom: 40, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170;
@@ -830,6 +832,8 @@ $(function () {
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
         var maxIntervalValue = 250;
+
+        drawButtons(data, svg, width);
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
@@ -866,7 +870,7 @@ $(function () {
 
         //Get Data
         data.forEach(function (data) {
-            data.words_deleted_s_f = +data.words_deleted_s_f;
+            data[words_deleted] = +data[words_deleted];
             data.unters_beginn = new Date(data.unters_beginn);
         });
 
@@ -884,11 +888,11 @@ $(function () {
                 return x(d.unters_beginn);
             })
             .attr("cy", function (d) {
-                if (d.words_deleted_s_f > maxIntervalValue) {
+                if (d[words_deleted] > maxIntervalValue) {
                     return y(maxIntervalValue)
                 }
                 else {
-                    return y(d.words_deleted_s_f);
+                    return y(d[words_deleted]);
                 }
             })
             .attr("r", 4)
@@ -902,7 +906,7 @@ $(function () {
                     .style("opacity", 1);
                 div.html(d.untart_name + "<br/>" + "Date: " +
                     formatTime(d.unters_beginn) + "<br/>" +
-                    "Words deleted: " + d.words_deleted_s_f)
+                    "Words deleted: " + d[words_deleted])
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 40) + "px");
             })
@@ -924,7 +928,7 @@ $(function () {
             .domain(y.domain())
             .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
             .value(function (d) {
-                return d.words_deleted_s_f;
+                return d[words_deleted];
             })(data);
 
         yx.domain([0, d3.max(yBins, function (d) {
@@ -961,10 +965,10 @@ $(function () {
                 g.selectAll("circle")
                     .filter(function (d) {
                         if (data.x1 === maxIntervalValue) {
-                            return d.words_deleted_s_f >= data.x0;
+                            return d[words_deleted] >= data.x0;
                         }
                         else {
-                            return d.words_deleted_s_f >= data.x0 && d.words_deleted_s_f <= data.x1;
+                            return d[words_deleted] >= data.x0 && d[words_deleted] <= data.x1;
                         }
                     })
                     .attr("r", 7)
@@ -986,8 +990,8 @@ $(function () {
                     .style("opacity", 0);
             });
 
-        var medianValueSingle = median_single["words_deleted_s_f"];
-        var medianValueAll = median_all["words_deleted_s_f"];
+        var medianValueSingle = median_single[words_deleted];
+        var medianValueAll = median_all[words_deleted];
 
         //Draw Median Line single
         g.append("line")
@@ -1085,7 +1089,7 @@ $(function () {
             {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
-        var medianValueSingle = median_single["words_deleted_s_f"];
+        var medianValueSingle = median_single[words_deleted];
 
         pieSegments[0].value = medianValueSingle;
         pieSegments[1].value = 50 - medianValueSingle;
@@ -1139,7 +1143,7 @@ $(function () {
             {name: 'maxValue', value: 0, color: 'lightgrey'},
         ];
 
-        var medianValueAll = median_all["words_deleted_s_f"];
+        var medianValueAll = median_all[words_deleted];
         pieSegments[0].value = medianValueAll;
         pieSegments[1].value = 50 - medianValueAll;
 
@@ -1240,5 +1244,25 @@ $(function () {
 
         d3.select("#SimilarityDoughnutAll").selectAll("g").remove();
         drawSimilarityDoughnutAll();
+
+        d3.select("#WordsAddedGraph").selectAll("g").remove();
+        drawWordsAddedGraph(data);
+
+        d3.select("#WordsAddedDoughnutSingle").selectAll("g").remove();
+        drawDoughnutWordsAddedSingle();
+
+        d3.select("#WordsAddedDoughnutAll").selectAll("g").remove();
+        drawDoughnutWordsAddedAll();
+
+        d3.select("#WordsDeletedGraph").selectAll("g").remove();
+        drawWordsDeletedGraph();
+
+        d3.select("#WordsDeletedDoughnutSingle").selectAll("g").remove();
+        drawDoughnutWordsDeletedSingle();
+
+        d3.select("#WordsDeletedDoughnutAll").selectAll("g").remove();
+        drawDoughnutWordsDeletedAll();
+
+
     }
 });
