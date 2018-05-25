@@ -1207,8 +1207,6 @@ $(function () {
             .attr("y", y0 + bHeight / 2)
             .text("schreiben -> final");
 
-
-
         button.on("click", function (d) {
             jaccard = (jaccard.valueOf() === 'jaccard_s_f' ? 'jaccard_g_f' : 'jaccard_s_f');
             words_added = (words_added.valueOf() === 'words_added_s_f' ? 'words_added_g_f' : 'words_added_s_f');
