@@ -38,6 +38,22 @@ div.tooltip {
     font-weight: bold;
 }
 
+.button {
+    fill: lightgray;
+}
+
+.button:hover {
+    fill: darkgrey;
+}
+
+.buttonAnnotation {
+    text-anchor: middle;
+    font-size: 13px;
+    dominant-baseline: central;
+    fill: white;
+    font-weight: bold;
+}
+
 .grid line {
     stroke: lightgrey;
     stroke-opacity: 0.7;

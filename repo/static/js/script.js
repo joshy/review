@@ -1,4 +1,7 @@
 $(function () {
+    var jaccard = "jaccard_s_f",
+        words_added = "words_added_s_f",
+        words_deleted = "words_deleted_s_f";
 
     var picker = new Pikaday({
         field: document.getElementById('datepicker'),
@@ -79,15 +82,16 @@ $(function () {
             if (error) throw error;
 
             drawSimilarityGraph(data);
-            drawSimilarityDoughnutSingle();
-            drawSimilarityDoughnutAll();
             drawWordsAddedGraph(data);
-            drawDoughnutWordsAddedSingle();
-            drawDoughnutWordsAddedAll();
             drawWordsDeletedGraph(data);
-            drawDoughnutWordsDeletedSingle();
-            drawDoughnutWordsDeletedAll()
         });
+
+        drawSimilarityDoughnutSingle();
+        drawSimilarityDoughnutAll();
+        drawDoughnutWordsAddedSingle();
+        drawDoughnutWordsAddedAll();
+        drawDoughnutWordsDeletedSingle();
+        drawDoughnutWordsDeletedAll()
     }
 
     function data_url() {
@@ -112,9 +116,9 @@ $(function () {
             gap = 170,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        drawButtons(svg, width);
-
         var formatTime = d3.timeFormat("%d.%m.%Y");
+
+        drawButtons(data, svg, width);
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
@@ -150,9 +154,8 @@ $(function () {
             .style("opacity", 0);
 
         //Get Data
-
         data.forEach(function (data) {
-            data.jaccard_s_f = +data.jaccard_s_f;
+            data[jaccard] = +data[jaccard];
             data.unters_beginn = new Date(data.unters_beginn);
         });
 
@@ -170,7 +173,7 @@ $(function () {
                 return x(d.unters_beginn);
             })
             .attr("cy", function (d) {
-                return y(d.jaccard_s_f);
+                return y(d[jaccard]);
             })
             .attr("r", 4)
             .on("mouseover", function (d) {
@@ -183,7 +186,7 @@ $(function () {
                     .style("opacity", 1);
                 div.html(d.untart_name + "<br/>" + "Date: " +
                     formatTime(d.unters_beginn) + "<br/>" +
-                    "Similarity: " + d.jaccard_s_f)
+                    "Similarity: " + d[jaccard])
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 40) + "px");
             })
@@ -205,7 +208,7 @@ $(function () {
             .domain(y.domain())
             .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
             .value(function (d) {
-                return d.jaccard_s_f;
+                return d[jaccard];
             })(data);
 
         yx.domain([0, d3.max(yBins, function (d) {
@@ -240,7 +243,7 @@ $(function () {
             .on("mouseover", function (data) {
                 g.selectAll("circle")
                     .filter(function (d) {
-                        return d.jaccard_s_f >= data.x0 && d.jaccard_s_f <= data.x1;
+                        return d[jaccard] >= data.x0 && d[jaccard] <= data.x1;
                     })
                     .attr("r", 7)
                     .style("fill", "#666967");
@@ -261,8 +264,8 @@ $(function () {
                     .style("opacity", 0);
             });
 
-        var medianValueSingle = median_single["jaccard_s_f"];
-        var medianValueAll = median_all["jaccard_s_f"];
+        var medianValueSingle = median_single[jaccard];
+        var medianValueAll = median_all[jaccard];
 
         //Draw Median Line single
         g.append("line")
@@ -306,14 +309,14 @@ $(function () {
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 12) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("#Reports");
 
         g.append("text")
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 1.7) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("Date");
 
         //add legend
@@ -360,7 +363,7 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        var medianValueSingle = median_single["jaccard_s_f"];
+        var medianValueSingle = median_single[jaccard];
 
         pieSegments[0].value = medianValueSingle;
         pieSegments[1].value = 1.0 - medianValueSingle;
@@ -414,7 +417,7 @@ $(function () {
             {name: 'maxValue', value: 0.0, color: 'lightgrey'},
         ];
 
-        var medianValueAll = median_all["jaccard_s_f"];
+        var medianValueAll = median_all[jaccard];
 
         pieSegments[0].value = medianValueAll;
         pieSegments[1].value = 1.0 - medianValueAll;
@@ -862,7 +865,6 @@ $(function () {
             .style("opacity", 0);
 
         //Get Data
-
         data.forEach(function (data) {
             data.words_deleted_s_f = +data.words_deleted_s_f;
             data.unters_beginn = new Date(data.unters_beginn);
@@ -1178,79 +1180,67 @@ $(function () {
             .text("overall Median");
     }
 
-    function drawButtons(svg, width) {
-        var allButtons = svg.append("g")
-            .attr("id", "allButtons");
+    function drawButtons(data, svg, width) {
+        var button = svg.append("g"),
+            bWidth = 150,
+            bHeight = 20,
+            x0 = width - 100,
+            y0 = 0;
 
-        var labels = ['s', 'g'];
-
-        var defaultColor = "lightgrey";
-        var hoverColor = "#0000ff";
-        var pressedColor = "#000077";
-
-        function updateButtonColors(button, parent) {
-            parent.selectAll("rect")
-                .attr("fill", defaultColor);
-
-            button.select("rect")
-                .attr("fill", pressedColor);
-        }
-
-        var buttonGroups = allButtons.selectAll("g.button")
-            .data(labels)
-            .enter()
-            .append("g")
+        button.append("rect")
             .attr("class", "button")
-            .style("cursor", "pointer")
-            .on("click", function (d) {
-                updateButtonColors(d3.select(this), d3.select(this.parentNode))
-                
-            })
-            .on("mouseover", function () {
-                if (d3.select(this).select("rect").attr("fill") != pressedColor) {
-                    d3.select(this)
-                        .select("rect")
-                        .attr("fill", hoverColor);
-                }
-            })
-            .on("mouseout", function () {
-                if (d3.select(this).select("rect").attr("fill") != pressedColor) {
-                    d3.select(this)
-                        .select("rect")
-                        .attr("fill", defaultColor);
-                }
-            });
-
-        var bWidth = 30;
-        var bHeight = 20;
-        var bSpace = 5;
-        var x0 = width - 20;
-        var y0 = 0;
-
-        buttonGroups.append("rect")
-            .attr("class", "buttonRect")
             .attr("width", bWidth)
             .attr("height", bHeight)
             .attr("x", function (d, i) {
-                return x0 + (bWidth + bSpace) * i;
+                return x0 + (bWidth) * i;
             })
             .attr("y", y0)
             .attr("rx", 5)
-            .attr("ry", 5)
-            .attr("fill", "lightgrey");
+            .attr("ry", 5);
 
-        buttonGroups.append("text")
-            .attr("class", "buttonText")
-            .attr("font-family", "FontAwesome")
+        button.append("text")
+            .attr("class", "buttonAnnotation")
+
             .attr("x", function (d, i) {
-                return x0 + (bWidth + bSpace) * i + bWidth / 2;
+                return x0 + bWidth * i + bWidth / 2;
             })
             .attr("y", y0 + bHeight / 2)
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "central")
-            .attr("fill", "white")
-            .text(function (d) {
-                return d;
-            });
+            .text("schreiben -> final");
+
+
+
+        button.on("click", function (d) {
+            jaccard = (jaccard.valueOf() === 'jaccard_s_f' ? 'jaccard_g_f' : 'jaccard_s_f');
+            words_added = (words_added.valueOf() === 'words_added_s_f' ? 'words_added_g_f' : 'words_added_s_f');
+            words_deleted = (words_deleted.valueOf() === 'words_deleted_s_f' ? 'words_deleted_g_f' : 'words_deleted_s_f');
+            data = updateData(data);
+            redrawGraph(data);
+            if (jaccard === "jaccard_s_f") {
+                svg.selectAll(".buttonAnnotation").text("schreiben -> final");
+            }
+            else {
+                svg.selectAll(".buttonAnnotation").text("gegenlesen -> final");
+            }
+        });
+    }
+
+    function updateData(data) {
+        data.forEach(function (data) {
+            data[jaccard] = +data[jaccard];
+            data[words_added] = +data[words_added];
+            data[words_deleted] = +data[words_deleted];
+        });
+        return data
+    }
+
+    function redrawGraph(data) {
+        d3.select("#SimilarityGraph").selectAll("g").remove();
+        drawSimilarityGraph(data);
+
+        d3.select("#SimilarityDoughnutSingle").selectAll("g").remove();
+        drawSimilarityDoughnutSingle();
+
+        d3.select("#SimilarityDoughnutAll").selectAll("g").remove();
+        drawSimilarityDoughnutAll();
     }
 });
