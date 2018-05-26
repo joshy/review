@@ -673,14 +673,14 @@ $(function () {
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 12) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("#Reports");
 
         g.append("text")
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 1.7) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("Date");
 
         //add legend
@@ -1035,14 +1035,14 @@ $(function () {
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 12) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("#Reports");
 
         g.append("text")
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 1.7) + " ," +
-                (height + margin.top + 12) + ")")
+                (height + margin.top + 2) + ")")
             .text("Date");
 
         //add legend
@@ -1218,10 +1218,10 @@ $(function () {
             data = updateData(data);
             redrawGraph(data);
             if (jaccard === "jaccard_s_f") {
-                svg.selectAll(".buttonAnnotation").text("schreiben -> final");
+                d3.selectAll(".buttonAnnotation").text("schreiben -> final");
             }
             else {
-                svg.selectAll(".buttonAnnotation").text("gegenlesen -> final");
+                d3.selectAll(".buttonAnnotation").text("gegenlesen -> final");
             }
         });
     }
@@ -1255,7 +1255,7 @@ $(function () {
         drawDoughnutWordsAddedAll();
 
         d3.select("#WordsDeletedGraph").selectAll("g").remove();
-        drawWordsDeletedGraph();
+        drawWordsDeletedGraph(data);
 
         d3.select("#WordsDeletedDoughnutSingle").selectAll("g").remove();
         drawDoughnutWordsDeletedSingle();
