@@ -117,13 +117,14 @@ $(function () {
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var formatTime = d3.timeFormat("%d.%m.%Y");
-
-        drawButtons(data, svg, width);
+        var maxIntervalValue = 1;
 
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
             y = d3.scaleLinear().range([height, 0]).domain([0, 1]),
             yx = d3.scaleLinear().range([0, gap]);
+
+        drawButtons(data, svg, height, width, y, maxIntervalValue);
 
         //Define Gridlines
         function make_yAxis_gridlines() {
@@ -470,12 +471,12 @@ $(function () {
         var formatTime = d3.timeFormat("%d.%m.%Y");
         var maxIntervalValue = 250;
 
-        drawButtons(data, svg, width);
-
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
             y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervalValue]),
             yx = d3.scaleLinear().range([0, gap]);
+
+        drawButtons(data, svg, height, width, y, yx, maxIntervalValue);
 
         //Define Gridlines
         function make_yAxis_gridlines() {
@@ -833,12 +834,12 @@ $(function () {
         var formatTime = d3.timeFormat("%d.%m.%Y");
         var maxIntervalValue = 250;
 
-        drawButtons(data, svg, width);
-
         //Define Axes
         var x = d3.scaleTime().range([gap + 20, width]),
             y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervalValue]),
             yx = d3.scaleLinear().range([0, gap]);
+
+        drawButtons(data, svg, height, width, y, yx, maxIntervalValue);
 
         //Define Gridlines
         function make_yAxis_gridlines() {
@@ -1184,7 +1185,7 @@ $(function () {
             .text("overall Median");
     }
 
-    function drawButtons(data, svg, width) {
+    function drawButtons(data, svg, height, width, y, yx, maxIntervalValue) {
         var button = svg.append("g"),
             bWidth = 150,
             bHeight = 20,
@@ -1211,12 +1212,11 @@ $(function () {
             .attr("y", y0 + bHeight / 2)
             .text("schreiben -> final");
 
-        button.on("click", function (d) {
+        button.on("click", function () {
             jaccard = (jaccard.valueOf() === 'jaccard_s_f' ? 'jaccard_g_f' : 'jaccard_s_f');
             words_added = (words_added.valueOf() === 'words_added_s_f' ? 'words_added_g_f' : 'words_added_s_f');
             words_deleted = (words_deleted.valueOf() === 'words_deleted_s_f' ? 'words_deleted_g_f' : 'words_deleted_s_f');
-            data = updateData(data);
-            redrawGraph(data);
+            redrawGraph(data, height, width, y, yx, maxIntervalValue);
             if (jaccard === "jaccard_s_f") {
                 d3.selectAll(".buttonAnnotation").text("schreiben -> final");
             }
@@ -1226,43 +1226,53 @@ $(function () {
         });
     }
 
-    function updateData(data) {
+    function redrawGraph(data, height, width, y, yx, maxIntervalValue) {
+        var svg = d3.select("body");
+
         data.forEach(function (data) {
             data[jaccard] = +data[jaccard];
             data[words_added] = +data[words_added];
             data[words_deleted] = +data[words_deleted];
+
+        var circleSimilarity = svg.selectAll(".circle")
+            .data(data)
+            .exit();
+
+        circleSimilarity.transition()
+            .duration(1000)
+            .attr("cy", function (d) {
+                return y(d[jaccard]);
+            });
+
+         var circleWordsAdded = svg.selectAll(".circleWordsAdded")
+            .data(data)
+            .exit();
+
+        circleWordsAdded.transition()
+            .duration(1000)
+            .attr("cy", function (d) {
+               if (d[words_added] > maxIntervalValue) {
+                    return y(maxIntervalValue)
+                }
+                else {
+                    return y(d[words_added]);
+                }
+            });
+
+          var circleWordsDeleted = svg.selectAll(".circleWordsDeleted")
+            .data(data)
+            .exit();
+
+        circleWordsDeleted.transition()
+            .duration(1000)
+            .attr("cy", function (d) {
+                if (d[words_deleted] > maxIntervalValue) {
+                    return y(maxIntervalValue)
+                }
+                else {
+                    return y(d[words_deleted]);
+                }
+            });
         });
-        return data
-    }
-
-    function redrawGraph(data) {
-        d3.select("#SimilarityGraph").selectAll("g").remove();
-        drawSimilarityGraph(data);
-
-        d3.select("#SimilarityDoughnutSingle").selectAll("g").remove();
-        drawSimilarityDoughnutSingle();
-
-        d3.select("#SimilarityDoughnutAll").selectAll("g").remove();
-        drawSimilarityDoughnutAll();
-
-        d3.select("#WordsAddedGraph").selectAll("g").remove();
-        drawWordsAddedGraph(data);
-
-        d3.select("#WordsAddedDoughnutSingle").selectAll("g").remove();
-        drawDoughnutWordsAddedSingle();
-
-        d3.select("#WordsAddedDoughnutAll").selectAll("g").remove();
-        drawDoughnutWordsAddedAll();
-
-        d3.select("#WordsDeletedGraph").selectAll("g").remove();
-        drawWordsDeletedGraph(data);
-
-        d3.select("#WordsDeletedDoughnutSingle").selectAll("g").remove();
-        drawDoughnutWordsDeletedSingle();
-
-        d3.select("#WordsDeletedDoughnutAll").selectAll("g").remove();
-        drawDoughnutWordsDeletedAll();
-
-
     }
 });
