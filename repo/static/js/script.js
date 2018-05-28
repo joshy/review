@@ -603,7 +603,11 @@ $(function () {
                 .domain(y.domain())
                 .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
                 .value(function (d) {
-                    return d[words_added];
+                    if (d[words_added] > maxIntervalValue) {
+                        return maxIntervalValue;
+                    } else {
+                        return d[words_added];
+                    }
                 })(data);
 
             yx.domain([0, d3.max(yBins, function (d) {
@@ -1000,7 +1004,11 @@ $(function () {
                 .domain(y.domain())
                 .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
                 .value(function (d) {
-                    return d[words_deleted];
+                    if (d[words_deleted] > maxIntervalValue) {
+                        return maxIntervalValue;
+                    } else {
+                        return d[words_deleted];
+                    }
                 })(data);
 
             yx.domain([0, d3.max(yBins, function (d) {
@@ -1416,7 +1424,11 @@ $(function () {
                     .domain(y.domain())
                     .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
                     .value(function (d) {
-                        return d[words_added];
+                        if (d[words_added] > maxIntervalValue) {
+                            return maxIntervalValue;
+                        } else {
+                            return d[words_added];
+                        }
                     })(data);
 
                 yx.domain([0, d3.max(yBins, function (d) {
@@ -1514,7 +1526,11 @@ $(function () {
                     .domain(y.domain())
                     .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
                     .value(function (d) {
-                        return d[words_deleted];
+                        if (d[words_deleted] > maxIntervalValue) {
+                            return maxIntervalValue;
+                        } else {
+                            return d[words_deleted];
+                        }
                     })(data);
 
                 yx.domain([0, d3.max(yBins, function (d) {
