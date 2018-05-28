@@ -38,15 +38,15 @@ div.tooltip {
     font-weight: bold;
 }
 
-.button {
+.buttonSimilarity, .buttonWordsAdded, .buttonWordsDeleted {
     fill: lightgray;
 }
 
-.button:hover {
+.buttonSimilarity:hover, .buttonWordsAdded:hover, .buttonWordsDeleted:hover {
     fill: darkgrey;
 }
 
-.buttonAnnotation {
+.buttonAnnotationSimilarity, .buttonAnnotationWordsAdded, .buttonAnnotationWordsDeleted {
     text-anchor: middle;
     font-size: 13px;
     dominant-baseline: central;
@@ -127,5 +127,6 @@ div.tooltip {
     text-anchor: end;
     font: 10px sans-serif;
 }
+
 
 
