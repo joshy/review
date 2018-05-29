@@ -28,6 +28,16 @@ div.tooltip {
     fill: #666967;
 }
 
+.barText {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.barAnnotation {
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .axis--x path {
     display: none;
 }
@@ -96,7 +106,7 @@ div.tooltip {
 
 .doughnutFontAll {
     font: 50px sans-serif;
-    fill: #610A23;
+    fill: #666967;
 }
 
 .medianLineSingle {
@@ -119,7 +129,7 @@ div.tooltip {
 
 .medianLineAll {
     stroke-width: 1px;
-    stroke: #610a23;
+    stroke: #666967;
     stroke-dasharray: 5, 5;
 }
 
