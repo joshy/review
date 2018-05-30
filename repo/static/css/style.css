@@ -12,7 +12,7 @@ div.tooltip {
     color: black;
 }
 
-.bar {
+.barSimilarity {
     fill: steelblue;
 }
 
@@ -24,7 +24,7 @@ div.tooltip {
     fill: red;
 }
 
-.bar:hover, .barWordsAdded:hover, .barWordsDeleted:hover {
+.barSimilarity:hover, .barWordsAdded:hover, .barWordsDeleted:hover {
     fill: #666967;
 }
 

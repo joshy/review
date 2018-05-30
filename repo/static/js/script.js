@@ -3,6 +3,7 @@ $(function () {
             words_added = "words_added_s_f",
             words_deleted = "words_deleted_s_f",
             radius = 150,
+            maxValue = 50,
             pieSegments = [];
 
         var picker = new Pikaday({
@@ -226,7 +227,7 @@ $(function () {
                 .data(yBins)
                 .enter()
                 .append("g")
-                .attr("class", "bar")
+                .attr("class", "barSimilarity")
                 .attr("transform", function (d) {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
@@ -234,7 +235,7 @@ $(function () {
             var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
             yBar.append("rect")
-                .attr("class", "bar")
+                .attr("class", "barSimilarity")
                 .attr("y", 1)
                 .attr("width", function (d) {
                     return yx(d.length);
@@ -782,6 +783,7 @@ $(function () {
             button.on("click", function () {
                 words_added = (words_added.valueOf() === 'words_added_s_f' ? 'words_added_g_f' : 'words_added_s_f');
                 redrawWordsAddedGraph(svg, height, width, y, yx, maxIntervalValue);
+                redrawBarChart(d3.select("#WordsAddedBarChart"), words_added);
                 if (words_added === "words_added_s_f") {
                     d3.selectAll(".buttonAnnotationWordsAdded").text("schreiben -> final");
                 }
@@ -801,10 +803,6 @@ $(function () {
 
             var data = [{"name": "personal Median", "value": Math.round(median_single[words_added]), "color": "green"},
                 {"name": "overall Median", "value": Math.round(median_all[words_added]), "color": "#666967"}];
-
-            console.log(data);
-
-            var maxValue = 50;
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])
@@ -838,6 +836,7 @@ $(function () {
                 });
 
             yBar.append("rect")
+                .attr("class", "bar")
                 .attr("y", function (d) {
                     return y(d.name);
                 })
@@ -1155,6 +1154,7 @@ $(function () {
             button.on("click", function () {
                 words_deleted = (words_deleted.valueOf() === 'words_deleted_s_f' ? 'words_deleted_g_f' : 'words_deleted_s_f');
                 redrawWordsDeletedGraph(svg, height, width, y, yx, maxIntervalValue);
+                redrawBarChart(d3.select("#WordsDeletedBarChart"), words_deleted);
                 if (words_deleted === "words_deleted_s_f") {
                     d3.selectAll(".buttonAnnotationWordsDeleted").text("schreiben -> final");
                 }
@@ -1175,8 +1175,6 @@ $(function () {
 
             var data = [{"name": "personal Median", "value": Math.round(median_single[words_deleted]), "color": "red"},
                 {"name": "overall Median", "value": Math.round(median_all[words_deleted]), "color": "#666967"}];
-
-            var maxValue = 50;
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])
@@ -1210,6 +1208,7 @@ $(function () {
                 });
 
             yBar.append("rect")
+                .attr("class", "bar")
                 .attr("y", function (d) {
                     return y(d.name);
                 })
@@ -1396,46 +1395,45 @@ $(function () {
                     .attr("y1", y(median_all[words_added]))
                     .attr("y2", y(median_all[words_added]));
 
-                svg = d3.select("#WordsAddedDoughnutSingle");
-
-                //Redraw Doughnuts
-                pieSegments[0].value = median_single[words_added];
-                pieSegments[1].value = 50 - median_single[words_added];
-
-                var arc = d3.arc()
-                    .outerRadius(radius - 10)
-                    .innerRadius(100);
-
-                var pie = d3.pie()
-                    .sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontSingleWordsAdded").transition()
-                    .text(Math.round(median_single[words_added]));
-
-                svg = d3.select("#WordsAddedDoughnutAll");
-
-                pieSegments[0].value = median_all[words_added];
-                pieSegments[1].value = 50 - median_all[words_added];
-
-                pie.sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontAll").transition()
-                    .text(Math.round(median_all[words_added]));
             });
+        }
+
+        function redrawBarChart(svg, words) {
+
+            var margin = {top: 50, right: 250, bottom: 50, left: 250},
+                width = +svg.attr("width") - margin.left - margin.right;
+
+            var data = [Math.round(median_single[words]), Math.round(median_all[words])];
+
+            var x = d3.scaleLinear()
+                .domain([0, maxValue])
+                .range([0, width]);
+
+            svg.selectAll("rect.bar")
+                .data(data)
+                .transition()
+                .attr("width", function (d) {
+                    console.log(d);
+                    if (d > maxValue) {
+                        return x(maxValue)
+                    } else {
+                        return x(d)
+                    }
+                });
+
+            svg.selectAll("text.barText")
+                .data(data)
+                .transition()
+                .attr("x", function (d) {
+                    if (d > maxValue) {
+                        return x(maxValue) + 20;
+                    } else {
+                        return x(d) + 20;
+                    }
+                })
+                .text(function (d) {
+                    return d;
+                });
         }
 
         function redrawWordsDeletedGraph(svg, height, width, y, yx, maxIntervalValue) {
