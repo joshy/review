@@ -78,12 +78,12 @@ div.tooltip {
     stroke: lightgray;
 }
 
-.doughnutFontSingle {
+.pieChartFontSingle {
     font: 50px sans-serif;
     fill: steelblue;
 }
 
-.doughnutFontAll {
+.pieChartFontAll {
     font: 50px sans-serif;
     fill: #666967;
 }

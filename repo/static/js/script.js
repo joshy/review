@@ -1,11 +1,4 @@
 $(function () {
-        var jaccard = "jaccard_s_f",
-            words_added = "words_added_s_f",
-            words_deleted = "words_deleted_s_f",
-            radius = 150,
-            maxValue = 50,
-            pieSegments = [];
-
         var picker = new Pikaday({
             field: document.getElementById('datepicker'),
             format: 'DD.MM.YYYY'
@@ -92,10 +85,10 @@ $(function () {
         }
 
         function data_url() {
-            var writer = document.getElementById('writer').value;
-            var last_exams = document.getElementById('last_exams').value;
-            var start_date = document.getElementById('start_date').value;
-            var end_date = document.getElementById('end_date').value;
+            var writer = document.getElementById('writer').value,
+                last_exams = document.getElementById('last_exams').value,
+                start_date = document.getElementById('start_date').value,
+                end_date = document.getElementById('end_date').value;
             param = {
                 'w': writer,
                 'last_exams': last_exams,
@@ -106,164 +99,41 @@ $(function () {
         }
 
         function drawSimilarityGraph(data) {
+            var maxIntervalValue = 1,
+                pieSegments = [
+                    {name: 'medianValue', value: 0.0, color: "steelblue"},
+                    {name: 'maxValue', value: 0.0, color: 'lightgrey'},
+                ],
+                classNames = ["barSimilarity", "buttonSimilarity", "buttonAnnotationSimilarity", "Similarity"],
+                color = "steelblue",
+                radius = 150;
 
-            var maxIntervalValue = 1;
-            pieSegments = [
-                {name: 'medianValue', value: 0.0, color: "steelblue"},
-                {name: 'maxValue', value: 0.0, color: 'lightgrey'},
-            ];
-            var classNames = ["barSimilarity", "buttonSimilarity", "buttonAnnotationSimilarity", "Similarity"];
-            var color = "steelblue";
-
-            drawGraph(data, d3.select("#SimilarityGraph"), jaccard, maxIntervalValue, classNames, color);
-            drawPieChart(d3.select("#SimilarityDoughnutSingle"), median_single[jaccard], "doughnutFontSingle");
+            drawGraph(data, d3.select("#SimilarityGraph"), "jaccard_s_f", maxIntervalValue, classNames, color, radius, pieSegments);
+            drawPieChart(d3.select("#SimilarityPieChartSingle"), median_single["jaccard_s_f"], "pieChartFontSingle", radius, pieSegments);
             pieSegments[0].color = "#666967";
-            drawPieChart(d3.select("#SimilarityDoughnutAll"), median_all[jaccard], "doughnutFontAll");
+            drawPieChart(d3.select("#SimilarityPieChartAll"), median_all["jaccard_s_f"], "pieChartFontAll", radius, pieSegments);
         }
 
         function drawWordsAddedGraph(data) {
-
             var maxIntervalValue = 250;
-            var classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"];
-            var color = "green";
-            drawGraph(data, d3.select("#WordsAddedGraph"), words_added, maxIntervalValue, classNames, color);
-            drawBarChart(d3.select("#WordsAddedBarChart"), words_added, color);
+            maxBarValue = 50;
+            classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"];
+            color = "green";
+            drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_s_f", maxIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_s_f", color, maxBarValue);
         }
 
         function drawWordsDeletedGraph(data) {
-
-            var maxIntervalValue = 250;
-            var classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"];
-            var color = "red";
-            drawGraph(data, d3.select("#WordsDeletedGraph"), words_deleted, maxIntervalValue, classNames, color);
-            drawBarChart(d3.select("#WordsDeletedBarChart"), words_deleted, color);
+            var maxIntervalValue = 250,
+                maxBarValue = 50,
+                classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"],
+                color = "red";
+            drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_s_f", maxIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_s_f", color, maxBarValue);
 
         }
 
-        function drawPieChart(svg, medianValue, className) {
-
-            var margin = {top: 20, right: 55, bottom: 50, left: 45},
-                width = +svg.attr("width"),
-                height = +svg.attr("height");
-
-            pieSegments[0].value = medianValue;
-            pieSegments[1].value = 1.0 - medianValue;
-
-            var arc = d3.arc()
-                .outerRadius(radius - 10)
-                .innerRadius(100);
-
-            var pie = d3.pie()
-                .sort(null)
-                .value(function (d) {
-                    return d.value;
-                });
-
-            var g = svg.selectAll(".arc")
-                .data(pie(pieSegments))
-                .enter()
-                .append("g")
-                .attr("class", "arc")
-                .attr("transform", "translate(" + width / 2 +
-                    "," + height / 2 + ")");
-
-            g.append("path")
-                .attr("d", arc)
-                .style("fill", function (d) {
-                    return d.data.color;
-                });
-
-            g.append("text")
-                .attr("class", className)
-                .attr("text-anchor", "middle")
-                .attr('y', 20)
-                .text(medianValue.toPrecision(2));
-
-            g.append("text")
-                .attr("class", "axisAnnotation")
-                .attr("transform",
-                    "translate(" + (width / 10 - margin.right) + " ," +
-                    (height / 3 + margin.bottom) + ")")
-                .text("personal Median");
-        }
-
-        function drawBarChart(svg, value, color) {
-
-            var margin = {top: 50, right: 250, bottom: 50, left: 250},
-                width = +svg.attr("width") - margin.left - margin.right,
-                height = +svg.attr("height") - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            var data = [{"name": "personal Median", "value": Math.round(median_single[value]), "color": color},
-                {"name": "overall Median", "value": Math.round(median_all[value]), "color": "#666967"}];
-
-            var x = d3.scaleLinear()
-                .domain([0, maxValue])
-                .range([0, width]);
-
-            var y = d3.scaleBand()
-                .domain(data.map(function (d) {
-                    return d.name;
-                }))
-                .range([0, height])
-                .paddingInner(0.1);
-
-            var yAxis = d3.axisLeft()
-                .scale(y)
-                .tickSize(0);
-
-            g.append("g")
-                .attr("class", "barAnnotation")
-                .call(yAxis);
-
-            //Define Histogram
-            var gLeft = g.append("g")
-                .attr("class", "histogram");
-
-            var yBar = gLeft.selectAll(".bar")
-                .data(data)
-                .enter()
-                .append("g")
-                .attr("fill", function (d) {
-                    return d.color
-                });
-
-            yBar.append("rect")
-                .attr("class", "bar")
-                .attr("y", function (d) {
-                    return y(d.name);
-                })
-                .attr("width", function (d) {
-                    if (d.value > maxValue) {
-                        return x(maxValue);
-                    } else {
-                        return x(d.value);
-                    }
-                })
-                .attr("height", y.bandwidth())
-                .attr("fill", function (d) {
-                    return d.color
-                });
-
-            yBar.append("text")
-                .attr("class", "barText")
-                .attr("y", function (d) {
-                    return y(d.name) + y.bandwidth() / 2 + 4;
-                })
-                .attr("x", function (d) {
-                    if (d.value > maxValue) {
-                        return x(maxValue) + 20;
-                    } else {
-                        return x(d.value) + 20;
-                    }
-                })
-                .text(function (d) {
-                    return d.value;
-                });
-        }
-
-        function drawGraph(data, svg, value, maxIntervalValue, classNames, color) {
-
+        function drawGraph(data, svg, value, maxIntervalValue, classNames, color, specificValue, pieSegments) {
             var margin = {top: 30, right: 20, bottom: 40, left: 45},
                 width = +svg.attr("width") - margin.left - margin.right,
                 height = +svg.attr("height") - margin.top - margin.bottom,
@@ -558,25 +428,202 @@ $(function () {
 
                 }
 
-                redrawGraph(svg, height, width, y, yx, maxIntervalValue);
+                redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue);
 
                 if (tempValue === "jaccard_") {
-                    redrawPieChart(d3.select("#SimilarityDoughnutSingle"), median_single[value], ".doughnutFontSingle");
-                    redrawPieChart(d3.select("#SimilarityDoughnutAll"), median_all[value], ".doughnutFontAll")
+                    redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
+                    redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
                 }
                 else {
-                    if(tempValue === "words_added_") {
-                        redrawBarChart(d3.select("#WordsAddedBarChart"), value);
+                    if (tempValue === "words_added_") {
+                        redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
                     }
                     else {
-                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value);
+                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
                     }
                 }
             });
         }
 
-        function redrawBarChart(svg, words) {
+        function drawPieChart(svg, medianValue, className, radius, pieSegments) {
+            var margin = {top: 20, right: 55, bottom: 50, left: 45},
+                width = +svg.attr("width"),
+                height = +svg.attr("height");
 
+            pieSegments[0].value = medianValue;
+            pieSegments[1].value = 1.0 - medianValue;
+
+            var arc = d3.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(100);
+
+            var pie = d3.pie()
+                .sort(null)
+                .value(function (d) {
+                    return d.value;
+                });
+
+            var g = svg.selectAll(".arc")
+                .data(pie(pieSegments))
+                .enter()
+                .append("g")
+                .attr("class", "arc")
+                .attr("transform", "translate(" + width / 2 +
+                    "," + height / 2 + ")");
+
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function (d) {
+                    return d.data.color;
+                });
+
+            g.append("text")
+                .attr("class", className)
+                .attr("text-anchor", "middle")
+                .attr('y', 20)
+                .text(medianValue.toPrecision(2));
+
+            g.append("text")
+                .attr("class", "axisAnnotation")
+                .attr("transform",
+                    "translate(" + (width / 10 - margin.right) + " ," +
+                    (height / 3 + margin.bottom) + ")")
+                .text("personal Median");
+        }
+
+        function drawBarChart(svg, value, color, maxValue) {
+            var margin = {top: 50, right: 250, bottom: 50, left: 250},
+                width = +svg.attr("width") - margin.left - margin.right,
+                height = +svg.attr("height") - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var data = [{"name": "personal Median", "value": Math.round(median_single[value]), "color": color},
+                {"name": "overall Median", "value": Math.round(median_all[value]), "color": "#666967"}];
+
+            var x = d3.scaleLinear()
+                .domain([0, maxValue])
+                .range([0, width]);
+
+            var y = d3.scaleBand()
+                .domain(data.map(function (d) {
+                    return d.name;
+                }))
+                .range([0, height])
+                .paddingInner(0.1);
+
+            var yAxis = d3.axisLeft()
+                .scale(y)
+                .tickSize(0);
+
+            g.append("g")
+                .attr("class", "barAnnotation")
+                .call(yAxis);
+
+            //Define Histogram
+            var gLeft = g.append("g")
+                .attr("class", "histogram");
+
+            var yBar = gLeft.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("g")
+                .attr("fill", function (d) {
+                    return d.color
+                });
+
+            yBar.append("rect")
+                .attr("class", "bar")
+                .attr("y", function (d) {
+                    return y(d.name);
+                })
+                .attr("width", function (d) {
+                    if (d.value > maxValue) {
+                        return x(maxValue);
+                    } else {
+                        return x(d.value);
+                    }
+                })
+                .attr("height", y.bandwidth())
+                .attr("fill", function (d) {
+                    return d.color
+                });
+
+            yBar.append("text")
+                .attr("class", "barText")
+                .attr("y", function (d) {
+                    return y(d.name) + y.bandwidth() / 2 + 4;
+                })
+                .attr("x", function (d) {
+                    if (d.value > maxValue) {
+                        return x(maxValue) + 20;
+                    } else {
+                        return x(d.value) + 20;
+                    }
+                })
+                .text(function (d) {
+                    return d.value;
+                });
+        }
+
+        function redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue) {
+            data.forEach(function (data) {
+                data[value] = +data[value];
+                data.unters_beginn = new Date(data.unters_beginn);
+            });
+
+            //Redraw Circles
+            svg.selectAll(".circle")
+                .data(data)
+                .transition()
+                .attr("cy", function (d) {
+                    if (d[value] > maxIntervalValue) {
+                        return y(maxIntervalValue)
+                    }
+                    else {
+                        return y(d[value]);
+                    }
+                });
+
+            //Redraw Histogram
+            var yBins = d3.histogram()
+                .domain(y.domain())
+                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
+                .value(function (d) {
+                    if (d[value] > maxIntervalValue) {
+                        return maxIntervalValue;
+                    } else {
+                        return d[value];
+                    }
+                })(data);
+
+            yx.domain([0, d3.max(yBins, function (d) {
+                return d.length;
+            })]);
+
+            svg.selectAll(".yx")
+                .transition()
+                .call(d3.axisBottom(yx)
+                    .ticks(4));
+
+            svg.selectAll("rect.bar")
+                .data(yBins)
+                .transition()
+                .attr("width", function (d) {
+                    return yx(d.length);
+                });
+
+            //Redraw Median Lines
+            svg.select(".medianLineSingle").transition()
+                .attr("y1", y(median_single[value]))
+                .attr("y2", y(median_single[value]));
+
+            svg.select(".medianLineAll").transition()
+                .attr("y1", y(median_all[value]))
+                .attr("y2", y(median_all[value]));
+
+        }
+
+        function redrawBarChart(svg, words, maxValue) {
             var margin = {top: 50, right: 250, bottom: 50, left: 250},
                 width = +svg.attr("width") - margin.left - margin.right;
 
@@ -612,8 +659,7 @@ $(function () {
                 });
         }
 
-        function redrawPieChart(svg, value, className) {
-
+        function redrawPieChart(svg, value, className, radius, pieSegments) {
             pieSegments[0].value = value;
             pieSegments[1].value = 1 - value;
 
@@ -633,69 +679,6 @@ $(function () {
 
             svg.selectAll(className).transition()
                 .text(pieSegments[0].value.toPrecision(2));
-        }
-
-        function redrawGraph(svg, height, width, y, yx, maxIntervalValue) {
-
-            d3.csv(data_url(), function (error, data) {
-                if (error) throw error;
-
-                data.forEach(function (data) {
-                    data[words_deleted] = +data[words_deleted];
-                    data.unters_beginn = new Date(data.unters_beginn);
-                });
-
-                //Redraw Circles
-                svg.selectAll(".circleWordsDeleted")
-                    .data(data)
-                    .transition()
-                    .attr("cy", function (d) {
-                        if (d[words_deleted] > maxIntervalValue) {
-                            return y(maxIntervalValue)
-                        }
-                        else {
-                            return y(d[words_deleted]);
-                        }
-                    });
-
-                //Redraw Histogram
-                var yBins = d3.histogram()
-                    .domain(y.domain())
-                    .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
-                    .value(function (d) {
-                        if (d[words_deleted] > maxIntervalValue) {
-                            return maxIntervalValue;
-                        } else {
-                            return d[words_deleted];
-                        }
-                    })(data);
-
-                yx.domain([0, d3.max(yBins, function (d) {
-                    return d.length;
-                })]);
-
-                svg.selectAll(".yx")
-                    .transition()
-                    .call(d3.axisBottom(yx)
-                        .ticks(4));
-
-                svg.selectAll("rect.barWordsDeleted")
-                    .data(yBins)
-                    .transition()
-                    .attr("width", function (d) {
-                        return yx(d.length);
-                    });
-
-                //Redraw Median Lines
-                svg.select(".medianLineSingleWordsDeleted").transition()
-                    .attr("y1", y(median_single[words_deleted]))
-                    .attr("y2", y(median_single[words_deleted]));
-
-                svg.select(".medianLineAll").transition()
-                    .attr("y1", y(median_all[words_deleted]))
-                    .attr("y2", y(median_all[words_deleted]));
-
-            });
         }
 
         function reloadContent(data) {
