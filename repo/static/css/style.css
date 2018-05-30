@@ -75,33 +75,12 @@ div.tooltip {
 }
 
 .circle {
-    fill: steelblue;
-    stroke: lightgray;
-}
-
-.circleWordsAdded {
-    fill: green;
-    stroke: lightgray;
-}
-
-.circleWordsDeleted {
-    fill: red;
     stroke: lightgray;
 }
 
 .doughnutFontSingle {
     font: 50px sans-serif;
     fill: steelblue;
-}
-
-.doughnutFontSingleWordsAdded {
-    font: 50px sans-serif;
-    fill: green;
-}
-
-.doughnutFontSingleWordsDeleted {
-    font: 50px sans-serif;
-    fill: red;
 }
 
 .doughnutFontAll {
@@ -111,19 +90,6 @@ div.tooltip {
 
 .medianLineSingle {
     stroke-width: 1px;
-    stroke: steelblue;
-    stroke-dasharray: 5, 5;
-}
-
-.medianLineSingleWordsAdded {
-    stroke-width: 1px;
-    stroke: green;
-    stroke-dasharray: 5, 5;
-}
-
-.medianLineSingleWordsDeleted {
-    stroke-width: 1px;
-    stroke: red;
     stroke-dasharray: 5, 5;
 }
 
