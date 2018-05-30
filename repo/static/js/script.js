@@ -126,8 +126,8 @@ $(function () {
             var maxIntervalValue = 250;
             var classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"];
             var color = "green";
-            drawGraph(data, d3.select("#WordsAddedGraph"), words_deleted, maxIntervalValue, classNames, color);
-            drawWordsAddedBarChart();
+            drawGraph(data, d3.select("#WordsAddedGraph"), words_added, maxIntervalValue, classNames, color);
+            drawBarChart(d3.select("#WordsAddedBarChart"), words_added, color);
         }
 
         function drawWordsDeletedGraph(data) {
@@ -136,9 +136,7 @@ $(function () {
             var classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"];
             var color = "red";
             drawGraph(data, d3.select("#WordsDeletedGraph"), words_deleted, maxIntervalValue, classNames, color);
-
-
-            drawWordsDeletedBarChart();
+            drawBarChart(d3.select("#WordsDeletedBarChart"), words_deleted, color);
 
         }
 
@@ -189,16 +187,15 @@ $(function () {
                 .text("personal Median");
         }
 
-        function drawWordsAddedBarChart() {
+        function drawBarChart(svg, value, color) {
 
-            var svg = d3.select("#WordsAddedBarChart"),
-                margin = {top: 50, right: 250, bottom: 50, left: 250},
+            var margin = {top: 50, right: 250, bottom: 50, left: 250},
                 width = +svg.attr("width") - margin.left - margin.right,
                 height = +svg.attr("height") - margin.top - margin.bottom,
                 g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            var data = [{"name": "personal Median", "value": Math.round(median_single[words_added]), "color": "green"},
-                {"name": "overall Median", "value": Math.round(median_all[words_added]), "color": "#666967"}];
+            var data = [{"name": "personal Median", "value": Math.round(median_single[value]), "color": color},
+                {"name": "overall Median", "value": Math.round(median_all[value]), "color": "#666967"}];
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])
@@ -347,7 +344,7 @@ $(function () {
                         .style("opacity", 1);
                     div.html(d.untart_name + "<br/>" + "Date: " +
                         formatTime(d.unters_beginn) + "<br/>" +
-                        classNames[3] +": " + d[value])
+                        classNames[3] + ": " + d[value])
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 40) + "px");
                 })
@@ -546,250 +543,35 @@ $(function () {
                 .attr("y", y0 + buttonHeight / 2)
                 .text("schreiben -> final");
 
-            /* button.on("click", function () {
-                 value = (value.valueOf() === 'words_deleted_s_f' ? 'words_deleted_g_f' : 'words_deleted_s_f');
-                 redrawWordsDeletedGraph(svg, height, width, y, yx, maxIntervalValue);
-                 redrawBarChart(d3.select("#WordsDeletedBarChart"), value);
-                 if (value === "words_deleted_s_f") {
-                     d3.selectAll(".buttonAnnotationWordsDeleted").text("schreiben -> final");
-                 }
-                 else {
-                     d3.selectAll(".buttonAnnotationWordsDeleted").text("gegenlesen -> final");
-                 }
-             });
- */
-        }
+            button.on("click", function () {
 
-        function drawWordsDeletedBarChart() {
+                var tempValue = value.slice(0, -3),
+                    checkValue = value.substr(value.length - 3);
 
-            var svg = d3.select("#WordsDeletedBarChart"),
-                margin = {top: 50, right: 250, bottom: 50, left: 250},
-                width = +svg.attr("width") - margin.left - margin.right,
-                height = +svg.attr("height") - margin.top - margin.bottom,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                if (checkValue === "s_f") {
+                    value = tempValue + "g_f";
+                    d3.selectAll("." + classNames[2]).text("gegenlesen -> final");
+                }
+                else {
+                    value = tempValue + "s_f";
+                    d3.selectAll("." + classNames[2]).text("schreiben -> final");
 
-            var data = [{"name": "personal Median", "value": Math.round(median_single[words_deleted]), "color": "red"},
-                {"name": "overall Median", "value": Math.round(median_all[words_deleted]), "color": "#666967"}];
+                }
 
-            var x = d3.scaleLinear()
-                .domain([0, maxValue])
-                .range([0, width]);
+                redrawGraph(svg, height, width, y, yx, maxIntervalValue);
 
-            var y = d3.scaleBand()
-                .domain(data.map(function (d) {
-                    return d.name;
-                }))
-                .range([0, height])
-                .paddingInner(0.1);
-
-            var yAxis = d3.axisLeft()
-                .scale(y)
-                .tickSize(0);
-
-            g.append("g")
-                .attr("class", "barAnnotation")
-                .call(yAxis);
-
-            //Define Histogram
-            var gLeft = g.append("g")
-                .attr("class", "histogram");
-
-            var yBar = gLeft.selectAll(".bar")
-                .data(data)
-                .enter()
-                .append("g")
-                .attr("fill", function (d) {
-                    return d.color
-                });
-
-            yBar.append("rect")
-                .attr("class", "bar")
-                .attr("y", function (d) {
-                    return y(d.name);
-                })
-                .attr("width", function (d) {
-                    if (d.value > maxValue) {
-                        return x(maxValue);
-                    } else {
-                        return x(d.value);
+                if (tempValue === "jaccard_") {
+                    redrawPieChart(d3.select("#SimilarityDoughnutSingle"), median_single[value], ".doughnutFontSingle");
+                    redrawPieChart(d3.select("#SimilarityDoughnutAll"), median_all[value], ".doughnutFontAll")
+                }
+                else {
+                    if(tempValue === "words_added_") {
+                        redrawBarChart(d3.select("#WordsAddedBarChart"), value);
                     }
-                })
-                .attr("height", y.bandwidth())
-                .attr("fill", function (d) {
-                    return d.color
-                });
-
-            yBar.append("text")
-                .attr("class", "barText")
-                .attr("y", function (d) {
-                    return y(d.name) + y.bandwidth() / 2 + 4;
-                })
-                .attr("x", function (d) {
-                    if (d.value > maxValue) {
-                        return x(maxValue) + 20;
-                    } else {
-                        return x(d.value) + 20;
+                    else {
+                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value);
                     }
-                })
-                .text(function (d) {
-                    return d.value;
-                });
-        }
-
-        function redrawSimilarityGraph(svg, height, width, y, yx) {
-
-            d3.csv(data_url(), function (error, data) {
-                if (error) throw error;
-
-                data.forEach(function (data) {
-                    data[jaccard] = +data[jaccard];
-                    data.unters_beginn = new Date(data.unters_beginn);
-                });
-
-                //Redraw Circles
-                svg.selectAll(".circle")
-                    .data(data)
-                    .transition()
-                    .attr("cy", function (d) {
-                        return y(d[jaccard]);
-                    });
-
-                //Redraw Histogram
-                var yBins = d3.histogram()
-                    .domain(y.domain())
-                    .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
-                    .value(function (d) {
-                        return d[jaccard];
-                    })(data);
-
-                yx.domain([0, d3.max(yBins, function (d) {
-                    return d.length;
-                })]);
-
-                svg.selectAll(".yx")
-                    .transition()
-                    .call(d3.axisBottom(yx)
-                        .ticks(4));
-
-                svg.selectAll("rect.bar")
-                    .data(yBins)
-                    .transition()
-                    .attr("width", function (d) {
-                        return yx(d.length);
-                    });
-
-                //Redraw Median Lines
-                svg.select(".medianLineSingle").transition()
-                    .attr("y1", y(median_single[jaccard]))
-                    .attr("y2", y(median_single[jaccard]));
-
-                svg.select(".medianLineAll").transition()
-                    .attr("y1", y(median_all[jaccard]))
-                    .attr("y2", y(median_all[jaccard]));
-
-                svg = d3.select("#SimilarityDoughnutSingle");
-
-                //Redraw Doughnuts
-                pieSegments[0].value = median_single[jaccard];
-                pieSegments[1].value = 1.0 - median_single[jaccard];
-
-                var arc = d3.arc()
-                    .outerRadius(radius - 10)
-                    .innerRadius(100);
-
-                var pie = d3.pie()
-                    .sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontSingle").transition()
-                    .text(median_single[jaccard].toPrecision(2));
-
-                svg = d3.select("#SimilarityDoughnutAll");
-
-                pieSegments[0].value = median_all[jaccard];
-                pieSegments[1].value = 1.0 - median_all[jaccard];
-
-                pie.sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontAll").transition()
-                    .text(median_all[jaccard].toPrecision(2));
-            });
-        }
-
-
-        function redrawWordsAddedGraph(svg, height, width, y, yx, maxIntervalValue) {
-
-            d3.csv(data_url(), function (error, data) {
-                if (error) throw error;
-
-                data.forEach(function (data) {
-                    data[words_added] = +data[words_added];
-                    data.unters_beginn = new Date(data.unters_beginn);
-                });
-
-                //Redraw Circles
-                svg.selectAll(".circleWordsAdded")
-                    .data(data)
-                    .transition()
-                    .attr("cy", function (d) {
-                        if (d[words_added] > maxIntervalValue) {
-                            return y(maxIntervalValue)
-                        }
-                        else {
-                            return y(d[words_added]);
-                        }
-                    });
-
-                //Redraw Histogram
-                var yBins = d3.histogram()
-                    .domain(y.domain())
-                    .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
-                    .value(function (d) {
-                        if (d[words_added] > maxIntervalValue) {
-                            return maxIntervalValue;
-                        } else {
-                            return d[words_added];
-                        }
-                    })(data);
-
-                yx.domain([0, d3.max(yBins, function (d) {
-                    return d.length;
-                })]);
-
-                svg.selectAll(".yx")
-                    .transition()
-                    .call(d3.axisBottom(yx)
-                        .ticks(4));
-
-                svg.selectAll("rect.barWordsAdded")
-                    .data(yBins)
-                    .transition()
-                    .attr("width", function (d) {
-                        return yx(d.length);
-                    });
-
-                //Redraw Median Lines
-                svg.select(".medianLineSingleWordsAdded").transition()
-                    .attr("y1", y(median_single[words_added]))
-                    .attr("y2", y(median_single[words_added]));
-
-                svg.select(".medianLineAll").transition()
-                    .attr("y1", y(median_all[words_added]))
-                    .attr("y2", y(median_all[words_added]));
-
+                }
             });
         }
 
@@ -808,7 +590,6 @@ $(function () {
                 .data(data)
                 .transition()
                 .attr("width", function (d) {
-                    console.log(d);
                     if (d > maxValue) {
                         return x(maxValue)
                     } else {
@@ -831,7 +612,30 @@ $(function () {
                 });
         }
 
-        function redrawWordsDeletedGraph(svg, height, width, y, yx, maxIntervalValue) {
+        function redrawPieChart(svg, value, className) {
+
+            pieSegments[0].value = value;
+            pieSegments[1].value = 1 - value;
+
+            var arc = d3.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(100);
+
+            var pie = d3.pie()
+                .sort(null)
+                .value(function (d) {
+                    return d.value;
+                });
+
+            svg.selectAll(".arc").select("path")
+                .data(pie(pieSegments))
+                .attr("d", arc);
+
+            svg.selectAll(className).transition()
+                .text(pieSegments[0].value.toPrecision(2));
+        }
+
+        function redrawGraph(svg, height, width, y, yx, maxIntervalValue) {
 
             d3.csv(data_url(), function (error, data) {
                 if (error) throw error;
@@ -891,48 +695,8 @@ $(function () {
                     .attr("y1", y(median_all[words_deleted]))
                     .attr("y2", y(median_all[words_deleted]));
 
-                svg = d3.select("#WordsDeletedDoughnutSingle");
-
-                //Redraw Doughnuts
-                pieSegments[0].value = median_single[words_deleted];
-                pieSegments[1].value = 50 - median_single[words_deleted];
-
-                var arc = d3.arc()
-                    .outerRadius(radius - 10)
-                    .innerRadius(100);
-
-                var pie = d3.pie()
-                    .sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontSingleWordsDeleted").transition()
-                    .text(Math.round(median_single[words_deleted]));
-
-                svg = d3.select("#WordsDeletedDoughnutAll");
-
-                pieSegments[0].value = median_all[words_deleted];
-                pieSegments[1].value = 50 - median_all[words_deleted];
-
-                pie.sort(null)
-                    .value(function (d) {
-                        return d.value;
-                    });
-
-                svg.selectAll(".arc").select("path")
-                    .data(pie(pieSegments))
-                    .attr("d", arc);
-
-                svg.selectAll(".doughnutFontAll").transition()
-                    .text(Math.round(median_all[words_deleted]));
             });
         }
-
 
         function reloadContent(data) {
             d3.selectAll("svg").selectAll("g").remove();
