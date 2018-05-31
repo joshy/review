@@ -428,7 +428,7 @@ $(function () {
 
                 }
 
-                redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue);
+                redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue, classNames[0]);
 
                 if (tempValue === "jaccard_") {
                     redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -565,7 +565,7 @@ $(function () {
                 });
         }
 
-        function redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue) {
+        function redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue, className) {
             data.forEach(function (data) {
                 data[value] = +data[value];
                 data.unters_beginn = new Date(data.unters_beginn);
@@ -605,7 +605,7 @@ $(function () {
                 .call(d3.axisBottom(yx)
                     .ticks(4));
 
-            svg.selectAll("rect.bar")
+            svg.selectAll("rect."+className)
                 .data(yBins)
                 .transition()
                 .attr("width", function (d) {
