@@ -115,10 +115,10 @@ $(function () {
         }
 
         function drawWordsAddedGraph(data) {
-            var maxIntervalValue = 250;
-            maxBarValue = 50;
-            classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"];
-            color = "green";
+            var maxIntervalValue = 250,
+                maxBarValue = 50,
+                classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"],
+                color = "green";
             drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_s_f", maxIntervalValue, classNames, color, maxBarValue);
             drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_s_f", color, maxBarValue);
         }
@@ -147,21 +147,11 @@ $(function () {
                 y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervalValue]),
                 yx = d3.scaleLinear().range([0, gap]);
 
-            //Define Gridlines
-            function make_yAxis_gridlines() {
-                return d3.axisLeft(y)
-                    .ticks(4)
-            }
-
-            function make_xAxis_gridlines() {
-                return d3.axisBottom(yx)
-                    .ticks(3)
-            }
-
             //Draw Gridlines
             g.append("g")
                 .attr("class", "grid")
-                .call(make_yAxis_gridlines()
+                .call(d3.axisLeft(y)
+                    .ticks(4)
                     .tickSize(-width)
                     .tickFormat("")
                 );
@@ -247,26 +237,16 @@ $(function () {
                 return d.length;
             })]);
 
-            g.append("g")
-                .attr("class", "grid")
-                .attr("transform", "translate(0," + height + ")")
-                .call(make_xAxis_gridlines()
-                    .tickSize(-height)
-                    .tickFormat("")
-                );
+            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
-            var yBar = gLeft.selectAll(".bar")
+            var yBar = gLeft.selectAll(".rect")
                 .data(yBins)
                 .enter()
-                .append("g")
+                .append("rect")
                 .attr("class", classNames[0])
                 .attr("transform", function (d) {
                     return "translate(" + 0 + "," + y(d.x1) + ")";
-                });
-
-            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
-
-            yBar.append("rect")
+                })
                 .attr("y", 1)
                 .attr("class", classNames[0])
                 .attr("width", function (d) {
@@ -300,6 +280,38 @@ $(function () {
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
+                })
+                .on("click", function (d) {
+                    var tempData = [],
+                        minIntervalValue = d.x0;
+                    maxIntervalValue = d.x1;
+
+                    //Filter Interval Data
+                    data.forEach(function (data) {
+                        data[value] = +data[value];
+                        data.unters_beginn = new Date(data.unters_beginn);
+                        if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
+                            tempData.push(data)
+                        }
+                    });
+
+                    //Redefine y-Axis
+                    y.domain([minIntervalValue, maxIntervalValue]);
+
+                    //Redraw y-Axis
+                    svg.selectAll(".y")
+                        .transition()
+                        .call(d3.axisLeft(y)
+                            .ticks(2));
+
+                    //Redraw Gridlines
+                    svg.selectAll(".grid").transition()
+                        .call(d3.axisLeft(y)
+                            .ticks(2)
+                            .tickSize(-width)
+                            .tickFormat(""));
+
+                    redrawGraph(tempData, svg, height, width, y, yx, value, maxIntervalValue, classNames[0]);
                 });
 
             //Draw Median Line single
@@ -325,6 +337,7 @@ $(function () {
                 .call(d3.axisBottom(x));
 
             g.append("g")
+                .attr("class", "y")
                 .call(d3.axisLeft(y)
                     .ticks(6));
 
@@ -332,7 +345,8 @@ $(function () {
                 .attr("class", "yx")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
-                    .ticks(3));
+                    .ticks(4));
+
             //add Annotation of Axes
             g.append("text")
                 .attr("class", "axisAnnotation")
@@ -572,9 +586,14 @@ $(function () {
             });
 
             //Redraw Circles
-            svg.selectAll(".circle")
-                .data(data)
-                .transition()
+            var circles = svg.selectAll(".circle")
+                .data(data);
+
+            circles.exit().remove();
+
+            circles.enter().append("circle");
+
+            circles.transition()
                 .attr("cy", function (d) {
                     if (d[value] > maxIntervalValue) {
                         return y(maxIntervalValue)
@@ -584,10 +603,16 @@ $(function () {
                     }
                 });
 
+            var intervalDivisor = 5;
+
+            if (y.domain()[0] !== 0) {
+                intervalDivisor = 2;
+            }
+
             //Redraw Histogram
             var yBins = d3.histogram()
                 .domain(y.domain())
-                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1]) / 5))
+                .thresholds(d3.range(y.domain()[0], y.domain()[1], (y.domain()[1] - y.domain()[0]) / intervalDivisor))
                 .value(function (d) {
                     if (d[value] > maxIntervalValue) {
                         return maxIntervalValue;
@@ -605,11 +630,22 @@ $(function () {
                 .call(d3.axisBottom(yx)
                     .ticks(4));
 
-            svg.selectAll("rect."+className)
-                .data(yBins)
-                .transition()
+            var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
+
+            var bars = svg.selectAll("rect." + className)
+                .data(yBins);
+
+            bars.exit().remove();
+
+            bars.enter().append("rect");
+
+            bars.transition()
                 .attr("width", function (d) {
                     return yx(d.length);
+                })
+                .attr("height", bWidth)
+                .attr("transform", function (d) {
+                    return "translate(" + 0 + "," + y(d.x1) + ")";
                 });
 
             //Redraw Median Lines
