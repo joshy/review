@@ -1,4 +1,5 @@
 $(function () {
+        var counter = 0;
         var picker = new Pikaday({
             field: document.getElementById('datepicker'),
             format: 'DD.MM.YYYY'
@@ -100,6 +101,7 @@ $(function () {
 
         function drawSimilarityGraph(data) {
             var maxIntervalValue = 1,
+                minIntervalValue = 0,
                 pieSegments = [
                     {name: 'medianValue', value: 0.0, color: "steelblue"},
                     {name: 'maxValue', value: 0.0, color: 'lightgrey'},
@@ -108,7 +110,7 @@ $(function () {
                 color = "steelblue",
                 radius = 150;
 
-            drawGraph(data, d3.select("#SimilarityGraph"), "jaccard_s_f", maxIntervalValue, classNames, color, radius, pieSegments);
+            drawGraph(data, d3.select("#SimilarityGraph"), "jaccard_s_f", maxIntervalValue, minIntervalValue, classNames, color, radius, pieSegments);
             drawPieChart(d3.select("#SimilarityPieChartSingle"), median_single["jaccard_s_f"], "pieChartFontSingle", radius, pieSegments);
             pieSegments[0].color = "#666967";
             drawPieChart(d3.select("#SimilarityPieChartAll"), median_all["jaccard_s_f"], "pieChartFontAll", radius, pieSegments);
@@ -116,24 +118,26 @@ $(function () {
 
         function drawWordsAddedGraph(data) {
             var maxIntervalValue = 250,
+                minIntervalValue = 0,
                 maxBarValue = 50,
                 classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"],
                 color = "green";
-            drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_s_f", maxIntervalValue, classNames, color, maxBarValue);
+            drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
             drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_s_f", color, maxBarValue);
         }
 
         function drawWordsDeletedGraph(data) {
             var maxIntervalValue = 250,
+                minIntervalValue = 0,
                 maxBarValue = 50,
                 classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"],
                 color = "red";
-            drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_s_f", maxIntervalValue, classNames, color, maxBarValue);
+            drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
             drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_s_f", color, maxBarValue);
 
         }
 
-        function drawGraph(data, svg, value, maxIntervalValue, classNames, color, specificValue, pieSegments) {
+        function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments) {
             var margin = {top: 30, right: 20, bottom: 40, left: 45},
                 width = +svg.attr("width") - margin.left - margin.right,
                 height = +svg.attr("height") - margin.top - margin.bottom,
@@ -144,7 +148,7 @@ $(function () {
 
             //Define Axes
             var x = d3.scaleTime().range([gap + 20, width]),
-                y = d3.scaleLinear().range([height, 0]).domain([0, maxIntervalValue]),
+                y = d3.scaleLinear().range([height, 0]).domain([minIntervalValue, maxIntervalValue]),
                 yx = d3.scaleLinear().range([0, gap]);
 
             //Draw Gridlines
@@ -256,8 +260,8 @@ $(function () {
                 .on("mouseover", function (data) {
                     g.selectAll("circle")
                         .filter(function (d) {
-                            if (data.x1 === maxIntervalValue) {
-                                return d[value] >= data.x0;
+                            if (data.x0 > minIntervalValue && data.x1 === maxIntervalValue) {
+                                return d[value] > data.x0;
                             }
                             else {
                                 return d[value] >= data.x0 && d[value] <= data.x1;
@@ -282,36 +286,54 @@ $(function () {
                         .style("opacity", 0);
                 })
                 .on("click", function (d) {
-                    var tempData = [],
+                    if (counter < 2) {
+                        counter++;
+                        var tempData = [];
                         minIntervalValue = d.x0;
-                    maxIntervalValue = d.x1;
+                        maxIntervalValue = d.x1;
 
-                    //Filter Interval Data
-                    data.forEach(function (data) {
-                        data[value] = +data[value];
-                        data.unters_beginn = new Date(data.unters_beginn);
-                        if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
-                            tempData.push(data)
-                        }
-                    });
+                        console.log("Min: " + minIntervalValue);
+                        console.log("Max: " + maxIntervalValue);
 
-                    //Redefine y-Axis
-                    y.domain([minIntervalValue, maxIntervalValue]);
+                        //Filter Interval Data
+                        data.forEach(function (data) {
+                            data[value] = +data[value];
+                            data.unters_beginn = new Date(data.unters_beginn);
+                            if (minIntervalValue === 0) {
+                                if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
+                                    tempData.push(data);
+                                }
+                            } else {
+                                if (data[value] > minIntervalValue && data[value] <= maxIntervalValue) {
+                                    tempData.push(data)
+                                }
+                            }
+                        });
 
-                    //Redraw y-Axis
-                    svg.selectAll(".y")
-                        .transition()
-                        .call(d3.axisLeft(y)
-                            .ticks(2));
+                        data = tempData;
 
-                    //Redraw Gridlines
-                    svg.selectAll(".grid").transition()
-                        .call(d3.axisLeft(y)
-                            .ticks(2)
-                            .tickSize(-width)
-                            .tickFormat(""));
+                        //Redefine y-Axis
+                        y.domain([minIntervalValue, maxIntervalValue]);
 
-                    redrawGraph(tempData, svg, height, width, y, yx, value, maxIntervalValue, classNames[0]);
+                        //Redraw y-Axis
+                        svg.selectAll(".y")
+                            .transition()
+                            .call(d3.axisLeft(y)
+                                .ticks(2));
+
+                        //Redraw Gridlines
+                        svg.selectAll(".grid").transition()
+                            .call(d3.axisLeft(y)
+                                .ticks(2)
+                                .tickSize(-width)
+                                .tickFormat(""));
+
+                        redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
+
+                        g.selectAll("circle")
+                            .attr("r", 4)
+                            .style("fill", color);
+                    }
                 });
 
             //Draw Median Line single
@@ -442,7 +464,7 @@ $(function () {
 
                 }
 
-                redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue, classNames[0]);
+                redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                 if (tempValue === "jaccard_") {
                     redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -609,7 +631,7 @@ $(function () {
                 });
         }
 
-        function redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue, className) {
+        function redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, className) {
             data.forEach(function (data) {
                 data[value] = +data[value];
                 data.unters_beginn = new Date(data.unters_beginn);
@@ -624,6 +646,9 @@ $(function () {
             circles.enter().append("circle");
 
             circles.transition()
+                .attr("cx", function (d) {
+                    return x(d.unters_beginn);
+                })
                 .attr("cy", function (d) {
                     if (d[value] > maxIntervalValue) {
                         return y(maxIntervalValue)
@@ -632,10 +657,9 @@ $(function () {
                         return y(d[value]);
                     }
                 });
-
+            
             var intervalDivisor = 5;
-
-            if (y.domain()[0] !== 0) {
+            if ((Math.abs(maxIntervalValue - minIntervalValue)) < 0.2) {
                 intervalDivisor = 2;
             }
 
@@ -748,6 +772,7 @@ $(function () {
         }
 
         function reloadContent(data) {
+            counter = 0;
             d3.selectAll("svg").selectAll("g").remove();
             d3.selectAll(".tooltip").remove();
 
