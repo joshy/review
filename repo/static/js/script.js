@@ -377,38 +377,38 @@ $(function () {
             legend.append("line")
                 .attr("class", "medianLineSingle")
                 .style("stroke", color)
-                .attr("x1", width / 2)
-                .attr("x2", width / 2 + 20)
-                .attr("y1", 5)
-                .attr("y2", 5);
+                .attr("x1", width / 3)
+                .attr("x2", width / 3 + 20)
+                .attr("y1", 11)
+                .attr("y2", 11);
 
             legend.append("line")
                 .attr("class", "medianLineAll")
-                .attr("x1", width / 1.6)
-                .attr("x2", width / 1.6 + 20)
-                .attr("y1", 5)
-                .attr("y2", 5);
+                .attr("x1", width / 2.2)
+                .attr("x2", width / 2.2 + 20)
+                .attr("y1", 11)
+                .attr("y2", 11);
 
             legend.append("text")
-                .attr("x", width / 2 + 100)
-                .attr("y", 5)
+                .attr("x", width / 3 + 100)
+                .attr("y", 11)
                 .attr("dy", "0.32em")
                 .text("personal Median");
 
             legend.append("text")
-                .attr("x", width / 1.6 + 95)
-                .attr("y", 5)
+                .attr("x", width / 2.2 + 95)
+                .attr("y", 11)
                 .attr("dy", "0.32em")
                 .text("overall Median");
 
-            //Add Button
-            var button = svg.append("g"),
+            //Add Reports Button
+            var reportButton = svg.append("g"),
                 buttonWidth = 150,
                 buttonHeight = 20,
                 x0 = width - 100,
                 y0 = 0;
 
-            button.append("rect")
+            reportButton.append("rect")
                 .attr("class", classNames[1])
                 .attr("width", buttonWidth)
                 .attr("height", buttonHeight)
@@ -419,7 +419,7 @@ $(function () {
                 .attr("rx", 5)
                 .attr("ry", 5);
 
-            button.append("text")
+            reportButton.append("text")
                 .attr("class", classNames[2])
                 .attr("x", function (d, i) {
                     return x0 + buttonWidth * i + buttonWidth / 2;
@@ -427,7 +427,7 @@ $(function () {
                 .attr("y", y0 + buttonHeight / 2)
                 .text("schreiben -> final");
 
-            button.on("click", function () {
+            reportButton.on("click", function () {
 
                 var tempValue = value.slice(0, -3),
                     checkValue = value.substr(value.length - 3);
@@ -456,6 +456,36 @@ $(function () {
                         redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
                     }
                 }
+            });
+
+            //Add Reports Button
+            var resetButton = svg.append("g");
+            x0 = width - 260;
+
+            resetButton.append("rect")
+                .attr("class", "buttonReset")
+                .attr("width", buttonWidth)
+                .attr("height", buttonHeight)
+                .attr("x", function (d, i) {
+                    return x0 + (buttonWidth) * i;
+                })
+                .attr("y", y0)
+                .attr("rx", 5)
+                .attr("ry", 5);
+
+            resetButton.append("text")
+                .attr("class", "buttonAnnotationReset")
+                .attr("x", function (d, i) {
+                    return x0 + buttonWidth * i + buttonWidth / 2;
+                })
+                .attr("y", y0 + buttonHeight / 2)
+                .text("reset");
+
+            resetButton.on("click", function () {
+                d3.csv(data_url(), function (error, data) {
+                    if (error) throw error;
+                    reloadContent(data);
+                });
             });
         }
 
