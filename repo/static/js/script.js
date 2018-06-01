@@ -259,11 +259,11 @@ $(function () {
                 .on("mouseover", function (data) {
                     g.selectAll("circle")
                         .filter(function (d) {
-                            if (data.x0 === minIntervalValue && data.x1 === maxIntervalValue) {
-                                return d[value] >= data.x0;
+                            if (data.x0 > minIntervalValue && data.x1 === maxIntervalValue) {
+                                return d[value] > data.x0;
                             }
                             else {
-                                return d[value] >= data.x0 && d[value] <= data.x1;
+                                return d[value] > data.x0 && d[value] <= data.x1;
                             }
                         })
                         .attr("r", 7)
@@ -292,7 +292,7 @@ $(function () {
                     //Filter Interval Data
                     data.forEach(function (data) {
                         data[value] = +data[value];
-                        if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
+                        if (data[value] > minIntervalValue && data[value] <= maxIntervalValue) {
                             tempData.push(data)
                         }
                     });
@@ -315,7 +315,7 @@ $(function () {
                             .tickSize(-width)
                             .tickFormat(""));
 
-                    redrawGraph(tempData, svg, height, width, y, yx, value, minIntervalValue, maxIntervalValue, classNames[0]);
+                    redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, 2, classNames[0]);
 
                     g.selectAll("circle")
                         .attr("r", 4)
@@ -450,7 +450,7 @@ $(function () {
 
                 }
 
-                redrawGraph(data, svg, height, width, y, yx, value, maxIntervalValue, classNames[0]);
+                redrawGraph(data, svg, height, width, y, yx, x, value, maxIntervalValue, 5, classNames[0]);
 
                 if (tempValue === "jaccard_") {
                     redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -617,7 +617,8 @@ $(function () {
                 });
         }
 
-        function redrawGraph(data, svg, height, width, y, yx, value, minIntervalValue, maxIntervalValue, className) {
+        function redrawGraph(data, svg, height, width, y, yx, x, value,
+                             minIntervalValue, maxIntervalValue, intervalDivisor, className) {
             data.forEach(function (data) {
                 data[value] = +data[value];
                 data.unters_beginn = new Date(data.unters_beginn);
@@ -632,6 +633,9 @@ $(function () {
             circles.enter().append("circle");
 
             circles.transition()
+                .attr("cx", function (d) {
+                    return x(d.unters_beginn);
+                })
                 .attr("cy", function (d) {
                     if (d[value] > maxIntervalValue) {
                         return y(maxIntervalValue)
@@ -640,12 +644,6 @@ $(function () {
                         return y(d[value]);
                     }
                 });
-
-            var intervalDivisor = 5;
-
-            if (minIntervalValue !== 0) {
-                intervalDivisor = 2;
-            }
 
             //Redraw Histogram
             var yBins = d3.histogram()
