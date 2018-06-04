@@ -71,8 +71,10 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
             A.GEGENLESE_DATUM,
             A.GEGENLESER,
             B.UNTART_NAME,
-            C.PAT_NAME,
-            C.PAT_VORNAME
+            C.PP_MISC_MFD_1_KUERZEL
+            C.PP_MISC_MFD_1_BEZEICHNUNG
+            D.PAT_NAME,
+            D.PAT_VORNAME
           FROM
             A_BEFUND A
           INNER JOIN
@@ -80,9 +82,13 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
           ON
           	A.UNTERS_ART = B.UNTART_KUERZEL
           INNER JOIN
-            A_PATIENT C
+            A_UNTBEH_SONSTIGE_FELDER C
           ON
-            A.PATIENT_SCHLUESSEL = C.PATIENT_SCHLUESSEL
+          	A.UNTERS_SCHLUESSEL = C.UNTERS_SCHLUESSEL
+          INNER JOIN
+            A_PATIENT D
+          ON
+            A.PATIENT_SCHLUESSEL = D.PATIENT_SCHLUESSEL
           WHERE
               A.BEFUND_STATUS = :befund_status
             AND
@@ -184,3 +190,17 @@ def _select_befund(cursor, befund_schluessel):
     result_set = cursor.fetchall()
     doc = ''.join([row[0] for row in result_set])
     return doc
+
+
+def _query_departments(cursor):
+    sql = """
+          SELECT
+            A.PP_MISC_MFD_1_KUERZEL,
+            A.PP_MISC_MFD_1_BEZEICHNUNG
+            
+          FROM
+            A_UNTBEH_SONSTIGE_FELDER A
+            WHERE PP_MISC_MFD_1_KUERZEL IS NOT NULL ;
+          """
+    cursor.execute(sql)
+    return cursor.fetchall()

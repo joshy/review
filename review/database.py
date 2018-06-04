@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 import datetime
 
+
 def query_review_reports(cursor):
     """
     Returns the rows where the reports are finalized and metrics are not yet
@@ -31,6 +32,7 @@ def query_review_reports(cursor):
     results = cursor.fetchall()
     return results
 
+
 def update_metrics(cursor, unters_schluessel, diffs):
     sql = """
           UPDATE reports SET
@@ -49,18 +51,38 @@ def update_metrics(cursor, unters_schluessel, diffs):
     try:
 
         cursor.execute(sql,
-          (diffs[0]['jaccard'],
-           diffs[0]['additions'],
-           diffs[0]['deletions'],
-           diffs[1]['jaccard'],
-           diffs[1]['additions'],
-           diffs[1]['deletions'],
-           diffs[2]['total_words_s'],
-           diffs[2]['total_words_g'],
-           diffs[2]['total_words_f'],
-           unters_schluessel))
+                       (diffs[0]['jaccard'],
+                        diffs[0]['additions'],
+                        diffs[0]['deletions'],
+                        diffs[1]['jaccard'],
+                        diffs[1]['additions'],
+                        diffs[1]['deletions'],
+                        diffs[2]['total_words_s'],
+                        diffs[2]['total_words_g'],
+                        diffs[2]['total_words_f'],
+                        unters_schluessel))
     except psycopg2.Error as e:
         logging.error('Error %s', e)
+
+
+def _insert_department(cursor, row):
+    """
+       Temporary Method to fill existing rows with the department description
+    """
+    sql = """
+          INSERT INTO reports
+            (pp_misc_mfd_1_kuerzel,
+             pp_misc_mfd_1_bezeichnung)
+          VALUES
+            (%s, %s)
+          ON CONFLICT
+            (unters_schluessel)
+          DO NOTHING
+          """
+    cursor.execute(sql,
+                   (row['pp_misc_mfd_1_kuerzel'],
+                    row['pp_misc_mfd_1_bezeichnung']))
+
 
 def insert(cursor, row):
     sql = """
@@ -77,27 +99,31 @@ def insert(cursor, row):
             befund_s,
             untart_name,
             pat_name,
-            pat_vorname)
+            pat_vorname,
+            pp_misc_mfd_1_kuerzel,
+            pp_misc_mfd_1_bezeichnung)
           VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
           ON CONFLICT
             (unters_schluessel)
           DO NOTHING
           """
     cursor.execute(sql,
-        (row['patient_schluessel'],
-         row['unters_schluessel'],
-         row['unters_art'],
-         row['befund_schluessel'],
-         row['unters_beginn'],
-         row['schreiber'],
-         row['freigeber'],
-         row['befund_freigabe'],
-         row['befund_status'],
-         row['befund_s'],
-         row['untart_name'],
-         row['pat_name'],
-         row['pat_vorname']))
+                   (row['patient_schluessel'],
+                    row['unters_schluessel'],
+                    row['unters_art'],
+                    row['befund_schluessel'],
+                    row['unters_beginn'],
+                    row['schreiber'],
+                    row['freigeber'],
+                    row['befund_freigabe'],
+                    row['befund_status'],
+                    row['befund_s'],
+                    row['untart_name'],
+                    row['pat_name'],
+                    row['pat_vorname'],
+                    row['pp_misc_mfd_1_kuerzel'],
+                    row['pp_misc_mfd_1_bezeichnung']))
 
 
 def update(cursor, row, befund_status):
@@ -120,18 +146,18 @@ def update(cursor, row, befund_status):
             unters_schluessel = %s
           """.format(field)
     cursor.execute(sql,
-        (row[field],
-         row['lese_datum'],
-         row['leser'],
-         row['gegenlese_datum'],
-         row['gegenleser'],
-         row['befund_status'],
-         row['befund_freigabe'],
-         row['unters_beginn'],
-         row['pat_vorname'],
-         row['pat_name'],
-         row['untart_name'],
-         row['unters_schluessel']))
+                   (row[field],
+                    row['lese_datum'],
+                    row['leser'],
+                    row['gegenlese_datum'],
+                    row['gegenleser'],
+                    row['befund_status'],
+                    row['befund_freigabe'],
+                    row['unters_beginn'],
+                    row['pat_vorname'],
+                    row['pat_name'],
+                    row['untart_name'],
+                    row['unters_schluessel']))
 
 
 def query_by_writer(cursor, writer, last_exams):
@@ -165,7 +191,9 @@ def query_by_writer(cursor, writer, last_exams):
             a.words_deleted_g_f,
             a.total_words_s,
             a.total_words_g,
-            a.total_words_f
+            a.total_words_f,
+            a.pp_misc_mfd_1_kuerzel,
+            a.pp_misc_mfd_1_bezeichnung
           FROM
             reports a
           WHERE
@@ -178,6 +206,7 @@ def query_by_writer(cursor, writer, last_exams):
           """
     cursor.execute(sql, (writer.upper(), last_exams))
     return cursor.fetchall()
+
 
 def query_by_writer_and_date(cursor, writer, start_date, end_date):
     """
@@ -210,7 +239,9 @@ def query_by_writer_and_date(cursor, writer, start_date, end_date):
             a.words_deleted_g_f,
             a.total_words_s,
             a.total_words_g,
-            a.total_words_f
+            a.total_words_f,
+            a.pp_misc_mfd_1_kuerzel,
+            a.pp_misc_mfd_1_bezeichnung
           FROM
             reports a
           WHERE
@@ -224,6 +255,7 @@ def query_by_writer_and_date(cursor, writer, start_date, end_date):
           """
     cursor.execute(sql, (writer.upper(), start_date, end_date))
     return cursor.fetchall()
+
 
 def query_calculations(cursor):
     """
