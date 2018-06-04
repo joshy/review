@@ -71,8 +71,8 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
             A.GEGENLESE_DATUM,
             A.GEGENLESER,
             B.UNTART_NAME,
-            C.PP_MISC_MFD_1_KUERZEL
-            C.PP_MISC_MFD_1_BEZEICHNUNG
+            C.PP_MISC_MFD_1_KUERZEL,
+            C.PP_MISC_MFD_1_BEZEICHNUNG,
             D.PAT_NAME,
             D.PAT_VORNAME
           FROM
@@ -200,7 +200,7 @@ def _query_departments(cursor):
             
           FROM
             A_UNTBEH_SONSTIGE_FELDER A
-            WHERE PP_MISC_MFD_1_KUERZEL IS NOT NULL ;
+            WHERE PP_MISC_MFD_1_KUERZEL IS NOT NULL
           """
     cursor.execute(sql)
     return cursor.fetchall()
