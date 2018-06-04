@@ -107,9 +107,13 @@ def dashboard():
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_data(writer, last_exams, start_date, end_date)
+    df = pd.DataFrame(rows)
+    df = relative(df).to_dict('records')
+    median_single = prepare_values(df)
     all_rows = load_all_data()
-    median_single = prepare_values(rows)
-    median_all = prepare_values(all_rows)
+    df = pd.DataFrame(all_rows)
+    df = relative(df).to_dict('records')
+    median_all = prepare_values(df)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
         start_date=start_date, end_date=end_date, version=version,

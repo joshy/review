@@ -117,23 +117,23 @@ $(function () {
         }
 
         function drawWordsAddedGraph(data) {
-            var maxIntervalValue = 250,
+            var maxIntervalValue = 1,
                 minIntervalValue = 0,
-                maxBarValue = 50,
+                maxBarValue = 1,
                 classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"],
                 color = "green";
-            drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-            drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_s_f", color, maxBarValue);
+            drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
         }
 
         function drawWordsDeletedGraph(data) {
-            var maxIntervalValue = 250,
+            var maxIntervalValue = 1,
                 minIntervalValue = 0,
-                maxBarValue = 50,
+                maxBarValue = 1,
                 classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"],
                 color = "red";
-            drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-            drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_s_f", color, maxBarValue);
+            drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
 
         }
 
@@ -291,9 +291,6 @@ $(function () {
                         var tempData = [];
                         minIntervalValue = d.x0;
                         maxIntervalValue = d.x1;
-
-                        console.log("Min: " + minIntervalValue);
-                        console.log("Max: " + maxIntervalValue);
 
                         //Filter Interval Data
                         data.forEach(function (data) {
@@ -471,7 +468,7 @@ $(function () {
                     redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
                 }
                 else {
-                    if (tempValue === "words_added_") {
+                    if (tempValue === "words_added_relative_") {
                         redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
                     }
                     else {
@@ -563,8 +560,8 @@ $(function () {
                 height = +svg.attr("height") - margin.top - margin.bottom,
                 g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            var data = [{"name": "personal Median", "value": Math.round(median_single[value]), "color": color},
-                {"name": "overall Median", "value": Math.round(median_all[value]), "color": "#666967"}];
+            var data = [{"name": "personal Median", "value": median_single[value].toPrecision(2), "color": color},
+                {"name": "overall Median", "value": median_all[value].toPrecision(2), "color": "#666967"}];
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])
@@ -659,7 +656,8 @@ $(function () {
                 });
             
             var intervalDivisor = 5;
-            if ((Math.abs(maxIntervalValue - minIntervalValue)) < 0.2) {
+
+            if ((Math.abs(maxIntervalValue - minIntervalValue)) <= 0.3) {
                 intervalDivisor = 2;
             }
 
@@ -717,7 +715,9 @@ $(function () {
             var margin = {top: 50, right: 250, bottom: 50, left: 250},
                 width = +svg.attr("width") - margin.left - margin.right;
 
-            var data = [Math.round(median_single[words]), Math.round(median_all[words])];
+            var data = [median_single[words].toPrecision(2), median_all[words].toPrecision(2)];
+
+            console.log(data);
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])

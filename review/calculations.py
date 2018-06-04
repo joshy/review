@@ -1,10 +1,14 @@
 from math import floor
 
 def relative(df):
-    df['words_added_g_f_relative'] = df.apply(
+    df['words_added_relative_g_f'] = df.apply(
         lambda row: _relative(row['total_words_f'], row['words_added_g_f']), axis=1)
-    df['words_deleted_g_f_relative'] = df.apply(
+    df['words_added_relative_s_f'] = df.apply(
+        lambda row: _relative(row['total_words_f'], row['words_added_s_f']), axis=1)
+    df['words_deleted_relative_g_f'] = df.apply(
         lambda row: _relative(row['total_words_f'], row['words_deleted_g_f']), axis=1)
+    df['words_deleted_relative_s_f'] = df.apply(
+        lambda row: _relative(row['total_words_f'], row['words_deleted_s_f']), axis=1)
     return df
 
 def _relative(total, changes):
@@ -12,8 +16,8 @@ def _relative(total, changes):
     return (changes) / t
 
 def prepare_values(rows):
-    keys = ["jaccard_s_f", "jaccard_g_f", "words_added_s_f",
-            "words_added_g_f", "words_deleted_s_f", "words_deleted_g_f"]
+    keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",
+            "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f"]
     median_values = {}
 
     for key in keys:
