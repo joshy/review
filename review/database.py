@@ -116,6 +116,7 @@ def update(cursor, row, befund_status):
             leser = %s,
             gegenlese_datum = %s,
             gegenleser = %s,
+            freigeber = %s,
             befund_status = %s,
             befund_freigabe = %s,
             unters_beginn = %s,
@@ -131,6 +132,7 @@ def update(cursor, row, befund_status):
                     row['leser'],
                     row['gegenlese_datum'],
                     row['gegenleser'],
+                    row['freigeber'],
                     row['befund_status'],
                     row['befund_freigabe'],
                     row['unters_beginn'],
@@ -176,10 +178,16 @@ def query_by_writer(cursor, writer, last_exams):
             a.pp_misc_mfd_1_bezeichnung
           FROM
             reports a
+          INNER JOIN 
+            reports b 
+          ON 
+            a.unters_schluessel = b.unters_schluessel
           WHERE
               a.schreiber = %s
           AND
               a.befund_status = 'f'
+          AND
+              a.schreiber != b.freigeber
           ORDER BY
               a.unters_beginn desc
           LIMIT %s
@@ -223,13 +231,19 @@ def query_by_writer_and_date(cursor, writer, start_date, end_date):
             a.pp_misc_mfd_1_kuerzel,
             a.pp_misc_mfd_1_bezeichnung
           FROM
-            reports a
+            reports a 
+          INNER JOIN 
+            reports b 
+          ON 
+            a.unters_schluessel = b.unters_schluessel
           WHERE
               a.schreiber = %s
           AND
               a.unters_beginn between %s and %s
           AND
               a.befund_status = 'f'
+          AND
+              a.schreiber != b.freigeber
           ORDER BY
               a.unters_beginn desc
           """
@@ -254,8 +268,14 @@ def query_calculations(cursor):
             a.total_words_f
           FROM
             reports a
+          INNER JOIN 
+            reports b 
+          ON 
+            a.unters_schluessel = b.unters_schluessel
           WHERE
               a.befund_status = 'f'
+          AND
+              a.schreiber != b.freigeber
           ORDER BY
               a.unters_beginn desc
           """
@@ -272,7 +292,7 @@ def _update_department(cursor, row):
             pp_misc_mfd_1_kuerzel = %s,
             pp_misc_mfd_1_bezeichnung = %s
           WHERE
-            unters_schluessel = %s
+            unters_schluessel = %s AND pp_misc_mfd_1_kuerzel IS NULL
           """
     cursor.execute(sql,
                    (row['pp_misc_mfd_1_kuerzel'],

@@ -107,7 +107,7 @@ def run_schedule():
 
 
 if __name__ == '__main__':
-    schedule.every(30).minutes.do(job)
+    schedule.every(15).minutes.do(job)
     t = Thread(target=run_schedule)
     t.start()
     logging.info('Polling is up and running')
