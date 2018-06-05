@@ -551,7 +551,14 @@ $(function () {
                 .attr("transform",
                     "translate(" + (width / 10 - margin.right) + " ," +
                     (height / 3 + margin.bottom) + ")")
-                .text("personal Median");
+                .text(function() {
+                    if(className === "pieChartFontSingle") {
+                        return "personal Median"
+                    }
+                    else {
+                        return "overall Median"
+                    }
+                });
         }
 
         function drawBarChart(svg, value, color, maxValue) {

@@ -64,26 +64,6 @@ def update_metrics(cursor, unters_schluessel, diffs):
     except psycopg2.Error as e:
         logging.error('Error %s', e)
 
-
-def _insert_department(cursor, row):
-    """
-       Temporary Method to fill existing rows with the department description
-    """
-    sql = """
-          INSERT INTO reports
-            (pp_misc_mfd_1_kuerzel,
-             pp_misc_mfd_1_bezeichnung)
-          VALUES
-            (%s, %s)
-          ON CONFLICT
-            (unters_schluessel)
-          DO NOTHING
-          """
-    cursor.execute(sql,
-                   (row['pp_misc_mfd_1_kuerzel'],
-                    row['pp_misc_mfd_1_bezeichnung']))
-
-
 def insert(cursor, row):
     sql = """
           INSERT INTO reports
@@ -281,3 +261,21 @@ def query_calculations(cursor):
           """
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+def _update_department(cursor, row):
+    """
+       Temporary Method to fill existing rows with the department description
+    """
+    sql = """
+          UPDATE reports SET
+            pp_misc_mfd_1_kuerzel = %s,
+            pp_misc_mfd_1_bezeichnung = %s
+          WHERE
+            unters_schluessel = %s
+          """
+    cursor.execute(sql,
+                   (row['pp_misc_mfd_1_kuerzel'],
+                    row['pp_misc_mfd_1_bezeichnung'],
+                    row['unters_schluessel']))
+

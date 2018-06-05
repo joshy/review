@@ -6,7 +6,7 @@ import daiquiri
 from repo.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
 from repo.database.connection import open_connection
 from repo.database.report import _query_departments
-from review.database import _insert_department
+from review.database import _update_department
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -38,20 +38,20 @@ def query_departments():
     return rows
 
 
-def insert_departments():
+def update_departments():
     rows = query_departments()
     count = len(rows)
-    logging.debug('Updating total of {} rows with department description'.format(count))
+    logging.debug('Iterate over total of {} rows with department description'.format(count))
     review_db = get_review_db()
     review_cursor = review_db.cursor()
     for i, row in enumerate(rows, start=1):
-        logging.debug('Updating row {}/{} rows'.format(i, count))
-        _insert_department(review_cursor, row)
+        logging.debug('Iterating over row {}/{} rows'.format(i, count))
+        _update_department(review_cursor, row)
     logging.info('Inserting departments done')
     review_db.commit()
     review_cursor.close()
 
 
 if __name__ == '__main__':
-    insert_departments()
+    update_departments()
 

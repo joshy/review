@@ -195,12 +195,23 @@ def _select_befund(cursor, befund_schluessel):
 def _query_departments(cursor):
     sql = """
           SELECT
-            A.PP_MISC_MFD_1_KUERZEL,
-            A.PP_MISC_MFD_1_BEZEICHNUNG
-            
+            A.UNTERS_SCHLUESSEL,
+            B.PP_MISC_MFD_1_KUERZEL,
+            B.PP_MISC_MFD_1_BEZEICHNUNG
           FROM
-            A_UNTBEH_SONSTIGE_FELDER A
-            WHERE PP_MISC_MFD_1_KUERZEL IS NOT NULL
+            A_BEFUND A
+          INNER JOIN
+            A_UNTBEH_SONSTIGE_FELDER B
+          ON
+          	A.UNTERS_SCHLUESSEL = B.UNTERS_SCHLUESSEL
+          WHERE PP_MISC_MFD_1_KUERZEL IS NOT NULL
           """
-    cursor.execute(sql)
-    return cursor.fetchall()
+    try:
+        cursor.execute(sql)
+        desc = [d[0].lower() for d in cursor.description]
+        result = [dict(zip(desc, row)) for row in cursor]
+        return result
+    except cx_Oracle.DatabaseError as e:
+        logging.error('Database error occured')
+        logging.error(e)
+        return None
