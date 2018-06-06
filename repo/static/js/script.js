@@ -78,6 +78,8 @@ $(function () {
             d3.csv(data_url(), function (error, data) {
                 if (error) throw error;
 
+                console.log(data);
+
                 drawSimilarityGraph(data);
                 drawWordsAddedGraph(data);
                 drawWordsDeletedGraph(data);
@@ -138,16 +140,25 @@ $(function () {
         }
 
         function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments) {
-            var margin = {top: 30, right: 20, bottom: 40, left: 45},
+            var margin = {top: 30, right: 20, bottom: 150, left: 45},
                 width = +svg.attr("width") - margin.left - margin.right,
                 height = +svg.attr("height") - margin.top - margin.bottom,
                 gap = 170,
-                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                g = svg.append("g")
+                    .attr("class", "graphArea")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
+                brushArea = svg.append("g")
+                    .attr("class", "brushArea")
+                    .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")"),
 
-            var formatTime = d3.timeFormat("%d.%m.%Y");
+                formatTime = d3.timeFormat("%d.%m.%Y"),
+                brush = d3.brushX()
+                    .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
+                    .on("brush", brushed),
 
-            //Define Axes
-            var x = d3.scaleTime().range([gap + 20, width]),
+                //Define Axes
+                x = d3.scaleTime().range([gap + margin.right, width]),
+                x2 = d3.scaleTime().range([gap + margin.right, width]),
                 y = d3.scaleLinear().range([height, 0]).domain([minIntervalValue, maxIntervalValue]),
                 yx = d3.scaleLinear().range([0, gap]);
 
@@ -161,7 +172,8 @@ $(function () {
                 );
 
             //Define Histogramm
-            var gLeft = g.append("g");
+            var gLeft = g.append("g")
+                .attr("class", "histogram");
 
             // Define the div for the tooltip
             var div = d3.select("body")
@@ -179,8 +191,13 @@ $(function () {
                 return d.unters_beginn;
             }));
 
+            x2.domain(x.domain());
+
             //Draw Circles
-            g.selectAll("circle")
+            var circles = g.append("g")
+                .attr("class", "circles");
+
+            circles.selectAll("circle")
                 .data(data)
                 .enter()
                 .append("circle")
@@ -325,7 +342,7 @@ $(function () {
                                 .tickSize(-width)
                                 .tickFormat(""));
 
-                        redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
+                        redrawGraph(data, svg, height, gap, margin, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                         g.selectAll("circle")
                             .attr("r", 4)
@@ -352,8 +369,13 @@ $(function () {
 
             //Draw Axes
             g.append("g")
+                .attr("class", "x")
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(x));
+
+            brushArea.append("g")
+                .attr("class", "x2")
+                .call(d3.axisBottom(x2));
 
             g.append("g")
                 .attr("class", "y")
@@ -365,6 +387,12 @@ $(function () {
                 .attr("transform", "translate(0," + height + ")")
                 .call(d3.axisBottom(yx)
                     .ticks(4));
+
+            //Append Brush
+            brushArea.append("g")
+                .attr("class", "brushTool")
+                .call(brush)
+                .call(brush.move, x.range());
 
             //add Annotation of Axes
             g.append("text")
@@ -420,8 +448,9 @@ $(function () {
                 .attr("dy", "0.32em")
                 .text("overall Median");
 
-            //Add Reports Button
-            var reportButton = svg.append("g"),
+            //Add Report Button
+            var reportButton = svg.append("g")
+                    .attr("class", "reportButton"),
                 buttonWidth = 150,
                 buttonHeight = 20,
                 x0 = width - 100,
@@ -461,7 +490,7 @@ $(function () {
 
                 }
 
-                redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
+                redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                 if (tempValue === "jaccard_") {
                     redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -477,8 +506,9 @@ $(function () {
                 }
             });
 
-            //Add Reports Button
-            var resetButton = svg.append("g");
+            //Add Reset Button
+            var resetButton = svg.append("g")
+                .attr("class", "resetButton");
             x0 = width - 260;
 
             resetButton.append("rect")
@@ -506,6 +536,16 @@ $(function () {
                     reloadContent(data);
                 });
             });
+
+            //Brush function
+            function brushed() {
+                x.domain(d3.event.selection.map(x2.invert, x2));
+                g.selectAll("circle")
+                    .attr("cx", function (d) {
+                        return x(d.unters_beginn);
+                    });
+                g.select(".x").call(d3.axisBottom(x));
+            }
         }
 
         function drawPieChart(svg, medianValue, className, radius, pieSegments) {
@@ -551,8 +591,8 @@ $(function () {
                 .attr("transform",
                     "translate(" + (width / 10 - margin.right) + " ," +
                     (height / 3 + margin.bottom) + ")")
-                .text(function() {
-                    if(className === "pieChartFontSingle") {
+                .text(function () {
+                    if (className === "pieChartFontSingle") {
                         return "personal Median"
                     }
                     else {
@@ -635,7 +675,7 @@ $(function () {
                 });
         }
 
-        function redrawGraph(data, svg, height, width, y, yx, x, value, minIntervalValue, maxIntervalValue, className) {
+        function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className) {
             data.forEach(function (data) {
                 data[value] = +data[value];
                 data.unters_beginn = new Date(data.unters_beginn);
@@ -661,7 +701,7 @@ $(function () {
                         return y(d[value]);
                     }
                 });
-            
+
             var intervalDivisor = 5;
 
             if ((Math.abs(maxIntervalValue - minIntervalValue)) <= 0.3) {
