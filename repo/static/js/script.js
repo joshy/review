@@ -78,8 +78,6 @@ $(function () {
             d3.csv(data_url(), function (error, data) {
                 if (error) throw error;
 
-                console.log(data);
-
                 drawSimilarityGraph(data);
                 drawWordsAddedGraph(data);
                 drawWordsDeletedGraph(data);
@@ -342,7 +340,7 @@ $(function () {
                                 .tickSize(-width)
                                 .tickFormat(""));
 
-                        redrawGraph(data, svg, height, gap, margin, width, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
+                        redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                         g.selectAll("circle")
                             .attr("r", 4)
@@ -542,7 +540,12 @@ $(function () {
                 x.domain(d3.event.selection.map(x2.invert, x2));
                 g.selectAll("circle")
                     .attr("cx", function (d) {
-                        return x(d.unters_beginn);
+                        if (x(d.unters_beginn) < gap + margin.right) {
+                            return -100;
+                        }
+                        else {
+                            return x(d.unters_beginn);
+                        }
                     });
                 g.select(".x").call(d3.axisBottom(x));
             }
@@ -691,7 +694,12 @@ $(function () {
 
             circles.transition()
                 .attr("cx", function (d) {
-                    return x(d.unters_beginn);
+                    if (x(d.unters_beginn) < gap + margin.right) {
+                        return -100;
+                    }
+                    else {
+                        return x(d.unters_beginn);
+                    }
                 })
                 .attr("cy", function (d) {
                     if (d[value] > maxIntervalValue) {
@@ -763,8 +771,6 @@ $(function () {
                 width = +svg.attr("width") - margin.left - margin.right;
 
             var data = [median_single[words].toPrecision(2), median_all[words].toPrecision(2)];
-
-            console.log(data);
 
             var x = d3.scaleLinear()
                 .domain([0, maxValue])
