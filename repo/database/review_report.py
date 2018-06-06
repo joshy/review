@@ -42,7 +42,9 @@ def query_review_reports(cursor, day, writer):
             a.jaccard_g_f,
             a.jaccard_s_f,
             a.words_added_g_f,
-            a.words_deleted_g_f
+            a.words_deleted_g_f,
+            a.pp_misc_mfd_1_kuerzel,
+            a.pp_misc_mfd_1_bezeichnung
           FROM
             reports a
           WHERE

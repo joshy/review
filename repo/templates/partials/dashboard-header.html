@@ -43,22 +43,20 @@
         <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
     </form>
 </div>
-<div class="w-100 center pb4-ns pt3-ns flex justify-center mw8">
-    <form class="flex justify-center" action="/review/dashboard">
-        <fieldset>
-            <legend class="f6 pa1">Filter Clinics </legend>
-            <input type="checkbox" id="CheckboxAOD" checked>
-            <label class="f6 pa1" for="CheckboxAOD">AOD</label>
-            <input type="checkbox" id="CheckboxCTD" checked>
-            <label class="f6 pa1" for="CheckboxCTD">CTD</label>
-            <input type="checkbox" id="CheckboxMSK" checked>
-            <label class="f6 pa1" for="CheckboxMSK">MSK</label>
-            <input type="checkbox" id="CheckboxNUK" checked>
-            <label class="f6 pa1" for="CheckboxNUK">NUK</label>
-            <input type="checkbox" id="CheckboxIR" checked>
-            <label class="f6 pa1"  for="CheckboxIR">IR</label>
-            <input type="checkbox" id="CheckboxFPS" checked>
-            <label class="f6 pa1" for="CheckboxFPS">FPS</label>
-        </fieldset>
-    </form>
+<div class="w-100 center pb4-ns pt3-ns flex justify-center mw8" id="checkboxes">
+    <fieldset>
+        <legend class="f6 pa1">Filter Clinics</legend>
+        <input type="checkbox" id="checkboxAOD" value="AOD" checked>
+        <label class="f6 pa1 checkbox" for="checkboxAOD">AOD</label>
+        <input type="checkbox" id="checkboxCTD" value="CTD" checked>
+        <label class="f6 pa1 checkbox" for="checkboxCTD">CTD</label>
+        <input type="checkbox" id="checkboxMSK" value="MSK" checked>
+        <label class="f6 pa1 checkbox" for="checkboxMSK">MSK</label>
+        <input type="checkbox" id="checkboxNUK" value="NUK" checked>
+        <label class="f6 pa1 checkbox" for="checkboxNUK">NUK</label>
+        <input type="checkbox" id="checkboxIR" value="IR" checked>
+        <label class="f6 pa1 checkbox" for="checkboxIR">IR</label>
+        <input type="checkbox" id="checkboxFPS" value="FPS" checked>
+        <label class="f6 pa1 checkbox" for="checkboxFPS">FPS</label>
+    </fieldset>
 </div>

@@ -13,6 +13,7 @@
                     <th class="fw6 bb bw1 b--black-80 tr pb2 pa1 bg-white w-15">Date of exam</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20">Patient</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25">Type of exam</th>
+                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25">Clinic</th>
                     <th class="fw6 bb bw1 b--black-80 tr pb2 pa1 bg-white">Reviewer</th>
                     <th class="fw6 bb bw1 b--black-80 tr pb2 pa1 bg-white">Status</th>
                     <th class="fw6 bb bw1 b--black-80 tr pb2 pa1 bg-white">S->F</th>
@@ -31,6 +32,7 @@
                         <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M') }}</td>
                         <td class="pa1 bb b--black-10 w-25">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
                         <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
+                        <td class="pa1 bb b--black-10 w-25">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                         <td class="pa1 bb b--black-10 tr">{{ row['freigeber'] }}</td>
                         <td class="pa1 bb b--black-10 tr">{{ row['befund_status'] }}</td>
                         <td class="pa1 bb b--black-10 tr">{{'%0.1f' % row['jaccard_s_f']|float }}</td>
@@ -49,9 +51,5 @@
         </div>
     </div>
 </div>
-{% assets "js_all" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-{% endassets %}
 </body>
-
 </html>
