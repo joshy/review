@@ -286,7 +286,7 @@ def query_calculations(cursor, departments):
           AND
               a.schreiber != b.freigeber
           AND
-              a.pp_misc_mfd_1_kuerzel = ANY('{AOD,CTD,MSK,NUK,IR,FPS}')
+              a.pp_misc_mfd_1_kuerzel = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
