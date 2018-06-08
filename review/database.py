@@ -142,7 +142,7 @@ def update(cursor, row, befund_status):
                     row['unters_schluessel']))
 
 
-def query_by_writer(cursor, writer, last_exams):
+def query_by_writer_and_department(cursor, writer, last_exams, departments):
     """
     Query all reports in the review db by writer.
     """
@@ -188,15 +188,19 @@ def query_by_writer(cursor, writer, last_exams):
               a.befund_status = 'f'
           AND
               a.schreiber != b.freigeber
+          AND 
+              a.pp_misc_mfd_1_kuerzel = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (writer.upper(), last_exams))
+    departments = '{'+departments+'}'
+    print("without:" +departments)
+    cursor.execute(sql, (writer.upper(), departments, last_exams))
     return cursor.fetchall()
 
 
-def query_by_writer_and_date(cursor, writer, start_date, end_date):
+def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date, departments):
     """
     Query all reports in the review db by writer.
     """
@@ -244,19 +248,24 @@ def query_by_writer_and_date(cursor, writer, start_date, end_date):
               a.befund_status = 'f'
           AND
               a.schreiber != b.freigeber
+          AND
+              a.pp_misc_mfd_1_kuerzel = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.upper(), start_date, end_date))
+    departments = '{'+departments+'}'
+    print("with"+departments)
+    cursor.execute(sql, (writer.upper(), start_date, end_date, departments))
     return cursor.fetchall()
 
 
-def query_calculations(cursor):
+def query_calculations(cursor, departments):
     """
     Query all reports in the review db which have status final
     """
     sql = """
           SELECT
+            a.pp_misc_mfd_1_kuerzel,
             a.jaccard_s_f,
             a.jaccard_g_f,
             a.words_added_s_f,
@@ -276,10 +285,13 @@ def query_calculations(cursor):
               a.befund_status = 'f'
           AND
               a.schreiber != b.freigeber
+          AND
+              a.pp_misc_mfd_1_kuerzel = ANY('{AOD,CTD,MSK,NUK,IR,FPS}')
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql)
+    departments = '{'+departments+'}'
+    cursor.execute(sql, [departments])
     return cursor.fetchall()
 
 

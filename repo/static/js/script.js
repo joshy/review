@@ -90,12 +90,15 @@ $(function () {
         var writer = document.getElementById('writer').value,
             last_exams = document.getElementById('last_exams').value,
             start_date = document.getElementById('start_date').value,
-            end_date = document.getElementById('end_date').value;
+            end_date = document.getElementById('end_date').value,
+            departments = document.getElementById('departments').value,
+
         param = {
             'w': writer,
             'last_exams': last_exams,
             'start_date': start_date,
-            'end_date': end_date
+            'end_date': end_date,
+            'departments' : departments
         };
         return 'dashboard/data?' + $.param(param)
     }
@@ -826,14 +829,23 @@ $(function () {
     }
 
     function checkboxHandler() {
-        var checkboxes = d3.select("#checkboxes"),
-            check = {};
+        var checkboxes = d3.select("#checkboxes");
+        var departments = [];
 
         checkboxes.on('click', function () {
+                departments = [];
                 checkboxes.selectAll('input').each(function () {
                     var checkbox = d3.select(this);
-                    check[checkbox.attr('id')] = checkbox.property("checked");
+                    if(checkbox.property("checked")) {
+                        departments.push(checkbox.attr('id'));
+                        localStorage.setItem(this, true)
+                    }
+                    else {
+                        localStorage.setItem(this, false)
+                    }
+
                 });
+                document.getElementById("departments").value = departments;
             });
     }
 });

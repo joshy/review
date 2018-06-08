@@ -40,23 +40,24 @@
         <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
                value="{{ writer }}"
                type="text" name="w" placeholder="Shortname">
+        <input type="hidden" id="departments" value="{{ departments}} ">
         <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
     </form>
 </div>
 <div class="w-100 center pb4-ns pt3-ns flex justify-center mw8" id="checkboxes">
     <fieldset>
         <legend class="f6 pa1">Filter Clinics</legend>
-        <input type="checkbox" id="checkboxAOD" value="AOD" checked>
-        <label class="f6 pa1" for="checkboxAOD">AOD</label>
-        <input type="checkbox" id="checkboxCTD" value="CTD" checked>
-        <label class="f6 pa1" for="checkboxCTD">CTD</label>
-        <input type="checkbox" id="checkboxMSK" value="MSK" checked>
-        <label class="f6 pa1" for="checkboxMSK">MSK</label>
-        <input type="checkbox" id="checkboxNUK" value="NUK" checked>
-        <label class="f6 pa1" for="checkboxNUK">NUK</label>
-        <input type="checkbox" id="checkboxIR" value="IR" checked>
-        <label class="f6 pa1" for="checkboxIR">IR</label>
-        <input type="checkbox" id="checkboxFPS" value="FPS" checked>
-        <label class="f6 pa1" for="checkboxFPS">FPS</label>
+        <input type="checkbox" id="AOD" checked>
+        <label class="f6 pa1" for="AOD">AOD</label>
+        <input type="checkbox" id="CTD" checked>
+        <label class="f6 pa1" for="CTD">CTD</label>
+        <input type="checkbox" id="MSK" checked>
+        <label class="f6 pa1" for="MSK">MSK</label>
+        <input type="checkbox" id="NUK" checked>
+        <label class="f6 pa1" for="NUK">NUK</label>
+        <input type="checkbox" id="IR" checked>
+        <label class="f6 pa1" for="IR">IR</label>
+        <input type="checkbox" id="FPS" checked>
+        <label class="f6 pa1" for="FPS">FPS</label>
     </fieldset>
 </div>

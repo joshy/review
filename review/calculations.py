@@ -1,14 +1,16 @@
 from math import floor
 
+
 def relative(df):
-    df['words_added_relative_g_f'] = df.apply(
-        lambda row: _relative(row['total_words_f'], row['words_added_g_f']), axis=1)
-    df['words_added_relative_s_f'] = df.apply(
-        lambda row: _relative(row['total_words_f'], row['words_added_s_f']), axis=1)
-    df['words_deleted_relative_g_f'] = df.apply(
-        lambda row: _relative(row['total_words_f'], row['words_deleted_g_f']), axis=1)
-    df['words_deleted_relative_s_f'] = df.apply(
-        lambda row: _relative(row['total_words_f'], row['words_deleted_s_f']), axis=1)
+    if df.shape[0] > 0:
+        df['words_added_relative_g_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_added_g_f']), axis=1)
+        df['words_added_relative_s_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_added_s_f']), axis=1)
+        df['words_deleted_relative_g_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_deleted_g_f']), axis=1)
+        df['words_deleted_relative_s_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_deleted_s_f']), axis=1)
     return df
 
 def _relative(total, changes):

@@ -10,7 +10,7 @@ from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer, query_by_writer_and_date, query_calculations
+from review.database import query_by_writer_and_department, query_calculations, query_by_writer_and_date_and_department
 from review.calculations import relative, prepare_values
 
 from repo.converter import rtf_to_text
@@ -106,18 +106,19 @@ def dashboard():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    rows = load_data(writer, last_exams, start_date, end_date)
+    departments = request.args.get('departments', '')
+    rows = load_data(writer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
     median_single = prepare_values(df)
-    all_rows = load_all_data()
+    all_rows = load_all_data(departments)
     df = pd.DataFrame(all_rows)
     df = relative(df).to_dict('records')
     median_all = prepare_values(df)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
         start_date=start_date, end_date=end_date, version=version,
-        median_single=median_single, median_all=median_all)
+        median_single=median_single, median_all=median_all, departments=departments)
 
 
 @app.route('/review/dashboard/data')
@@ -126,7 +127,8 @@ def data():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    rows = load_data(writer, last_exams, start_date, end_date)
+    departments = request.args.get('departments')
+    rows = load_data(writer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:
         df = pd.DataFrame(rows)
@@ -135,22 +137,22 @@ def data():
     return pd.DataFrame().to_csv(index_label='index')
 
 
-def load_data(writer, last_exams, start_date, end_date):
+def load_data(writer, last_exams, start_date, end_date, departments):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
         s_d = datetime.strptime(start_date, '%d.%m.%Y')
         e_d = datetime.strptime(end_date, '%d.%m.%Y')
-        rows = query_by_writer_and_date(cursor, writer, s_d, e_d)
+        rows = query_by_writer_and_date_and_department(cursor, writer, s_d, e_d, departments)
     else:
-        rows = query_by_writer(cursor, writer, last_exams)
+        rows = query_by_writer_and_department(cursor, writer, last_exams, departments)
     return rows
 
 
-def load_all_data():
+def load_all_data(departments):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
-    return query_calculations(cursor)
+    return query_calculations(cursor, departments)
 
 
 @app.route('/cm')
