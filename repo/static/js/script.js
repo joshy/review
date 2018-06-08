@@ -827,14 +827,12 @@ $(function () {
 
     function checkboxHandler() {
         var checkboxes = d3.select("#checkboxes"),
-            check = [];
+            check = {};
 
-        checkboxes
-            .on('click', function () {
-                checkboxes.selectAll(".checkbox").each(function (d) {
+        checkboxes.on('click', function () {
+                checkboxes.selectAll('input').each(function () {
                     var checkbox = d3.select(this);
-                    console.log(checkbox.property("checked"));
-
+                    check[checkbox.attr('id')] = checkbox.property("checked");
                 });
             });
     }
