@@ -106,8 +106,8 @@ def dashboard():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    department_values = 'AOD,CTD,MSK,NUK,IR,FPS'
-    departments = request.args.get('departments', department_values)
+    departments = request.args.getlist('departments')
+    departments = '{' + ','.join(departments) + '}'
     rows = load_data(writer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
@@ -118,7 +118,7 @@ def dashboard():
     median_all = prepare_values(df)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
-        start_date=start_date, end_date=end_date, departments=departments, version=version,
+        start_date=start_date, end_date=end_date, version=version,
         median_single=median_single, median_all=median_all)
 
 
@@ -128,7 +128,9 @@ def data():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    departments = request.args.get('departments')
+    departments = request.args.getlist('departments[]')
+    departments = '{' + ','.join(departments) + '}'
+    print(departments)
     rows = load_data(writer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:

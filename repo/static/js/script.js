@@ -1,4 +1,5 @@
 $(function () {
+
     var counter = 0;
     var picker = new Pikaday({
         field: document.getElementById('datepicker'),
@@ -75,6 +76,7 @@ $(function () {
 
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
+        checkboxHandler();
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
 
@@ -82,7 +84,6 @@ $(function () {
             drawWordsAddedGraph(data);
             drawWordsDeletedGraph(data);
         });
-        checkboxHandler();
     }
 
 
@@ -91,15 +92,20 @@ $(function () {
             last_exams = document.getElementById('last_exams').value,
             start_date = document.getElementById('start_date').value,
             end_date = document.getElementById('end_date').value,
-            departments = document.getElementById('departments').value,
+            departments = [];
 
-        param = {
+        $.each($("input[name='departments']:checked"), function () {
+            departments.push($(this).val());
+        });
+
+        var param = {
             'w': writer,
             'last_exams': last_exams,
             'start_date': start_date,
             'end_date': end_date,
             'departments' : departments
         };
+        console.log(departments);
         return 'dashboard/data?' + $.param(param)
     }
 
@@ -829,23 +835,29 @@ $(function () {
     }
 
     function checkboxHandler() {
-        var checkboxes = d3.select("#checkboxes");
-        var departments = [];
+        var checkboxValues = JSON.parse(localStorage.getItem('departments')) || {};
+        $.each(checkboxValues, function (key, value) {
+            $("#" + key).prop('checked', value);
+        });
 
-        checkboxes.on('click', function () {
-                departments = [];
-                checkboxes.selectAll('input').each(function () {
-                    var checkbox = d3.select(this);
-                    if(checkbox.property("checked")) {
-                        departments.push(checkbox.attr('id'));
-                        localStorage.setItem(this, true)
-                    }
-                    else {
-                        localStorage.setItem(this, false)
-                    }
+        var checkboxes = $('#checkboxes :checkbox');
 
-                });
-                document.getElementById("departments").value = departments;
+        checkboxes.on("change", function () {
+            var departments = [];
+            checkboxes.each(function () {
+                checkboxValues[this.id] = this.checked;
+                if (this.checked) {
+                    departments.push(this.id);
+                    this.value = this.id;
+                }
+                else {
+                    this.value = null
+                }
             });
+            localStorage.setItem('departments', JSON.stringify(checkboxValues));
+            $('#departments').val(departments);
+            console.log("Departments:" + departments)
+        });
     }
+
 });

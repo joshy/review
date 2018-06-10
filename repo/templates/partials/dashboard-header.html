@@ -23,28 +23,46 @@
 
 <div class="w-100 center pt4-ns flex justify-center mw8">
     <form class="flex justify-center" action="/review/dashboard">
-        <label class="f6 pa2" for="datepicker">Last exams </label>
-        <input id="last_exams" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
-               value="{{ last_exams }}"
-               type="text" name="last_exams" placeholder="30">
-        <label class="f6 pa2"> or </label>
-        <label class="f6 pa2" for="start_date">Start Date</label>
-        <input id="start_date" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
-               value="{{ start_date }}"
-               type="text" name="start_date" placeholder="01.01.2018">
-        <label class="f6 pa2" for="end_date">End Date </label>
-        <input id="end_date" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
-               value="{{ end_date }}"
-               type="text" name="end_date" placeholder="31.01.2018">
-        <label class="f6 pa2" for="writer">Writer </label>
-        <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
-               value="{{ writer }}"
-               type="text" name="w" placeholder="Shortname">
-        <input type="hidden" id="departments" value="{{ departments}} ">
-        <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
+        <div>
+            <label class="f6 pa2" for="datepicker">Last exams </label>
+            <input id="last_exams"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ last_exams }}"
+                   type="text" name="last_exams" placeholder="30">
+            <label class="f6 pa2"> or </label>
+            <label class="f6 pa2" for="start_date">Start Date</label>
+            <input id="start_date"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ start_date }}"
+                   type="text" name="start_date" placeholder="01.01.2018">
+            <label class="f6 pa2" for="end_date">End Date </label>
+            <input id="end_date"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ end_date }}"
+                   type="text" name="end_date" placeholder="31.01.2018">
+            <label class="f6 pa2" for="writer">Writer </label>
+            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ writer }}"
+                   type="text" name="w" placeholder="Shortname">
+            <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
+        </div>
+        <div id="checkboxes">
+            <input type="checkbox" id="AOD" name="departments" value="AOD" checked>
+            <label class="f6 pa1" for="AOD">AOD</label>
+            <input type="checkbox" id="CTD" name="departments" value="CTD" checked>
+            <label class="f6 pa1" for="CTD">CTD</label>
+            <input type="checkbox" id="MSK" name="departments" value="MSK" checked>
+            <label class="f6 pa1" for="MSK">MSK</label>
+            <input type="checkbox" id="NUK" name="departments" value="NUK" checked>
+            <label class="f6 pa1" for="NUK">NUK</label>
+            <input type="checkbox" id="IR" name="departments" value="IR" checked>
+            <label class="f6 pa1" for="IR">IR</label>
+            <input type="checkbox" id="FPS" name="departments" value="FPS" checked>
+            <label class="f6 pa1" for="FPS">FPS</label>
+        </div>
     </form>
 </div>
-<div class="w-100 center pb4-ns pt3-ns flex justify-center mw8" id="checkboxes">
+{#<div class="w-100 center pb4-ns pt3-ns flex justify-center mw8" id="checkboxes">
     <fieldset>
         <legend class="f6 pa1">Filter Clinics</legend>
         <input type="checkbox" id="AOD" checked>
@@ -60,4 +78,4 @@
         <input type="checkbox" id="FPS" checked>
         <label class="f6 pa1" for="FPS">FPS</label>
     </fieldset>
-</div>
+</div>#}

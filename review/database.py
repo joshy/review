@@ -194,7 +194,6 @@ def query_by_writer_and_department(cursor, writer, last_exams, departments):
               a.unters_beginn desc
           LIMIT %s
           """
-    departments = '{'+departments+'}'
     print("without:" +departments)
     cursor.execute(sql, (writer.upper(), departments, last_exams))
     return cursor.fetchall()
@@ -253,7 +252,6 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
           ORDER BY
               a.unters_beginn desc
           """
-    departments = '{'+departments+'}'
     print("with"+departments)
     cursor.execute(sql, (writer.upper(), start_date, end_date, departments))
     return cursor.fetchall()
@@ -290,7 +288,6 @@ def query_calculations(cursor, departments):
           ORDER BY
               a.unters_beginn desc
           """
-    departments = '{'+departments+'}'
     cursor.execute(sql, [departments])
     return cursor.fetchall()
 
