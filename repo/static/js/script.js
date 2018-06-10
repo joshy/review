@@ -88,10 +88,10 @@ $(function () {
 
 
     function data_url() {
-        var writer = document.getElementById('writer').value,
-            last_exams = document.getElementById('last_exams').value,
-            start_date = document.getElementById('start_date').value,
-            end_date = document.getElementById('end_date').value,
+        var writer = $('#writer').val(),
+            last_exams = $('#last_exams').val(),
+            start_date = $('#start_date').val(),
+            end_date = $('#end_date').val(),
             departments = [];
 
         $.each($("input[name='departments']:checked"), function () {
