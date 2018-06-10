@@ -1,6 +1,5 @@
 from math import floor
 
-
 def relative(df):
     if df.shape[0] > 0:
         df['words_added_relative_g_f'] = df.apply(
@@ -17,18 +16,19 @@ def _relative(total, changes):
     t = total or 1.0
     return (changes) / t
 
-def prepare_values(rows):
+def calculate_median(rows):
     keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",
             "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f"]
     median_values = {}
 
     for key in keys:
         temp_array = [x[key] for x in rows]
-        median_values[key] = calculate_median(temp_array)
+        median_values[key] = _calculate_median(temp_array)
 
     return median_values
 
-def calculate_median(values):
+
+def _calculate_median(values):
     if len(values) == 0:
         return 0
 

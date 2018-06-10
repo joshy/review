@@ -194,7 +194,7 @@ def query_by_writer_and_department(cursor, writer, last_exams, departments):
               a.unters_beginn desc
           LIMIT %s
           """
-    print("without:" +departments)
+    print("without:" + departments)
     cursor.execute(sql, (writer.upper(), departments, last_exams))
     return cursor.fetchall()
 
@@ -252,7 +252,7 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
           ORDER BY
               a.unters_beginn desc
           """
-    print("with"+departments)
+    print("with" + departments)
     cursor.execute(sql, (writer.upper(), start_date, end_date, departments))
     return cursor.fetchall()
 
@@ -308,3 +308,30 @@ def _update_department(cursor, row):
                     row['pp_misc_mfd_1_bezeichnung'],
                     row['unters_schluessel']))
 
+
+def update_department_development(cursor, row, item):
+    """
+       Temporary Method to fill existing rows with the department description (development)
+    """
+    sql = """
+              UPDATE reports SET 
+                pp_misc_mfd_1_kuerzel = %s
+              WHERE
+                unters_schluessel = %s
+              """
+    print(item)
+    cursor.execute(sql, (item, row))
+
+
+def query_all_rows(cursor):
+    """
+    Temporary Method: query all rows (development)
+    """
+    sql = """
+              SELECT
+                 unters_schluessel
+              FROM reports
+            
+               """
+    cursor.execute(sql)
+    return cursor.fetchall()

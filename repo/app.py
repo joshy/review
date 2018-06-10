@@ -11,7 +11,7 @@ from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer_and_department, query_calculations, query_by_writer_and_date_and_department
-from review.calculations import relative, prepare_values
+from review.calculations import relative, calculate_median
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -111,11 +111,11 @@ def dashboard():
     rows = load_data(writer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
-    median_single = prepare_values(df)
+    median_single = calculate_median(df)
     all_rows = load_all_data(departments)
     df = pd.DataFrame(all_rows)
     df = relative(df).to_dict('records')
-    median_all = prepare_values(df)
+    median_all = calculate_median(df)
     return render_template('dashboard.html',
         rows=rows, writer=writer, last_exams=last_exams,
         start_date=start_date, end_date=end_date, version=version,
