@@ -833,10 +833,6 @@ $(function () {
         drawWordsDeletedGraph(data);
     }
 
-    function deleteStorage() {
-        localStorage.clear();
-    }
-
     function checkboxHandler() {
         var checkboxValues = JSON.parse(localStorage.getItem('departments')) || {};
         $.each(checkboxValues, function (key, value) {
@@ -845,7 +841,7 @@ $(function () {
 
         var checkboxes = $('#checkboxes :checkbox');
 
-        checkboxes.on("change", function () {
+        checkboxes.on('change', function () {
             var departments = [];
             checkboxes.each(function () {
                 checkboxValues[this.id] = this.checked;
@@ -862,5 +858,4 @@ $(function () {
             console.log("Departments:" + departments)
         });
     }
-
 });

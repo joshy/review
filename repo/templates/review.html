@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
-    <script>
-        function deleteStorage() {
-            localStorage.clear();
-        }
-    </script>
 </head>
 
 <body class="w-100 sans-serif">
@@ -39,8 +34,7 @@
                         <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
-                        <td class="pa1 bb b--black-10"><a onclick="deleteStorage()"
-                                                          href="review/dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['schreiber'] }}</a></td>
+                        <td class="pa1 bb b--black-10 reviewerRow"><a href="review/dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['schreiber'] }}</a></td>
                         <td class="pa1 bb b--black-10">{{ row['freigeber'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
                         <td class="bb b--black-10">
