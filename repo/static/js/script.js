@@ -1,5 +1,4 @@
 $(function () {
-    var counter = 0;
     var picker = new Pikaday({
         field: document.getElementById('datepicker'),
         format: 'DD.MM.YYYY'

@@ -1,4 +1,5 @@
 $(function () {
+    var counter = 0;
     if ('dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
         checkboxHandler();
@@ -29,7 +30,6 @@ $(function () {
             'end_date': end_date,
             'departments': departments
         };
-        console.log(departments);
         return 'dashboard/data?' + $.param(param)
     }
 
@@ -780,7 +780,6 @@ $(function () {
             });
             localStorage.setItem('departments', JSON.stringify(checkboxValues));
             $('#departments').val(departments);
-            console.log("Departments:" + departments)
         });
     }
 });

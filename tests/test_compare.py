@@ -1,6 +1,5 @@
 import unittest
 
-from review.calculations import calculate_median
 from review.compare import _diff, _total_length
 
 
@@ -93,28 +92,3 @@ class TestLength(unittest.TestCase):
         l1 = "  foooooo "
         length = _total_length(l1)
         self.assertEqual(length, 1)
-
-
-class TestMedian(unittest.TestCase):
-
-    def test_median1(self):
-        values = [{'jaccard_s_f': 0}, {'jaccard_s_f': 0},
-                  {'jaccard_s_f': 0}, {'jaccard_s_f': 0},
-                  {'jaccard_s_f': 0}]
-        median = calculate_median(values)
-        self.assertEqual(median, 0)
-
-    def test_median2(self):
-        values = [{'jaccard_s_f': 1}, {'jaccard_s_f': 2},
-                  {'jaccard_s_f': 3}, {'jaccard_s_f': 4},
-                  {'jaccard_s_f': 5}, {'jaccard_s_f': 5},
-                  {'jaccard_s_f': 5}]
-        median = calculate_median(values)
-        self.assertEqual(median, 4)
-
-    def test_median3(self):
-        values = [{'jaccard_s_f': 0.5}, {'jaccard_s_f': 1.4},
-                  {'jaccard_s_f': 3.32}, {'jaccard_s_f': 11},
-                  {'jaccard_s_f': 23}, {'jaccard_s_f': 56.3}, {'jaccard_s_f': 65}]
-        median = calculate_median(values)
-        self.assertEqual(median, 11)

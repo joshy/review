@@ -1,5 +1,6 @@
 from math import floor
 
+
 def relative(df):
     if df.shape[0] > 0:
         df['words_added_relative_g_f'] = df.apply(
@@ -12,9 +13,11 @@ def relative(df):
             lambda row: _relative(row['total_words_f'], row['words_deleted_s_f']), axis=1)
     return df
 
+
 def _relative(total, changes):
     t = total or 1.0
-    return (changes) / t
+    return changes / t
+
 
 def calculate_median(rows):
     keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",

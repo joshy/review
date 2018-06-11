@@ -108,7 +108,6 @@ def dashboard():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
-    print("dashboard" + departments)
     rows = load_data(writer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
@@ -131,7 +130,6 @@ def data():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments[]')
     departments = '{' + ','.join(departments) + '}'
-    print("data"+departments)
     rows = load_data(writer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:
