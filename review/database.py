@@ -64,6 +64,7 @@ def update_metrics(cursor, unters_schluessel, diffs):
     except psycopg2.Error as e:
         logging.error('Error %s', e)
 
+
 def insert(cursor, row):
     sql = """
           INSERT INTO reports
@@ -194,7 +195,6 @@ def query_by_writer_and_department(cursor, writer, last_exams, departments):
               a.unters_beginn desc
           LIMIT %s
           """
-    print("without:" + departments)
     cursor.execute(sql, (writer.upper(), departments, last_exams))
     return cursor.fetchall()
 
@@ -252,7 +252,6 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
           ORDER BY
               a.unters_beginn desc
           """
-    print("with" + departments)
     cursor.execute(sql, (writer.upper(), start_date, end_date, departments))
     return cursor.fetchall()
 
@@ -319,7 +318,6 @@ def update_department_development(cursor, row, item):
               WHERE
                 unters_schluessel = %s
               """
-    print(item)
     cursor.execute(sql, (item, row))
 
 

@@ -86,7 +86,6 @@ $(function () {
         });
     }
 
-
     function data_url() {
         var writer = $('#writer').val(),
             last_exams = $('#last_exams').val(),
@@ -832,6 +831,10 @@ $(function () {
         drawSimilarityGraph(data);
         drawWordsAddedGraph(data);
         drawWordsDeletedGraph(data);
+    }
+
+    function deleteStorage() {
+        localStorage.clear();
     }
 
     function checkboxHandler() {

@@ -3,6 +3,7 @@ import unittest
 from review.calculations import calculate_median
 from review.compare import _diff, _total_length
 
+
 class TestCompare(unittest.TestCase):
     def test_compare(self):
         l1 = "Hello Mary Sue from Johnny"
