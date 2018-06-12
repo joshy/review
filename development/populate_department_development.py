@@ -4,6 +4,7 @@ import random
 import psycopg2
 import daiquiri.formatter
 import daiquiri
+from psycopg2.extras import DictCursor
 
 from repo.app import REVIEW_DB_SETTINGS
 from review.database import query_all_rows, update_department_development
@@ -30,7 +31,7 @@ def generate_department():
 
 def update_departments():
     review_db = get_review_db()
-    review_cursor = review_db.cursor()
+    review_cursor = review_db.cursor(cursor_factory=DictCursor)
     rows = query_all_rows(review_cursor)
     count = len(rows)
     logging.debug('Iterate over total of {} rows with department description'.format(count))
@@ -38,7 +39,7 @@ def update_departments():
         logging.debug('Iterating over row {}/{} rows'.format(i, count))
         department = generate_department()
         logging.debug('Department {} generated'.format((department)))
-        update_department_development(review_cursor, row[0], department)
+        update_department_development(review_cursor, row['unters_schluessel'], department)
     logging.info('Inserting departments done')
     review_db.commit()
     review_cursor.close()
