@@ -403,32 +403,32 @@ $(function () {
             .text("schreiben -> final");
 
         reportButton.on("click", function () {
+            if(counter === 0) {
+                var tempValue = value.slice(0, -3),
+                    checkValue = value.substr(value.length - 3);
 
-            var tempValue = value.slice(0, -3),
-                checkValue = value.substr(value.length - 3);
-
-            if (checkValue === "s_f") {
-                value = tempValue + "g_f";
-                d3.selectAll("." + classNames[2]).text("gegenlesen -> final");
-            }
-            else {
-                value = tempValue + "s_f";
-                d3.selectAll("." + classNames[2]).text("schreiben -> final");
-
-            }
-
-            redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
-
-            if (tempValue === "jaccard_") {
-                redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
-                redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
-            }
-            else {
-                if (tempValue === "words_added_relative_") {
-                    redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
+                if (checkValue === "s_f") {
+                    value = tempValue + "g_f";
+                    d3.selectAll("." + classNames[2]).text("gegenlesen -> final");
                 }
                 else {
-                    redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
+                    value = tempValue + "s_f";
+                    d3.selectAll("." + classNames[2]).text("schreiben -> final");
+                }
+
+                redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
+
+                if (tempValue === "jaccard_") {
+                    redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
+                    redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
+                }
+                else {
+                    if (tempValue === "words_added_relative_") {
+                        redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
+                    }
+                    else {
+                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
+                    }
                 }
             }
         });

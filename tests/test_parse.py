@@ -69,8 +69,15 @@ class TestParse(unittest.TestCase):
         self.assertEqual(result['datenimport'],
                          'Bilder wurden auf Wunsch des Auftraggebers eingescannt')
 
-    def test_parse(self):
+    def test_exclude_anamnese(self):
         a = "Anamnese delete this part Befund this part should be here"
-        t = [x.strip() for x in a.splitlines()]
-        result = _extract_section(t)
-        self.assertEqual(result, "this part should be here")
+        result = _extract_section(a)
+        self.assertEqual(result, "Befund this part should be here")
+
+    def test_exclude_anamnese2(self):
+        a = "Anamnese und Fragestellung " \
+            "delete this part Befunde: this " \
+            "part should be here Beurteilung is " \
+            "still here as well"
+        result = _extract_section(a)
+        self.assertEqual(result, "Befunde: this part should be here Beurteilung is still here as well")

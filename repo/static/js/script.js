@@ -19,7 +19,7 @@ $(function () {
         maxDate: new Date(),
         yearRange: [2017, 2018]
     });
-
+    
     if ('diff' == $('body').data('page')) {
         diff();
     }

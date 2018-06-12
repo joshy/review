@@ -333,3 +333,36 @@ def query_all_rows(cursor):
                """
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+def query_review_reports_development(cursor):
+    """
+    Returns the rows where the reports are finalized, temporary method to test new calculations
+    """
+    sql = """
+          SELECT
+            unters_schluessel,
+            befund_s,
+            befund_g,
+            befund_f,
+            jaccard_s_f,
+            jaccard_g_f,
+            words_added_s_f,
+            words_added_g_f,
+            words_deleted_s_f,
+            words_deleted_g_f,
+            total_words_s,
+            total_words_g,
+            total_words_f,
+            unters_beginn
+          FROM
+            reports
+          WHERE
+            befund_f is not null
+          ORDER BY
+            unters_beginn desc
+            LIMIT 1000
+          """
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    return results

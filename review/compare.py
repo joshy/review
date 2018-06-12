@@ -66,7 +66,11 @@ def _diff(before, after):
 
 
 def _extract_section(befund):
-    return re.sub('Anamnese[^>]+Befund', '', befund)
+    keyword = 'Befund'
+    if keyword in befund:
+        parts = befund.partition(keyword)
+        befund = ''.join([parts[1], parts[2]])
+    return befund
 
 
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
