@@ -284,17 +284,17 @@ $(function () {
             .attr("class", "medianLineSingle")
             .style("stroke", color)
             .attr("x1", 0)
-            .attr("y1", y(median_single[value]))
+            .attr("y1", checkGraphArea(y(median_single[value]), height))
             .attr("x2", width)
-            .attr("y2", y(median_single[value]));
+            .attr("y2", checkGraphArea(y(median_single[value]), height));
 
         //Draw Median Line overall
         g.append("line")
             .attr("class", "medianLineAll")
             .attr("x1", 0)
-            .attr("y1", y(median_all[value]))
+            .attr("y1", checkGraphArea(y(median_all[value]), height))
             .attr("x2", width)
-            .attr("y2", y(median_all[value]));
+            .attr("y2", checkGraphArea(y(median_all[value]), height));
 
         //Draw Axes
         g.append("g")
@@ -718,12 +718,12 @@ $(function () {
 
         //Redraw Median Lines
         svg.select(".medianLineSingle").transition()
-            .attr("y1", y(median_single[value]))
-            .attr("y2", y(median_single[value]));
+            .attr("y1", checkGraphArea(y(median_single[value]), height))
+            .attr("y2", checkGraphArea(y(median_single[value]), height));
 
         svg.select(".medianLineAll").transition()
-            .attr("y1", y(median_all[value]))
-            .attr("y2", y(median_all[value]));
+            .attr("y1", checkGraphArea(y(median_all[value]), height))
+            .attr("y2", checkGraphArea(y(median_all[value]), height));
     }
 
     function redrawBarChart(svg, words, maxValue) {
@@ -794,6 +794,15 @@ $(function () {
             drawWordsAddedGraph(data);
             drawWordsDeletedGraph(data);
         });
+    }
+
+    function checkGraphArea(value, height) {
+        if (value < 0 || value > height) {
+            return -100;
+        }
+        else {
+            return value;
+        }
     }
 
     function checkboxHandler() {
