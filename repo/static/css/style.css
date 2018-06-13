@@ -99,6 +99,18 @@ div.tooltip {
     stroke-dasharray: 5, 5;
 }
 
+.exceedingLine {
+    stroke-width: 1px;
+    stroke: darkgrey;
+}
+
+.exceedingLineAnnotation {
+    text-anchor: middle;
+    font-size: 14px;
+    dominant-baseline: central;
+    font-weight: bold;
+}
+
 .legend {
     text-anchor: end;
     font: 10px sans-serif;
@@ -109,5 +121,4 @@ div.tooltip {
     font: 10px sans-serif;
     fill: white;
 }
-
 

@@ -72,7 +72,7 @@ $(function () {
     }
 
     function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments) {
-        var margin = {top: 30, right: 20, bottom: 150, left: 45},
+        var margin = {top: 50, right: 20, bottom: 150, left: 45},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             gap = 170,
@@ -81,7 +81,7 @@ $(function () {
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
             brushArea = svg.append("g")
                 .attr("class", "brushArea")
-                .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom - margin.top / 2) + ")"),
+                .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom - margin.top / 10) + ")"),
 
             formatTime = d3.timeFormat("%d.%m"),
             brush = d3.brushX()
@@ -108,7 +108,7 @@ $(function () {
         var gLeft = g.append("g")
             .attr("class", "histogram");
 
-        // Define the div for the tooltip
+        //Define the div for the tooltip
         var div = d3.select("body")
             .append("div")
             .attr("class", "tooltip")
@@ -126,6 +126,22 @@ $(function () {
 
         x2.domain(x.domain());
 
+        //Draw ExceedingLine
+        g.append("line")
+            .attr("class", "exceedingLine")
+            .attr("x1", 0)
+            .attr("y1", -margin.top / 3)
+            .attr("x2", width)
+            .attr("y2", -margin.top / 3);
+
+        //Draw ExceedingLineText
+        g.append("text")
+            .attr("class", "exceedingLineAnnotation")
+            .attr("fill", color)
+            .attr("x", 7)
+            .attr("y", -margin.top / 2)
+            .text(">1");
+
         //Draw Circles
         var circles = g.append("g")
             .attr("class", "circles");
@@ -140,7 +156,7 @@ $(function () {
                 return x(d.unters_beginn);
             })
             .attr("cy", function (d) {
-                return y(d[value]);
+                return checkCircleValue(d[value], margin, y);
             })
             .attr("r", 4)
             .on("mouseover", function (d) {
@@ -215,9 +231,16 @@ $(function () {
                     .attr("r", 7)
                     .style("fill", "#666967");
                 div.transition()
-                    .duration(2)
+                    .duration(200)
                     .style("opacity", 1);
-                div.html("Click to expand Interval")
+                div.html(function () {
+                    if (counter < 2) {
+                        return "Click to expand this interval"
+                    }
+                    else {
+                        return "Click to reset interval"
+                    }
+                })
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY) + "px");
             })
@@ -234,8 +257,8 @@ $(function () {
                 if (counter < 2) {
                     counter++;
                     var tempData = [];
-                    minIntervalValue = d.x0;
-                    maxIntervalValue = d.x1;
+                    minIntervalValue = Math.round(d.x0 * 10) / 10;
+                    maxIntervalValue = Math.round(d.x1 * 10) / 10;
 
                     //Filter Interval Data
                     data.forEach(function (data) {
@@ -254,14 +277,16 @@ $(function () {
 
                     data = tempData;
                     redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
-
-                    g.selectAll("circle")
-                        .attr("r", 4)
-                        .style("fill", color);
                 }
                 else {
                     resetContent();
                 }
+                g.selectAll("circle")
+                    .attr("r", 4)
+                    .style("fill", color);
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
             });
 
         gLeft.selectAll("text")
@@ -339,44 +364,47 @@ $(function () {
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 12) + " ," +
-                (height + margin.top + 2) + ")")
+                (height + margin.top - 10) + ")")
             .text("#Reports");
 
         g.append("text")
             .attr("class", "axisAnnotation")
             .attr("transform",
                 "translate(" + (width / 1.7) + " ," +
-                (height + margin.top + 2) + ")")
+                (height + margin.top - 10) + ")")
             .text("Date");
 
         //add legend
         var legend = svg.append("g")
-            .attr("class", "legend");
+                .attr("class", "legend"),
+            legendHeight = 8,
+            legendLineLength = 20,
+            legendGap = 80;
 
         legend.append("line")
             .attr("class", "medianLineSingle")
             .style("stroke", color)
             .attr("x1", width / 3)
-            .attr("x2", width / 3 + 20)
-            .attr("y1", 11)
-            .attr("y2", 11);
+            .attr("x2", width / 3 + legendLineLength)
+            .attr("y1", legendHeight)
+            .attr("y2", legendHeight);
 
         legend.append("line")
             .attr("class", "medianLineAll")
-            .attr("x1", width / 2.2)
-            .attr("x2", width / 2.2 + 20)
-            .attr("y1", 11)
-            .attr("y2", 11);
+            .attr("x1", width / 2)
+            .attr("x2", width / 2 + legendLineLength)
+            .attr("y1", legendHeight)
+            .attr("y2", legendHeight);
 
         legend.append("text")
-            .attr("x", width / 3 + 100)
-            .attr("y", 11)
+            .attr("x", (width / 3) + legendLineLength + legendGap + 5)
+            .attr("y", legendHeight)
             .attr("dy", "0.32em")
             .text("personal Median");
 
         legend.append("text")
-            .attr("x", width / 2.2 + 95)
-            .attr("y", 11)
+            .attr("x", (width / 2) + legendLineLength + legendGap)
+            .attr("y", legendHeight)
             .attr("dy", "0.32em")
             .text("overall Median");
 
@@ -386,7 +414,7 @@ $(function () {
             buttonWidth = 150,
             buttonHeight = 20,
             x0 = width - 100,
-            y0 = 0;
+            y0 = -0;
 
         reportButton.append("rect")
             .attr("class", classNames[1])
@@ -655,7 +683,7 @@ $(function () {
                 }
             })
             .attr("cy", function (d) {
-                return y(d[value]);
+                return checkCircleValue(d[value], margin, y);
             });
 
         //Redraw Histogram
@@ -802,6 +830,15 @@ $(function () {
         }
         else {
             return value;
+        }
+    }
+
+    function checkCircleValue(value, margin, y) {
+        if (value > 1) {
+            return -margin.top / 3
+        }
+        else {
+            return y(value);
         }
     }
 
