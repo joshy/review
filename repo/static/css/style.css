@@ -104,4 +104,10 @@ div.tooltip {
     font: 10px sans-serif;
 }
 
+.graphBar {
+    text-anchor: middle;
+    font: 10px sans-serif;
+    fill: white;
+}
+
 

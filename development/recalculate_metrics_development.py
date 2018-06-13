@@ -5,6 +5,7 @@ import daiquiri
 from psycopg2.extras import DictCursor
 
 from repo.app import REVIEW_DB_SETTINGS
+from review.calculations import _calculate_median
 from review.compare import diffs
 from review.database import query_review_reports_development, update_metrics
 
@@ -25,6 +26,8 @@ def get_review_db():
 
 
 def _update_metrics():
+    before = []
+    after = []
     review_db = get_review_db()
     review_cursor =  review_db.cursor(cursor_factory=DictCursor)
     rows = query_review_reports_development(review_cursor)
@@ -33,7 +36,9 @@ def _update_metrics():
     for i, row in enumerate(rows, start=1):
         logging.debug('Iterating over row {}/{}'.format(i, count))
         logging.debug('Current jaccard_s_f: {}'.format(row['jaccard_s_f']))
+        before.append(row['jaccard_s_f'])
         calculations = diffs(row)
+        after.append(calculations[0]['jaccard'])
         logging.debug('Row {} with new calculations: {}'.format(i,calculations[0]['jaccard']))
         update_metrics(review_cursor, row['unters_schluessel'], calculations)
         logging.debug('Updated row %s of %s', i, count)
@@ -42,6 +47,9 @@ def _update_metrics():
     review_db.commit()
     review_cursor.close()
     logging.debug('Updating metrics done')
+    median_before = _calculate_median(before)
+    median_after = _calculate_median(after)
+    logging.debug('Before: {} , After: {}'.format(median_before,median_after))
 
 
 if __name__ == '__main__':

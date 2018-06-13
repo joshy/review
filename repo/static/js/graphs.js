@@ -88,6 +88,7 @@ $(function () {
                 .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
                 .on("brush", brushed),
 
+
             //Define Axes
             x = d3.scaleTime().range([gap + margin.right, width]),
             x2 = d3.scaleTime().range([gap + margin.right, width]),
@@ -277,6 +278,21 @@ $(function () {
                 }
             });
 
+        gLeft.selectAll("text")
+            .data(yBins)
+            .enter()
+            .append("text")
+            .attr("class", "graphBar")
+            .attr("x", function (d) {
+                return yx(d.length / 2);
+            })
+            .attr("transform", function (d) {
+                return "translate(" + 0 + "," + (y(d.x1) + (bWidth / 2) + 5) + ")";
+            })
+            .text(function (data) {
+                return data.length;
+            });
+
         //Draw Median Line single
         g.append("line")
             .attr("class", "medianLineSingle")
@@ -320,6 +336,9 @@ $(function () {
             .attr("class", "brushTool")
             .call(brush)
             .call(brush.move, x.range());
+
+        brushArea.selectAll("rect.handle")
+            .attr("fill", color);
 
         //add Annotation of Axes
         g.append("text")
@@ -403,7 +422,7 @@ $(function () {
             .text("schreiben -> final");
 
         reportButton.on("click", function () {
-            if(counter === 0) {
+            if (counter === 0) {
                 var tempValue = value.slice(0, -3),
                     checkValue = value.substr(value.length - 3);
 
@@ -672,11 +691,30 @@ $(function () {
 
         bars.transition()
             .attr("width", function (d) {
-                return yx(d.length);
+                return yx(d.length + 1);
             })
             .attr("height", bWidth)
             .attr("transform", function (d) {
                 return "translate(" + 0 + "," + y(d.x1) + ")";
+            });
+
+        //Redraw BarText
+        var barText = svg.selectAll("text.graphBar")
+            .data(yBins);
+
+        barText.exit().remove();
+
+        barText.enter().append("text");
+
+        barText.transition()
+            .attr("x", function (d) {
+                return yx(d.length / 2);
+            })
+            .attr("transform", function (d) {
+                return "translate(" + 0 + "," + (y(d.x1) + (bWidth / 2) + 5) + ")";
+            })
+            .text(function (data) {
+                return data.length;
             });
 
         //Redraw Median Lines
