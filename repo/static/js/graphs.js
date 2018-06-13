@@ -215,9 +215,9 @@ $(function () {
                     .attr("r", 7)
                     .style("fill", "#666967");
                 div.transition()
-                    .duration(200)
+                    .duration(2)
                     .style("opacity", 1);
-                div.html(data.length)
+                div.html("Click to expand Interval")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY) + "px");
             })
@@ -253,28 +253,14 @@ $(function () {
                     });
 
                     data = tempData;
-
-                    //Redefine y-Axis
-                    y.domain([minIntervalValue, maxIntervalValue]);
-
-                    //Redraw y-Axis
-                    svg.selectAll(".y")
-                        .transition()
-                        .call(d3.axisLeft(y)
-                            .ticks(2));
-
-                    //Redraw Gridlines
-                    svg.selectAll(".grid").transition()
-                        .call(d3.axisLeft(y)
-                            .ticks(2)
-                            .tickSize(-width)
-                            .tickFormat(""));
-
                     redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                     g.selectAll("circle")
                         .attr("r", 4)
                         .style("fill", color);
+                }
+                else {
+                    resetContent();
                 }
             });
 
@@ -284,7 +270,7 @@ $(function () {
             .append("text")
             .attr("class", "graphBar")
             .attr("x", function (d) {
-                return yx(d.length / 2);
+                return yx(d.length) - 10;
             })
             .attr("transform", function (d) {
                 return "translate(" + 0 + "," + (y(d.x1) + (bWidth / 2) + 5) + ")";
@@ -477,10 +463,7 @@ $(function () {
             .text("reset");
 
         resetButton.on("click", function () {
-            d3.csv(data_url(), function (error, data) {
-                if (error) throw error;
-                reloadContent(data);
-            });
+            resetContent();
         });
 
         //Brush function
@@ -632,8 +615,30 @@ $(function () {
             data.unters_beginn = new Date(data.unters_beginn);
         });
 
+        var intervalDivisor = 5;
+
+        if ((Math.abs(maxIntervalValue - minIntervalValue)) <= 0.3) {
+            intervalDivisor = 2;
+        }
+
+        //Redefine y-Axis
+        y.domain([minIntervalValue, maxIntervalValue]);
+
+        //Redraw y-Axis
+        svg.selectAll(".y")
+            .transition()
+            .call(d3.axisLeft(y)
+                .ticks(intervalDivisor));
+
+        //Redraw Gridlines
+        svg.selectAll(".grid").transition()
+            .call(d3.axisLeft(y)
+                .ticks(intervalDivisor)
+                .tickSize(-width)
+                .tickFormat(""));
+
         //Redraw Circles
-        var circles = svg.selectAll(".circle")
+        var circles = svg.selectAll("circle")
             .data(data);
 
         circles.exit().remove();
@@ -652,12 +657,6 @@ $(function () {
             .attr("cy", function (d) {
                 return y(d[value]);
             });
-
-        var intervalDivisor = 5;
-
-        if ((Math.abs(maxIntervalValue - minIntervalValue)) <= 0.3) {
-            intervalDivisor = 2;
-        }
 
         //Redraw Histogram
         var yBins = d3.histogram()
@@ -691,7 +690,7 @@ $(function () {
 
         bars.transition()
             .attr("width", function (d) {
-                return yx(d.length + 1);
+                return yx(d.length);
             })
             .attr("height", bWidth)
             .attr("transform", function (d) {
@@ -708,7 +707,7 @@ $(function () {
 
         barText.transition()
             .attr("x", function (d) {
-                return yx(d.length / 2);
+                return yx(d.length) - 10;
             })
             .attr("transform", function (d) {
                 return "translate(" + 0 + "," + (y(d.x1) + (bWidth / 2) + 5) + ")";
@@ -725,7 +724,6 @@ $(function () {
         svg.select(".medianLineAll").transition()
             .attr("y1", y(median_all[value]))
             .attr("y2", y(median_all[value]));
-
     }
 
     function redrawBarChart(svg, words, maxValue) {
@@ -786,14 +784,16 @@ $(function () {
             .text(pieSegments[0].value.toPrecision(2));
     }
 
-    function reloadContent(data) {
+    function resetContent() {
         counter = 0;
         d3.selectAll("svg").selectAll("g").remove();
         d3.selectAll(".tooltip").remove();
-
-        drawSimilarityGraph(data);
-        drawWordsAddedGraph(data);
-        drawWordsDeletedGraph(data);
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            drawSimilarityGraph(data);
+            drawWordsAddedGraph(data);
+            drawWordsDeletedGraph(data);
+        });
     }
 
     function checkboxHandler() {
