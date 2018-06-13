@@ -111,6 +111,10 @@ div.tooltip {
     font-weight: bold;
 }
 
+.brushLineLeft, .brushLineRight {
+    stroke-width: 6px;
+}
+
 .legend {
     text-anchor: end;
     font: 10px sans-serif;

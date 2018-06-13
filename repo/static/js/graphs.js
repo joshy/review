@@ -351,6 +351,22 @@ $(function () {
         brushArea.selectAll("rect.handle")
             .attr("fill", color);
 
+        svg.append("line")
+            .attr("class", "brushLineLeft")
+            .attr("stroke", color)
+            .attr("x1", gap + margin.left + 20)
+            .attr("x2", gap + margin.left + 20)
+            .attr("y1", height + margin.top)
+            .attr("y2", height + margin.top + 50);
+
+        svg.append("line")
+            .attr("class", "brushLineRight")
+            .attr("stroke", color)
+            .attr("x1", width + margin.left)
+            .attr("x2", width + margin.left)
+            .attr("y1", height + margin.top)
+            .attr("y2", height + margin.top + 50);
+
         //add Annotation of Axes
         g.append("text")
             .attr("class", "axisAnnotation")
@@ -507,6 +523,13 @@ $(function () {
                     }
                 });
             g.select(".x").call(d3.axisBottom(x));
+            var rightHandle = $(".handle--e"),
+                leftHandle = $(".handle--w");
+            svg.select(".brushLineLeft").transition()
+                .attr("x2", leftHandle.attr("x"));
+
+            svg.select(".brushLineRight").transition()
+                .attr("x2", rightHandle.attr("x"));
         }
     }
 
