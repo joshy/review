@@ -113,6 +113,8 @@ div.tooltip {
 
 .brushLineLeft, .brushLineRight {
     stroke-width: 6px;
+    opacity: 0.5;
+    stroke-linecap: round;
 }
 
 .legend {

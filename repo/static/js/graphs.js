@@ -54,7 +54,7 @@ $(function () {
         var maxIntervalValue = 1,
             minIntervalValue = 0,
             maxBarValue = 1,
-            classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words"],
+            classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
             color = "green";
         drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
         drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
@@ -64,7 +64,7 @@ $(function () {
         var maxIntervalValue = 1,
             minIntervalValue = 0,
             maxBarValue = 1,
-            classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words"],
+            classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
             color = "red";
         drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
         drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
@@ -82,15 +82,13 @@ $(function () {
             brushArea = svg.append("g")
                 .attr("class", "brushArea")
                 .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom - margin.top / 10) + ")"),
-
             formatTime = d3.timeFormat("%d.%m"),
             brush = d3.brushX()
                 .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
-                .on("brush", brushed),
+                .on("brush", brushed);
 
-
-            //Define Axes
-            x = d3.scaleTime().range([gap + margin.right, width]),
+        //Define Axes
+        x = d3.scaleTime().range([gap + margin.right, width]),
             x2 = d3.scaleTime().range([gap + margin.right, width]),
             y = d3.scaleLinear().range([height, 0]).domain([minIntervalValue, maxIntervalValue]),
             yx = d3.scaleLinear().range([0, gap]);
@@ -327,10 +325,6 @@ $(function () {
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x));
 
-        brushArea.append("g")
-            .attr("class", "x2")
-            .call(d3.axisBottom(x2));
-
         g.append("g")
             .attr("class", "y")
             .call(d3.axisLeft(y)
@@ -344,6 +338,10 @@ $(function () {
 
         //Append Brush
         brushArea.append("g")
+            .attr("class", "x2")
+            .call(d3.axisBottom(x2));
+
+        brushArea.append("g")
             .attr("class", "brushTool")
             .call(brush)
             .call(brush.move, x.range());
@@ -351,21 +349,24 @@ $(function () {
         brushArea.selectAll("rect.handle")
             .attr("fill", color);
 
-        svg.append("line")
+        var rightHandle = $(".handle--e"),
+            leftHandle = $(".handle--w");
+
+        brushArea.append("line")
             .attr("class", "brushLineLeft")
             .attr("stroke", color)
-            .attr("x1", gap + margin.left + 20)
-            .attr("x2", gap + margin.left + 20)
-            .attr("y1", height + margin.top)
-            .attr("y2", height + margin.top + 50);
+            .attr("x1", parseInt(leftHandle.attr("x"))+3)
+            .attr("x2", parseInt(leftHandle.attr("x"))+3)
+            .attr("y1", -95)
+            .attr("y2", -50);
 
-        svg.append("line")
+        brushArea.append("line")
             .attr("class", "brushLineRight")
             .attr("stroke", color)
-            .attr("x1", width + margin.left)
-            .attr("x2", width + margin.left)
-            .attr("y1", height + margin.top)
-            .attr("y2", height + margin.top + 50);
+            .attr("x1", parseInt(rightHandle.attr("x"))+3)
+            .attr("x2", parseInt(rightHandle.attr("x"))+3)
+            .attr("y1", -95)
+            .attr("y2", -50);
 
         //add Annotation of Axes
         g.append("text")
@@ -390,7 +391,7 @@ $(function () {
                 (height + margin.top - 10) + ")")
             .text("Date");
 
-        //add legend
+        //Add legend
         var legend = svg.append("g")
                 .attr("class", "legend"),
             legendHeight = 8,
@@ -510,6 +511,7 @@ $(function () {
             resetContent();
         });
 
+
         //Brush function
         function brushed() {
             x.domain(d3.event.selection.map(x2.invert, x2));
@@ -523,13 +525,16 @@ $(function () {
                     }
                 });
             g.select(".x").call(d3.axisBottom(x));
-            var rightHandle = $(".handle--e"),
-                leftHandle = $(".handle--w");
-            svg.select(".brushLineLeft").transition()
-                .attr("x2", leftHandle.attr("x"));
 
-            svg.select(".brushLineRight").transition()
-                .attr("x2", rightHandle.attr("x"));
+            var rightHandle = $("#"+classNames[3]+"Graph "+".handle--e"),
+                leftHandle = $("#"+classNames[3]+"Graph "+".handle--w");
+
+            brushArea.select(".brushLineLeft").transition()
+                .duration(1)
+                .attr("x2", parseInt(leftHandle.attr("x"))+3);
+            brushArea.select(".brushLineRight").transition()
+                .duration(1)
+                .attr("x2", parseInt(rightHandle.attr("x"))+3);
         }
     }
 
