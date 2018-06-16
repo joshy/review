@@ -100,8 +100,8 @@ def diff(id):
     return render_template('diff.html', row=row, version=version)
 
 
-@app.route('/review/dashboard')
-def dashboard():
+@app.route('/review/writer-dashboard')
+def writer_dashboard():
     writer = request.args.get('w', '')
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
@@ -116,14 +116,14 @@ def dashboard():
     df = pd.DataFrame(all_rows)
     df = relative(df).to_dict('records')
     median_all = calculate_median(df)
-    return render_template('dashboard.html',
-        rows=rows, writer=writer, last_exams=last_exams,
-        start_date=start_date, end_date=end_date, version=version,
-        median_single=median_single, median_all=median_all, departments=departments)
+    return render_template('writer-dashboard.html',
+                           rows=rows, writer=writer, last_exams=last_exams,
+                           start_date=start_date, end_date=end_date, version=version,
+                           median_single=median_single, median_all=median_all, departments=departments)
 
 
-@app.route('/review/dashboard/data')
-def data():
+@app.route('/review/writer-dashboard/data')
+def data_writer():
     writer = request.args.get('w', '')
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
@@ -131,6 +131,45 @@ def data():
     departments = request.args.getlist('departments[]')
     departments = '{' + ','.join(departments) + '}'
     rows = load_data(writer, last_exams, start_date, end_date, departments)
+    logging.debug(rows)
+    if len(rows) > 0:
+        df = pd.DataFrame(rows)
+        df = relative(df).sort_values('unters_beginn')
+        return df.to_csv(index_label='index')
+    return pd.DataFrame().to_csv(index_label='index')
+
+
+@app.route('/review/reviewer-dashboard')
+def reviewer_dashboard():
+    reviewer = request.args.get('r', '')
+    last_exams = request.args.get('last_exams', 30)
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    departments = request.args.getlist('departments')
+    departments = '{' + ','.join(departments) + '}'
+    rows = load_data(reviewer, last_exams, start_date, end_date, departments)
+    df = pd.DataFrame(rows)
+    df = relative(df).to_dict('records')
+    median_single = calculate_median(df)
+    all_rows = load_all_data(departments)
+    df = pd.DataFrame(all_rows)
+    df = relative(df).to_dict('records')
+    median_all = calculate_median(df)
+    return render_template('reviewer-dashboard.html',
+                           rows=rows, reviewer=reviewer, last_exams=last_exams,
+                           start_date=start_date, end_date=end_date, version=version,
+                           median_single=median_single, median_all=median_all, departments=departments)
+
+
+@app.route('/review/reviewer-dashboard/data')
+def data_reviewer():
+    reviewer = request.args.get('r', '')
+    last_exams = request.args.get('last_exams', 30)
+    start_date = request.args.get('start_date', '')
+    end_date = request.args.get('end_date', '')
+    departments = request.args.getlist('departments[]')
+    departments = '{' + ','.join(departments) + '}'
+    rows = load_data(reviewer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:
         df = pd.DataFrame(rows)

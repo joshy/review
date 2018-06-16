@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Report Review Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@3.2.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2.3.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.4.0"></script>
+    <script type="text/javascript"> median_single = {{ median_single|tojson|safe}};
+                                    median_all = {{ median_all|tojson|safe }};
+    </script>
+</head>
+
+<body class="w-100 sans-serif" data-page="writer-dashboard">
+{% include 'partials/dashboard-header.html' %}
+<div id="graphs" class="w-100 b--black-10 mw8 center">
+    <h1 class="f4">Personal Dashboard</h1>
+    <p>
+        This is a personal dashboard which should help the assistant to improve on writing radiology reports.
+    </p>
+    {% include 'partials/exam-list.html' %}
+    <h1 class="f5">Similarity</h1>
+    <svg id="SimilarityGraph" width="1000" height="500"></svg>
+    <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
+    <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
+    <h1 class="f5">Words added</h1>
+    <svg id="WordsAddedGraph" width="1000" height="500"></svg>
+    <svg id="WordsAddedBarChart" width="1000" height="300"></svg>
+    <h1 class="f5">Words deleted</h1>
+    <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
+    <svg id="WordsDeletedBarChart" width="1000" height="300"></svg>
+</div>
+{% assets "js_all" %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
+{% endassets %}
+</body>
+</html>

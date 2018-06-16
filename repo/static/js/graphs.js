@@ -1,6 +1,6 @@
 $(function () {
     var counter = 0;
-    if ('dashboard' == $('body').data('page')) {
+    if ('writer-dashboard' == $('body').data('page')) {
         console.log('on dashboard page');
         checkboxHandler();
         d3.csv(data_url(), function (error, data) {
@@ -30,7 +30,7 @@ $(function () {
             'end_date': end_date,
             'departments': departments
         };
-        return 'dashboard/data?' + $.param(param)
+        return 'writer-dashboard/data?' + $.param(param)
     }
 
     function drawSimilarityGraph(data) {
