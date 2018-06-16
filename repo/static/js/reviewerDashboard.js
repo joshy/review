@@ -1,7 +1,7 @@
 $(function () {
     var counter = 0;
     if ('reviewer-dashboard' == $('body').data('page')) {
-        console.log('on dashboard page');
+        console.log('on reviewer-dashboard page');
         checkboxHandler();
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;

@@ -23,10 +23,7 @@
         This is a personal dashboard which should help the assistant to improve on writing radiology reports.
     </p>
     {% include 'partials/exam-list.html' %}
-    <h1 class="f5">Similarity</h1>
-    <svg id="SimilarityGraph" width="1000" height="500"></svg>
-    <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
-    <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
+    {% include 'partials/writer-list.html' %}
     <h1 class="f5">Words added</h1>
     <svg id="WordsAddedGraph" width="1000" height="500"></svg>
     <svg id="WordsAddedBarChart" width="1000" height="300"></svg>

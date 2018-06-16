@@ -1,0 +1,26 @@
+<div class="w-100 b--black-10">
+    <div class="pa4">
+        <div class="overflow-auto">
+            <table class="f6 w-100 mw8 center" cellspacing="0">
+                <thead>
+                <tr>
+                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
+                </tr>
+                </thead>
+                <tbody class="lh-copy">
+                {#{% set writer_list = [] %}
+                {% for row in rows if row['schreiber'] not in writer_list['schreiber'] %}
+                    {% do writer_list.append(row) %}
+                {% endfor %}#}
+
+                {{ rows|map(attribute='schreiber')|unique|list }}
+                {% for writer in writer_list %}
+                <tr>
+                    <td class="pa1 bb b--black-10">{{ writer['schreiber'] }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
