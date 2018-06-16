@@ -8,6 +8,7 @@
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-15">Patient</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-30">Type of exam</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
+                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Reviewer</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Status</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">S->F</th>
@@ -25,6 +26,7 @@
                         <td class="pa1 bb b--black-10">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['untart_name'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
+                        <td class="pa1 bb b--black-10">{{ row['schreiber'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['freigeber'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
                         <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_s_f']|float }}</td>

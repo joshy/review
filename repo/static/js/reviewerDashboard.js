@@ -6,14 +6,13 @@ $(function () {
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
 
-            drawSimilarityGraph(data);
             drawWordsAddedGraph(data);
             drawWordsDeletedGraph(data);
         });
     }
 
     function data_url() {
-        var writer = $('#writer').val(),
+        var reviewer = $('#reviewer').val(),
             last_exams = $('#last_exams').val(),
             start_date = $('#start_date').val(),
             end_date = $('#end_date').val(),
@@ -24,30 +23,13 @@ $(function () {
         });
 
         var param = {
-            'w': writer,
+            'r': reviewer,
             'last_exams': last_exams,
             'start_date': start_date,
             'end_date': end_date,
             'departments': departments
         };
-        return 'writer-dashboard/data?' + $.param(param)
-    }
-
-    function drawSimilarityGraph(data) {
-        var maxIntervalValue = 1,
-            minIntervalValue = 0,
-            pieSegments = [
-                {name: 'medianValue', value: 0.0, color: "steelblue"},
-                {name: 'maxValue', value: 0.0, color: 'lightgrey'},
-            ],
-            classNames = ["barSimilarity", "buttonSimilarity", "buttonAnnotationSimilarity", "Similarity"],
-            color = "steelblue",
-            radius = 150;
-
-        drawGraph(data, d3.select("#SimilarityGraph"), "jaccard_s_f", maxIntervalValue, minIntervalValue, classNames, color, radius, pieSegments);
-        drawPieChart(d3.select("#SimilarityPieChartSingle"), median_single["jaccard_s_f"], "pieChartFontSingle", radius, pieSegments);
-        pieSegments[0].color = "#666967";
-        drawPieChart(d3.select("#SimilarityPieChartAll"), median_all["jaccard_s_f"], "pieChartFontAll", radius, pieSegments);
+        return 'reviewer-dashboard/data?' + $.param(param)
     }
 
     function drawWordsAddedGraph(data) {

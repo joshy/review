@@ -23,7 +23,7 @@
 
 <div class="w-100 center pt4-ns flex justify-center mw8">
     <form class="w-100 center justify-center mw8" action="/review/reviewer-dashboard">
-        <div class="w-80 center justify-center mw8">
+        <div class="w-100 flex center justify-center mw8">
             <label class="f6 pa2" for="datepicker">Last exams </label>
             <input id="last_exams"
                    class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
@@ -41,9 +41,9 @@
                    value="{{ end_date }}"
                    type="text" name="end_date" placeholder="31.01.2018">
             <label class="f6 pa2" for="writer">Reviewer </label>
-            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+            <input id="reviewer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
                    value="{{ reviewer }}"
-                   type="text" name="w" placeholder="Shortname">
+                   type="text" name="r" placeholder="Shortname">
             <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
         </div>
         <div class="w-100 center pt2-ns justify-center mw8 fl-ns" id="checkboxes">

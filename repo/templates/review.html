@@ -34,8 +34,8 @@
                         <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                         <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
-                        <td class="pa1 bb b--black-10 reviewerRow"><a href="review/writer-dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['schreiber'] }}</a></td>
-                        <td class="pa1 bb b--black-10"><a href="review/reviewer-dashboard?r={{ row['freigeber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['freigeber'] }}</a></td>
+                        <td class="pa1 bb b--black-10 dashboardRow"><a href="review/writer-dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['schreiber'] }}</a></td>
+                        <td class="pa1 bb b--black-10 dashboardRow"><a href="review/reviewer-dashboard?r={{ row['freigeber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['freigeber'] }}</a></td>
                         <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
                         <td class="bb b--black-10">
                             {% if row['befund_status'] == 'f' %}
