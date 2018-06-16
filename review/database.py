@@ -256,6 +256,119 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
     return cursor.fetchall()
 
 
+def query_by_reviewer_and_department(cursor, reviewer, last_exams, departments):
+    """
+    Query all reports in the review db by reviewer.
+    """
+    sql = """
+          SELECT
+            a.patient_schluessel,
+            a.unters_schluessel,
+            a.unters_art,
+            a.unters_beginn,
+            a.befund_schluessel,
+            a.schreiber,
+            a.signierer,
+            a.freigeber,
+            a.befund_freigabe,
+            a.befund_status,
+            a.lese_datum,
+            a.leser,
+            a.gegenlese_datum,
+            a.gegenleser,
+            a.pat_name,
+            a.pat_vorname,
+            a.untart_name,
+            a.jaccard_s_f,
+            a.jaccard_g_f,
+            a.words_added_s_f,
+            a.words_added_g_f,
+            a.words_deleted_s_f,
+            a.words_deleted_g_f,
+            a.total_words_s,
+            a.total_words_g,
+            a.total_words_f,
+            a.pp_misc_mfd_1_kuerzel,
+            a.pp_misc_mfd_1_bezeichnung
+          FROM
+            reports a
+          INNER JOIN 
+            reports b 
+          ON 
+            a.unters_schluessel = b.unters_schluessel
+          WHERE
+              a.freigeber = %s
+          AND
+              a.befund_status = 'f'
+          AND
+              a.schreiber != b.freigeber
+          AND 
+              a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          ORDER BY
+              a.unters_beginn desc
+          LIMIT %s
+          """
+    cursor.execute(sql, (reviewer.upper(), departments, last_exams))
+    return cursor.fetchall()
+
+
+def query_by_reviewer_and_date_and_department(cursor, reviewer, start_date, end_date, departments):
+    """
+    Query all reports in the review db by reviewer, date and department.
+    """
+    sql = """
+          SELECT
+            a.patient_schluessel,
+            a.unters_schluessel,
+            a.unters_art,
+            a.unters_beginn,
+            a.befund_schluessel,
+            a.schreiber,
+            a.signierer,
+            a.freigeber,
+            a.befund_freigabe,
+            a.befund_status,
+            a.lese_datum,
+            a.leser,
+            a.gegenlese_datum,
+            a.gegenleser,
+            a.pat_name,
+            a.pat_vorname,
+            a.untart_name,
+            a.jaccard_s_f,
+            a.jaccard_g_f,
+            a.words_added_s_f,
+            a.words_added_g_f,
+            a.words_deleted_s_f,
+            a.words_deleted_g_f,
+            a.total_words_s,
+            a.total_words_g,
+            a.total_words_f,
+            a.pp_misc_mfd_1_kuerzel,
+            a.pp_misc_mfd_1_bezeichnung
+          FROM
+            reports a 
+          INNER JOIN 
+            reports b 
+          ON 
+            a.unters_schluessel = b.unters_schluessel
+          WHERE
+              a.freigeber = %s
+          AND
+              a.unters_beginn between %s and %s
+          AND
+              a.befund_status = 'f'
+          AND
+              a.schreiber != b.freigeber
+          AND
+              a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          ORDER BY
+              a.unters_beginn desc
+          """
+    cursor.execute(sql, (reviewer.upper(), start_date, end_date, departments))
+    return cursor.fetchall()
+
+
 def query_calculations(cursor, departments):
     """
     Query all reports in the review db which have status final

@@ -1,0 +1,67 @@
+<nav class="w-100 center pv4 mw8 bb b--light-gray">
+    <div class="flex justify-between">
+        <div class="dtc v-btm w-25 tl">
+            <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black underline-hover" href="/review"
+               title="Home">
+                Report Review Server
+                <div>
+                    <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="dtc v-btm w-35 tr">
+            <a class="link f6 f5-ns dib near-black underline-hover"
+               href="http://www.unispital-basel.ch/index.php?id=1899"
+               title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
+                Universitätsspital Basel
+                <br>Klinik für Radiologie und Nuklearmedizin
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="w-100 center pt4-ns flex justify-center mw8">
+    <form class="w-100 center justify-center mw8" action="/review/reviewer-dashboard">
+        <div class="w-80 center justify-center mw8">
+            <label class="f6 pa2" for="datepicker">Last exams </label>
+            <input id="last_exams"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ last_exams }}"
+                   type="text" name="last_exams" placeholder="30">
+            <label class="f6 pa2"> or </label>
+            <label class="f6 pa2" for="start_date">Start Date</label>
+            <input id="start_date"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ start_date }}"
+                   type="text" name="start_date" placeholder="01.01.2018">
+            <label class="f6 pa2" for="end_date">End Date </label>
+            <input id="end_date"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ end_date }}"
+                   type="text" name="end_date" placeholder="31.01.2018">
+            <label class="f6 pa2" for="writer">Reviewer </label>
+            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
+                   value="{{ reviewer }}"
+                   type="text" name="w" placeholder="Shortname">
+            <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer pl2" type="submit" value="Search">
+        </div>
+        <div class="w-100 center pt2-ns justify-center mw8 fl-ns" id="checkboxes">
+            <fieldset class="w-30 center flex justify-center mw8">
+                <legend class="f6 pa1">Filter Departments</legend>
+                <input type="checkbox" id="AOD" name="departments" value="AOD" checked>
+                <label class="f6 pa1" for="AOD">AOD</label>
+                <input type="checkbox" id="CTD" name="departments" value="CTD" checked>
+                <label class="f6 pa1" for="CTD">CTD</label>
+                <input type="checkbox" id="MSK" name="departments" value="MSK" checked>
+                <label class="f6 pa1" for="MSK">MSK</label>
+                <input type="checkbox" id="NUK" name="departments" value="NUK" checked>
+                <label class="f6 pa1" for="NUK">NUK</label>
+                <input type="checkbox" id="IR" name="departments" value="IR" checked>
+                <label class="f6 pa1" for="IR">IR</label>
+                <input type="checkbox" id="FPS" name="departments" value="FPS" checked>
+                <label class="f6 pa1" for="FPS">FPS</label>
+            </fieldset>
+        </div>
+    </form>
+</div>

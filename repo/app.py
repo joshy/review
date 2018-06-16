@@ -10,7 +10,8 @@ from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer_and_department, query_calculations, query_by_writer_and_date_and_department
+from review.database import query_by_writer_and_department, query_calculations, query_by_writer_and_date_and_department, \
+    query_by_reviewer_and_date_and_department, query_by_reviewer_and_department
 from review.calculations import relative, calculate_median
 
 from repo.converter import rtf_to_text
@@ -49,8 +50,8 @@ if not os.path.exists(REPORTS_FOLDER):
 
 assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js",
-            "js/pikaday.js", "js/pikaday.jquery.js", "js/graphs.js",
-            "js/script.js", "js/review.js",
+            "js/pikaday.js", "js/pikaday.jquery.js", "js/writerDashboard.js",
+            "js/reviewerDashboard.js", "js/script.js", "js/review.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -78,12 +79,13 @@ def review():
     now = datetime.now().strftime('%d.%m.%Y')
     day = request.args.get('day', now)
     writer = request.args.get('writer', '')
+    reviewer = request.args.get('reviewer', '')
     dd = datetime.strptime(day, '%d.%m.%Y')
     con = get_review_db()
-    rows = query_review_reports(con.cursor(), dd, writer)
+    rows = query_review_reports(con.cursor(), dd, writer, reviewer)
     day = dd.strftime('%d.%m.%Y')
     return render_template('review.html',
-        rows=rows, day=day, writer=writer, version=version)
+        rows=rows, day=day, writer=writer, reviewer=reviewer, version=version)
 
 
 @app.route('/review/diff/<id>')
@@ -108,7 +110,7 @@ def writer_dashboard():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data(writer, last_exams, start_date, end_date, departments)
+    rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
     median_single = calculate_median(df)
@@ -130,7 +132,7 @@ def data_writer():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments[]')
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data(writer, last_exams, start_date, end_date, departments)
+    rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:
         df = pd.DataFrame(rows)
@@ -147,7 +149,7 @@ def reviewer_dashboard():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data(reviewer, last_exams, start_date, end_date, departments)
+    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
     df = pd.DataFrame(rows)
     df = relative(df).to_dict('records')
     median_single = calculate_median(df)
@@ -169,7 +171,7 @@ def data_reviewer():
     end_date = request.args.get('end_date', '')
     departments = request.args.getlist('departments[]')
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data(reviewer, last_exams, start_date, end_date, departments)
+    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
     if len(rows) > 0:
         df = pd.DataFrame(rows)
@@ -178,7 +180,7 @@ def data_reviewer():
     return pd.DataFrame().to_csv(index_label='index')
 
 
-def load_data(writer, last_exams, start_date, end_date, departments):
+def load_data_by_writer(writer, last_exams, start_date, end_date, departments):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
@@ -187,6 +189,18 @@ def load_data(writer, last_exams, start_date, end_date, departments):
         rows = query_by_writer_and_date_and_department(cursor, writer, s_d, e_d, departments)
     else:
         rows = query_by_writer_and_department(cursor, writer, last_exams, departments)
+    return rows
+
+
+def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments):
+    con = get_review_db()
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    if start_date and end_date:
+        s_d = datetime.strptime(start_date, '%d.%m.%Y')
+        e_d = datetime.strptime(end_date, '%d.%m.%Y')
+        rows = query_by_reviewer_and_date_and_department(cursor, reviewer, s_d, e_d, departments)
+    else:
+        rows = query_by_reviewer_and_department(cursor, reviewer, last_exams, departments)
     return rows
 
 
