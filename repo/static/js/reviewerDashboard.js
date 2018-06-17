@@ -817,12 +817,12 @@ $(function () {
         d3.select("#"+writer+"WordsDeletedBarChart").selectAll("g").remove();
         d3.select("#"+writer+"WordsAddedGraph").selectAll("g").remove();
         d3.select("#"+writer+"WordsDeletedGraph").selectAll("g").remove();
+        d3.selectAll(".tooltip").remove();
     }
 
     function resetContent() {
         counter = 0;
-        d3.selectAll("svg").selectAll("g").remove();
-        d3.selectAll(".tooltip").remove();
+        clearSVG();
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
             drawWordsAddedGraph(data);
