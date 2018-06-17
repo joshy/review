@@ -1,7 +1,7 @@
 $(function () {
-    var counter = 0;
-    var writer;
-    if ('reviewer-dashboard' == $('body').data('page')) {
+    var counter = 0,
+        writer;
+    if ('reviewer-dashboard' === $('body').data('page')) {
         console.log('on reviewer-dashboard page');
         buttonHandler();
         checkboxHandler();
@@ -35,7 +35,7 @@ $(function () {
             classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
             color = "green";
         drawGraph(data, d3.select("#" + writer + "WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
     }
 
     function drawWordsDeletedGraph(data) {
@@ -45,7 +45,7 @@ $(function () {
             classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
             color = "red";
         drawGraph(data, d3.select("#" + writer + "WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
 
     }
 
@@ -283,14 +283,16 @@ $(function () {
                 return data.length;
             });
 
+        var median_single = calculateMedian(data, value);
+
         //Draw Median Line single
         g.append("line")
             .attr("class", "medianLineSingle")
             .style("stroke", color)
             .attr("x1", 0)
-            .attr("y1", checkGraphArea(y(median_single[value]), height))
+            .attr("y1", checkGraphArea(y(median_single), height))
             .attr("x2", width)
-            .attr("y2", checkGraphArea(y(median_single[value]), height));
+            .attr("y2", checkGraphArea(y(median_single), height));
 
         //Draw Median Line overall
         g.append("line")
@@ -450,15 +452,15 @@ $(function () {
                 redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
 
                 if (tempValue === "jaccard_") {
-                    redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single[value], ".pieChartFontSingle", specificValue, pieSegments);
+                    redrawPieChart(d3.select("#SimilarityPieChartSingle"), value, ".pieChartFontSingle", specificValue, pieSegments);
                     redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(d3.select("#" + writer + "WordsAddedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), value, specificValue);
                     }
                     else {
-                        redrawBarChart(d3.select("#" + writer + "WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), value, specificValue);
                     }
                 }
             }
@@ -509,12 +511,8 @@ $(function () {
 
             var id = svg.attr("id");
 
-            console.log(id)
-
             var rightHandle = $("#" + id + " .handle--e"),
                 leftHandle = $("#" + id + " .handle--w");
-
-            console.log(rightHandle)
 
             brushArea.select(".brushLineLeft").transition()
                 .duration(1)
@@ -578,13 +576,17 @@ $(function () {
             });
     }
 
-    function drawBarChart(svg, value, color, maxValue) {
+    function drawBarChart(data, svg, value, color, maxValue) {
         var margin = {top: 50, right: 250, bottom: 50, left: 250},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var data = [{"name": "personal Median", "value": median_single[value].toPrecision(2), "color": color},
+        data = filterByWriter(data);
+
+        var median_single = calculateMedian(data, value);
+
+        var medianData = [{"name": "personal Median", "value": median_single.toPrecision(2), "color": color},
             {"name": "overall Median", "value": median_all[value].toPrecision(2), "color": "#666967"}];
 
         var x = d3.scaleLinear()
@@ -592,7 +594,7 @@ $(function () {
             .range([0, width]);
 
         var y = d3.scaleBand()
-            .domain(data.map(function (d) {
+            .domain(medianData.map(function (d) {
                 return d.name;
             }))
             .range([0, height])
@@ -611,7 +613,7 @@ $(function () {
             .attr("class", "histogram");
 
         var yBar = gLeft.selectAll(".bar")
-            .data(data)
+            .data(medianData)
             .enter()
             .append("g")
             .attr("fill", function (d) {
@@ -760,28 +762,32 @@ $(function () {
                 return data.length;
             });
 
+        var median_single = calculateMedian(data, value);
+
         //Redraw Median Lines
         svg.select(".medianLineSingle").transition()
-            .attr("y1", checkGraphArea(y(median_single[value]), height))
-            .attr("y2", checkGraphArea(y(median_single[value]), height));
+            .attr("y1", checkGraphArea(y(median_single), height))
+            .attr("y2", checkGraphArea(y(median_single), height));
 
         svg.select(".medianLineAll").transition()
             .attr("y1", checkGraphArea(y(median_all[value]), height))
             .attr("y2", checkGraphArea(y(median_all[value]), height));
     }
 
-    function redrawBarChart(svg, words, maxValue) {
+    function redrawBarChart(data, svg, words, maxValue) {
         var margin = {top: 50, right: 250, bottom: 50, left: 250},
             width = +svg.attr("width") - margin.left - margin.right;
 
-        var data = [median_single[words].toPrecision(2), median_all[words].toPrecision(2)];
+        var median_single = calculateMedian(data, words);
+
+        var medianData = [median_single.toPrecision(2), median_all[words].toPrecision(2)];
 
         var x = d3.scaleLinear()
             .domain([0, maxValue])
             .range([0, width]);
 
         svg.selectAll("rect.bar")
-            .data(data)
+            .data(medianData)
             .transition()
             .attr("width", function (d) {
                 if (d > maxValue) {
@@ -792,7 +798,7 @@ $(function () {
             });
 
         svg.selectAll("text.barText")
-            .data(data)
+            .data(medianData)
             .transition()
             .attr("x", function (d) {
                 if (d > maxValue) {
@@ -804,6 +810,13 @@ $(function () {
             .text(function (d) {
                 return d;
             });
+    }
+
+    function clearSVG() {
+        d3.select("#"+writer+"WordsAddedBarChart").selectAll("g").remove();
+        d3.select("#"+writer+"WordsDeletedBarChart").selectAll("g").remove();
+        d3.select("#"+writer+"WordsAddedGraph").selectAll("g").remove();
+        d3.select("#"+writer+"WordsDeletedGraph").selectAll("g").remove();
     }
 
     function resetContent() {
@@ -869,11 +882,13 @@ $(function () {
             var graphId = "#" + writer + "-graphs";
             $(graphId).toggle();
 
-            $(this).text(function (i, text) {
-                return text === "Hide" ? "Show" : "Hide";
-            });
-
-            drawDivContents();
+            if ($(this).text().trim() === "Show") {
+                $(this).text("Hide");
+                drawDivContents();
+            } else if ($(this).text().trim() === "Hide") {
+                $(this).text("Show");
+                clearSVG();
+            }
         });
     }
 
@@ -892,5 +907,33 @@ $(function () {
             }
         });
         return data;
+    }
+
+    function calculateMedian(data, value) {
+        var valueList = data.map(function (d) {
+            return parseFloat(d[value]);
+        });
+
+        return _calculateMedian(valueList);
+    }
+
+    function _calculateMedian(values) {
+
+        if (values.length === 0) {
+            return 0;
+        }
+
+        values.sort(function (a, b) {
+            return a - b;
+        });
+
+        var half = Math.floor(values.length / 2);
+
+        if (values.length % 2) {
+            return values[half];
+        }
+        else {
+            return (values[half - 1] + values[half]) / 2.0;
+        }
     }
 });

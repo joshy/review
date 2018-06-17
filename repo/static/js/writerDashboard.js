@@ -1,6 +1,6 @@
 $(function () {
     var counter = 0;
-    if ('writer-dashboard' == $('body').data('page')) {
+    if ('writer-dashboard' === $('body').data('page')) {
         console.log('on writer-dashboard page');
         checkboxHandler();
         d3.csv(data_url(), function (error, data) {

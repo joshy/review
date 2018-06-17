@@ -151,9 +151,6 @@ def reviewer_dashboard():
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
-    df = pd.DataFrame(rows)
-    df = relative(df).to_dict('records')
-    median_single = calculate_median(df)
     all_rows = load_all_data(departments)
     df = pd.DataFrame(all_rows)
     df = relative(df).to_dict('records')
@@ -161,7 +158,7 @@ def reviewer_dashboard():
     return render_template('reviewer-dashboard.html',
                            rows=rows, reviewer=reviewer, last_exams=last_exams,
                            start_date=start_date, end_date=end_date, version=version,
-                           median_single=median_single, median_all=median_all, departments=departments)
+                           median_all=median_all, departments=departments)
 
 
 @app.route('/review/reviewer-dashboard/data')
