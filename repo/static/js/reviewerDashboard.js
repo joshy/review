@@ -1,5 +1,18 @@
 $(function () {
     var counter = 0;
+
+    $(document).ready(function () {
+        $(".writerButton").click(function () {
+            var writer = $(this).closest("tr")
+                .find(".writerName")
+                .text();
+            writer =  writer.slice(0, writer.indexOf(" ")).trim();
+            var graphId = "#"+writer+"-graphs";
+            $(graphId).toggle();
+        });
+    });
+
+
     if ('reviewer-dashboard' == $('body').data('page')) {
         console.log('on reviewer-dashboard page');
         checkboxHandler();
@@ -337,16 +350,16 @@ $(function () {
         brushArea.append("line")
             .attr("class", "brushLineLeft")
             .attr("stroke", color)
-            .attr("x1", parseInt(leftHandle.attr("x"))+3)
-            .attr("x2", parseInt(leftHandle.attr("x"))+3)
+            .attr("x1", parseInt(leftHandle.attr("x")) + 3)
+            .attr("x2", parseInt(leftHandle.attr("x")) + 3)
             .attr("y1", -95)
             .attr("y2", -50);
 
         brushArea.append("line")
             .attr("class", "brushLineRight")
             .attr("stroke", color)
-            .attr("x1", parseInt(rightHandle.attr("x"))+3)
-            .attr("x2", parseInt(rightHandle.attr("x"))+3)
+            .attr("x1", parseInt(rightHandle.attr("x")) + 3)
+            .attr("x2", parseInt(rightHandle.attr("x")) + 3)
             .attr("y1", -95)
             .attr("y2", -50);
 
@@ -508,15 +521,15 @@ $(function () {
                 });
             g.select(".x").call(d3.axisBottom(x));
 
-            var rightHandle = $("#"+classNames[3]+"Graph "+".handle--e"),
-                leftHandle = $("#"+classNames[3]+"Graph "+".handle--w");
+            var rightHandle = $("#" + classNames[3] + "Graph " + ".handle--e"),
+                leftHandle = $("#" + classNames[3] + "Graph " + ".handle--w");
 
             brushArea.select(".brushLineLeft").transition()
                 .duration(1)
-                .attr("x2", parseInt(leftHandle.attr("x"))+3);
+                .attr("x2", parseInt(leftHandle.attr("x")) + 3);
             brushArea.select(".brushLineRight").transition()
                 .duration(1)
-                .attr("x2", parseInt(rightHandle.attr("x"))+3);
+                .attr("x2", parseInt(rightHandle.attr("x")) + 3);
         }
     }
 
@@ -828,7 +841,6 @@ $(function () {
         d3.selectAll(".tooltip").remove();
         d3.csv(data_url(), function (error, data) {
             if (error) throw error;
-            drawSimilarityGraph(data);
             drawWordsAddedGraph(data);
             drawWordsDeletedGraph(data);
         });

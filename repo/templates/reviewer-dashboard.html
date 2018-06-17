@@ -24,12 +24,6 @@
     </p>
     {% include 'partials/exam-list.html' %}
     {% include 'partials/writer-list.html' %}
-    <h1 class="f5">Words added</h1>
-    <svg id="WordsAddedGraph" width="1000" height="500"></svg>
-    <svg id="WordsAddedBarChart" width="1000" height="300"></svg>
-    <h1 class="f5">Words deleted</h1>
-    <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
-    <svg id="WordsDeletedBarChart" width="1000" height="300"></svg>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
