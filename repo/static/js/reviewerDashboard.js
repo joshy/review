@@ -1,31 +1,10 @@
 $(function () {
     var counter = 0;
-
-    $(document).ready(function () {
-        $(".writerButton").click(function () {
-            var writer = $(this).closest("tr")
-                .find(".writerName")
-                .text();
-            writer = writer.slice(0, writer.indexOf(" ")).trim();
-            var graphId = "#" + writer + "-graphs";
-            $(graphId).toggle();
-
-            $(this).text(function (i, text) {
-                return text === "Hide" ? "Show" : "Hide";
-            });
-        });
-    });
-
-
+    var writer;
     if ('reviewer-dashboard' == $('body').data('page')) {
         console.log('on reviewer-dashboard page');
+        buttonHandler();
         checkboxHandler();
-        d3.csv(data_url(), function (error, data) {
-            if (error) throw error;
-
-            drawWordsAddedGraph(data);
-            drawWordsDeletedGraph(data);
-        });
     }
 
     function data_url() {
@@ -55,8 +34,8 @@ $(function () {
             maxBarValue = 1,
             classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
             color = "green";
-        drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+        drawGraph(data, d3.select("#" + writer + "WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+        drawBarChart(d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
     }
 
     function drawWordsDeletedGraph(data) {
@@ -65,8 +44,8 @@ $(function () {
             maxBarValue = 1,
             classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
             color = "red";
-        drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
+        drawGraph(data, d3.select("#" + writer + "WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+        drawBarChart(d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
 
     }
 
@@ -84,10 +63,10 @@ $(function () {
             formatTime = d3.timeFormat("%d.%m"),
             brush = d3.brushX()
                 .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
-                .on("brush", brushed);
+                .on("brush", brushed),
 
-        //Define Axes
-        x = d3.scaleTime().range([gap + margin.right, width]),
+            //Define Axes
+            x = d3.scaleTime().range([gap + margin.right, width]),
             x2 = d3.scaleTime().range([gap + margin.right, width]),
             y = d3.scaleLinear().range([height, 0]).domain([minIntervalValue, maxIntervalValue]),
             yx = d3.scaleLinear().range([0, gap]);
@@ -116,6 +95,8 @@ $(function () {
             data[value] = +data[value];
             data.unters_beginn = new Date(data.unters_beginn);
         });
+
+        data = filterByWriter(data);
 
         x.domain(d3.extent(data, function (d) {
             return d.unters_beginn;
@@ -273,6 +254,7 @@ $(function () {
                     });
 
                     data = tempData;
+                    data = filterByWriter(data);
                     redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0]);
                 }
                 else {
@@ -473,10 +455,10 @@ $(function () {
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
+                        redrawBarChart(d3.select("#" + writer + "WordsAddedBarChart"), value, specificValue);
                     }
                     else {
-                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(d3.select("#" + writer + "WordsDeletedBarChart"), value, specificValue);
                     }
                 }
             }
@@ -525,8 +507,14 @@ $(function () {
                 });
             g.select(".x").call(d3.axisBottom(x));
 
-            var rightHandle = $("#" + classNames[3] + "Graph " + ".handle--e"),
-                leftHandle = $("#" + classNames[3] + "Graph " + ".handle--w");
+            var id = svg.attr("id");
+
+            console.log(id)
+
+            var rightHandle = $("#" + id + " .handle--e"),
+                leftHandle = $("#" + id + " .handle--w");
+
+            console.log(rightHandle)
 
             brushArea.select(".brushLineLeft").transition()
                 .duration(1)
@@ -669,6 +657,7 @@ $(function () {
             data[value] = +data[value];
             data.unters_beginn = new Date(data.unters_beginn);
         });
+        data = filterByWriter(data);
 
         var intervalDivisor = 5;
 
@@ -817,28 +806,6 @@ $(function () {
             });
     }
 
-    function redrawPieChart(svg, value, className, radius, pieSegments) {
-        pieSegments[0].value = value;
-        pieSegments[1].value = 1 - value;
-
-        var arc = d3.arc()
-            .outerRadius(radius - 10)
-            .innerRadius(100);
-
-        var pie = d3.pie()
-            .sort(null)
-            .value(function (d) {
-                return d.value;
-            });
-
-        svg.selectAll(".arc").select("path")
-            .data(pie(pieSegments))
-            .attr("d", arc);
-
-        svg.selectAll(className).transition()
-            .text(pieSegments[0].value.toPrecision(2));
-    }
-
     function resetContent() {
         counter = 0;
         d3.selectAll("svg").selectAll("g").remove();
@@ -891,5 +858,39 @@ $(function () {
             localStorage.setItem('departments', JSON.stringify(checkboxValues));
             $('#departments').val(departments);
         });
+    }
+
+    function buttonHandler() {
+        $(".writerButton").click(function () {
+            writer = $(this).closest("tr")
+                .find(".writerName")
+                .text();
+            writer = writer.slice(0, writer.indexOf(" ")).trim();
+            var graphId = "#" + writer + "-graphs";
+            $(graphId).toggle();
+
+            $(this).text(function (i, text) {
+                return text === "Hide" ? "Show" : "Hide";
+            });
+
+            drawDivContents();
+        });
+    }
+
+    function drawDivContents() {
+        d3.csv(data_url(), function (error, data) {
+            if (error) throw error;
+            drawWordsAddedGraph(data);
+            drawWordsDeletedGraph(data);
+        });
+    }
+
+    function filterByWriter(data) {
+        data = data.filter(function (d) {
+            if (d["schreiber"] === writer) {
+                return d;
+            }
+        });
+        return data;
     }
 });

@@ -85,10 +85,10 @@ $(function () {
             formatTime = d3.timeFormat("%d.%m"),
             brush = d3.brushX()
                 .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
-                .on("brush", brushed);
+                .on("brush", brushed),
 
-        //Define Axes
-        x = d3.scaleTime().range([gap + margin.right, width]),
+            //Define Axes
+            x = d3.scaleTime().range([gap + margin.right, width]),
             x2 = d3.scaleTime().range([gap + margin.right, width]),
             y = d3.scaleLinear().range([height, 0]).domain([minIntervalValue, maxIntervalValue]),
             yx = d3.scaleLinear().range([0, gap]);
@@ -355,16 +355,16 @@ $(function () {
         brushArea.append("line")
             .attr("class", "brushLineLeft")
             .attr("stroke", color)
-            .attr("x1", parseInt(leftHandle.attr("x"))+3)
-            .attr("x2", parseInt(leftHandle.attr("x"))+3)
+            .attr("x1", parseInt(leftHandle.attr("x")) + 3)
+            .attr("x2", parseInt(leftHandle.attr("x")) + 3)
             .attr("y1", -95)
             .attr("y2", -50);
 
         brushArea.append("line")
             .attr("class", "brushLineRight")
             .attr("stroke", color)
-            .attr("x1", parseInt(rightHandle.attr("x"))+3)
-            .attr("x2", parseInt(rightHandle.attr("x"))+3)
+            .attr("x1", parseInt(rightHandle.attr("x")) + 3)
+            .attr("x2", parseInt(rightHandle.attr("x")) + 3)
             .attr("y1", -95)
             .attr("y2", -50);
 
@@ -526,15 +526,15 @@ $(function () {
                 });
             g.select(".x").call(d3.axisBottom(x));
 
-            var rightHandle = $("#"+classNames[3]+"Graph "+".handle--e"),
-                leftHandle = $("#"+classNames[3]+"Graph "+".handle--w");
+            var rightHandle = $("#" + classNames[3] + "Graph " + ".handle--e"),
+                leftHandle = $("#" + classNames[3] + "Graph " + ".handle--w");
 
             brushArea.select(".brushLineLeft").transition()
                 .duration(1)
-                .attr("x2", parseInt(leftHandle.attr("x"))+3);
+                .attr("x2", parseInt(leftHandle.attr("x")) + 3);
             brushArea.select(".brushLineRight").transition()
                 .duration(1)
-                .attr("x2", parseInt(rightHandle.attr("x"))+3);
+                .attr("x2", parseInt(rightHandle.attr("x")) + 3);
         }
     }
 

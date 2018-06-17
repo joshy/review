@@ -14,13 +14,13 @@
                         <td class="pa1 bb b--black-10 writerName">{{ writer }}
                             <button class="black fr f6 input-reset pa2 ba bg-yellow b--yellow pointer writerButton">Show
                             </button>
-                            <div id="{{ writer }}-graphs" class="w-100 b--black-10 mw8 center dn writerGraphs">
+                            <div id="{{ writer }}-graphs" class="b--black-10 mw8 center dn writerGraphs">
                             <h1 class="f5">Words added</h1>
-                            <svg id="WordsAddedGraph" class="w-100" height="500"></svg>
-                            <svg id="WordsAddedBarChart" class="w-100" height="300"></svg>
+                            <svg id="{{ writer }}WordsAddedGraph" width="900" height="500"></svg>
+                            <svg id="{{ writer }}WordsAddedBarChart" width="900" height="300"></svg>
                             <h1 class="f5">Words deleted</h1>
-                            <svg id="WordsDeletedGraph" class="w-100" height="500"></svg>
-                            <svg id="WordsDeletedBarChart" class="w-100" height="300"></svg>
+                            <svg id="{{ writer }}WordsDeletedGraph" width="900" height="500"></svg>
+                            <svg id="{{ writer }}WordsDeletedBarChart" width="900" height="300"></svg>
                             </div>
                         </td>
                     </tr>
