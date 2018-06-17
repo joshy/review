@@ -6,9 +6,13 @@ $(function () {
             var writer = $(this).closest("tr")
                 .find(".writerName")
                 .text();
-            writer =  writer.slice(0, writer.indexOf(" ")).trim();
-            var graphId = "#"+writer+"-graphs";
+            writer = writer.slice(0, writer.indexOf(" ")).trim();
+            var graphId = "#" + writer + "-graphs";
             $(graphId).toggle();
+
+            $(this).text(function (i, text) {
+                return text === "Hide" ? "Show" : "Hide";
+            });
         });
     });
 

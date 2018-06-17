@@ -12,15 +12,15 @@
                 {% for writer in writerlist %}
                     <tr>
                         <td class="pa1 bb b--black-10 writerName">{{ writer }}
-                            <button class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer writerButton">Show
+                            <button class="black fr f6 input-reset pa2 ba bg-yellow b--yellow pointer writerButton">Show
                             </button>
-                            <div id="{{ writer }}-graphs" class="w-100 b--black-10 mw8 center writerGraphs">
+                            <div id="{{ writer }}-graphs" class="w-100 b--black-10 mw8 center dn writerGraphs">
                             <h1 class="f5">Words added</h1>
-                            <svg id="WordsAddedGraph" width="1000" height="500"></svg>
-                            <svg id="WordsAddedBarChart" width="1000" height="300"></svg>
+                            <svg id="WordsAddedGraph" class="w-100" height="500"></svg>
+                            <svg id="WordsAddedBarChart" class="w-100" height="300"></svg>
                             <h1 class="f5">Words deleted</h1>
-                            <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
-                            <svg id="WordsDeletedBarChart" width="1000" height="300"></svg>
+                            <svg id="WordsDeletedGraph" class="w-100" height="500"></svg>
+                            <svg id="WordsDeletedBarChart" class="w-100" height="300"></svg>
                             </div>
                         </td>
                     </tr>
