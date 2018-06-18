@@ -37,8 +37,8 @@ $(function () {
             classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
             color = "green";
         if (writer != null) {
-            drawGraph(data, d3.select("#" + writer + "WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-            drawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+            drawGraph(data, d3.select("#WordsAddedGraph"+writer), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(data, d3.select("#WordsAddedBarChart"+writer), "words_added_relative_s_f", color, maxBarValue);
         }
         else {
             drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue);
@@ -52,8 +52,8 @@ $(function () {
             classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
             color = "red";
         if (writer != null) {
-            drawGraph(data, d3.select("#" + writer + "WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-            drawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
+            drawGraph(data, d3.select("#WordsDeletedGraph"+writer), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(data, d3.select("#WordsDeletedBarChart"+writer), "words_deleted_relative_s_f", color, maxBarValue);
         }
         else {
             drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue);
@@ -468,10 +468,10 @@ $(function () {
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsAddedBarChart"+writer), value, specificValue);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"+writer), value, specificValue);
                     }
                 }
             }
@@ -771,10 +771,10 @@ $(function () {
     }
 
     function clearSVG() {
-        d3.select("#" + writer + "WordsAddedBarChart").selectAll("g").remove();
-        d3.select("#" + writer + "WordsDeletedBarChart").selectAll("g").remove();
-        d3.select("#" + writer + "WordsAddedGraph").selectAll("g").remove();
-        d3.select("#" + writer + "WordsDeletedGraph").selectAll("g").remove();
+        d3.select("#WordsAddedBarChart"+writer).selectAll("g").remove();
+        d3.select("#WordsDeletedBarChart"+writer).selectAll("g").remove();
+        d3.select("#WordsAddedGraph"+writer).selectAll("g").remove();
+        d3.select("#WordsDeletedGraph"+writer).selectAll("g").remove();
         d3.selectAll(".tooltip").remove();
     }
 
@@ -837,7 +837,7 @@ $(function () {
                 .find(".writerName")
                 .text();
             writer = writer.slice(0, writer.indexOf(" ")).trim();
-            var graphId = "#" + writer + "-graphs";
+            var graphId = "#graphs"+writer;
             $(graphId).toggle();
 
             if ($(this).text().trim() === "Show") {
