@@ -53,7 +53,8 @@ assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/pikaday.jquery.js", "js/writerDashboard.js", "js/reviewerDashboard.js",
             "js/diffHandling.js", "js/checkBoxHandling.js", "js/datePickerHandling.js",
-            "js/graph.js", "js/pieChart.js", "js/barChart.js", "js/median.js", "js/resetHandling.js",
+            "js/graph.js", "js/pieChart.js", "js/barChart.js", "js/median.js",
+            "js/clearHandling.js", "js/dataHandling.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -87,7 +88,7 @@ def review():
     rows = query_review_reports(con.cursor(), dd, writer, reviewer)
     day = dd.strftime('%d.%m.%Y')
     return render_template('review.html',
-        rows=rows, day=day, writer=writer, reviewer=reviewer, version=version)
+                           rows=rows, day=day, writer=writer, reviewer=reviewer, version=version)
 
 
 @app.route('/review/diff/<id>')

@@ -210,9 +210,11 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             else {
                 if (writer != null) {
                     clearContent(writer);
+                    drawDivContentsReviewer();
                 }
                 else {
                     clearAllContent();
+                    drawDivContentsWriter();
                 }
             }
             g.selectAll("circle")
@@ -417,11 +419,11 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                         redrawBarChart(data, d3.select("#WordsAddedBarChart" + writer), value, specificValue);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), value, specificValue);
                     }
                 }
                 else {
-                     if (tempValue === "words_added_relative_") {
+                    if (tempValue === "words_added_relative_") {
                         redrawBarChart(data, d3.select("#WordsAddedBarChart"), value, specificValue);
                     }
                     else {
@@ -457,11 +459,13 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         .text("reset");
 
     resetButton.on("click", function () {
-        if(writer != null) {
+        if (writer != null) {
             clearContent(writer);
+            drawDivContentsReviewer();
         }
         else {
             clearAllContent();
+            drawDivContentsWriter();
         }
     });
 
