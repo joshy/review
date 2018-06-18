@@ -53,6 +53,7 @@ assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/pikaday.jquery.js", "js/writerDashboard.js", "js/reviewerDashboard.js",
             "js/diffHandling.js", "js/localStorageHandling.js", "js/datePickerHandling.js",
+            "js/pieChart.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
