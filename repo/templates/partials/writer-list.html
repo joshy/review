@@ -2,10 +2,6 @@
     <div class="pa4">
         <div class="overflow-auto">
             <table class="f6 w-100 mw8 center" cellspacing="0">
-                <thead>
-                <tr>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
-                </tr>
                 </thead>
                 <tbody class="lh-copy">
                 {% set writerlist = rows|map(attribute ='schreiber')|unique|list %}

@@ -5,6 +5,8 @@ $(function () {
         console.log('on reviewer-dashboard page');
         buttonHandler();
         checkboxHandler();
+        drawDivContents();
+
     }
 
     function data_url() {
@@ -34,8 +36,13 @@ $(function () {
             maxBarValue = 1,
             classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
             color = "green";
-        drawGraph(data, d3.select("#" + writer + "WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+        if (writer != null) {
+            drawGraph(data, d3.select("#" + writer + "WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(data, d3.select("#" + writer + "WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+        }
+        else {
+            drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue);
+        }
     }
 
     function drawWordsDeletedGraph(data) {
@@ -44,9 +51,13 @@ $(function () {
             maxBarValue = 1,
             classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
             color = "red";
-        drawGraph(data, d3.select("#" + writer + "WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
-        drawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
-
+        if (writer != null) {
+            drawGraph(data, d3.select("#" + writer + "WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue);
+            drawBarChart(data, d3.select("#" + writer + "WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
+        }
+        else {
+            drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue);
+        }
     }
 
     function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments) {
@@ -523,61 +534,8 @@ $(function () {
         }
     }
 
-    function drawPieChart(svg, medianValue, className, radius, pieSegments) {
-        var margin = {top: 20, right: 55, bottom: 50, left: 45},
-            width = +svg.attr("width"),
-            height = +svg.attr("height");
-
-        pieSegments[0].value = medianValue;
-        pieSegments[1].value = 1.0 - medianValue;
-
-        var arc = d3.arc()
-            .outerRadius(radius - 10)
-            .innerRadius(100);
-
-        var pie = d3.pie()
-            .sort(null)
-            .value(function (d) {
-                return d.value;
-            });
-
-        var g = svg.selectAll(".arc")
-            .data(pie(pieSegments))
-            .enter()
-            .append("g")
-            .attr("class", "arc")
-            .attr("transform", "translate(" + width / 2 +
-                "," + height / 2 + ")");
-
-        g.append("path")
-            .attr("d", arc)
-            .style("fill", function (d) {
-                return d.data.color;
-            });
-
-        g.append("text")
-            .attr("class", className)
-            .attr("text-anchor", "middle")
-            .attr('y', 20)
-            .text(medianValue.toPrecision(2));
-
-        g.append("text")
-            .attr("class", "axisAnnotation")
-            .attr("transform",
-                "translate(" + (width / 10 - margin.right) + " ," +
-                (height / 3 + margin.bottom) + ")")
-            .text(function () {
-                if (className === "pieChartFontSingle") {
-                    return "personal Median"
-                }
-                else {
-                    return "overall Median"
-                }
-            });
-    }
-
     function drawBarChart(data, svg, value, color, maxValue) {
-        var margin = {top: 50, right: 250, bottom: 50, left: 250},
+        var margin = {top: 50, right: 250, bottom: 50, left: 200},
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom,
             g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -813,10 +771,10 @@ $(function () {
     }
 
     function clearSVG() {
-        d3.select("#"+writer+"WordsAddedBarChart").selectAll("g").remove();
-        d3.select("#"+writer+"WordsDeletedBarChart").selectAll("g").remove();
-        d3.select("#"+writer+"WordsAddedGraph").selectAll("g").remove();
-        d3.select("#"+writer+"WordsDeletedGraph").selectAll("g").remove();
+        d3.select("#" + writer + "WordsAddedBarChart").selectAll("g").remove();
+        d3.select("#" + writer + "WordsDeletedBarChart").selectAll("g").remove();
+        d3.select("#" + writer + "WordsAddedGraph").selectAll("g").remove();
+        d3.select("#" + writer + "WordsDeletedGraph").selectAll("g").remove();
         d3.selectAll(".tooltip").remove();
     }
 
@@ -901,12 +859,17 @@ $(function () {
     }
 
     function filterByWriter(data) {
-        data = data.filter(function (d) {
-            if (d["schreiber"] === writer) {
-                return d;
-            }
-        });
-        return data;
+        if (writer != null) {
+            data = data.filter(function (d) {
+                if (d["schreiber"] === writer) {
+                    return d;
+                }
+            });
+            return data;
+        }
+        else {
+            return data;
+        }
     }
 
     function calculateMedian(data, value) {
