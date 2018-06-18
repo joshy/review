@@ -474,10 +474,10 @@ $(function () {
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsAddedBarChart"), value, specificValue);
                     }
                     else {
-                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"), value, specificValue);
                     }
                 }
             }
@@ -653,42 +653,6 @@ $(function () {
         svg.select(".medianLineAll").transition()
             .attr("y1", checkGraphArea(y(median_all[value]), height))
             .attr("y2", checkGraphArea(y(median_all[value]), height));
-    }
-
-    function redrawBarChart(svg, words, maxValue) {
-        var margin = {top: 50, right: 250, bottom: 50, left: 250},
-            width = +svg.attr("width") - margin.left - margin.right;
-
-        var data = [median_single[words].toPrecision(2), median_all[words].toPrecision(2)];
-
-        var x = d3.scaleLinear()
-            .domain([0, maxValue])
-            .range([0, width]);
-
-        svg.selectAll("rect.bar")
-            .data(data)
-            .transition()
-            .attr("width", function (d) {
-                if (d > maxValue) {
-                    return x(maxValue)
-                } else {
-                    return x(d)
-                }
-            });
-
-        svg.selectAll("text.barText")
-            .data(data)
-            .transition()
-            .attr("x", function (d) {
-                if (d > maxValue) {
-                    return x(maxValue) + 20;
-                } else {
-                    return x(d) + 20;
-                }
-            })
-            .text(function (d) {
-                return d;
-            });
     }
 
     function resetContent() {

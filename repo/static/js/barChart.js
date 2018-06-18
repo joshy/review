@@ -73,3 +73,41 @@ function drawBarChart(data, svg, value, color, maxValue) {
             return d.value;
         });
 }
+
+function redrawBarChart(data, svg, words, maxValue) {
+    var margin = {top: 50, right: 250, bottom: 50, left: 250},
+        width = +svg.attr("width") - margin.left - margin.right;
+
+    var median_single = calculateMedian(data, words);
+
+    var medianData = [median_single.toPrecision(2), median_all[words].toPrecision(2)];
+
+    var x = d3.scaleLinear()
+        .domain([0, maxValue])
+        .range([0, width]);
+
+    svg.selectAll("rect.bar")
+        .data(medianData)
+        .transition()
+        .attr("width", function (d) {
+            if (d > maxValue) {
+                return x(maxValue)
+            } else {
+                return x(d)
+            }
+        });
+
+    svg.selectAll("text.barText")
+        .data(medianData)
+        .transition()
+        .attr("x", function (d) {
+            if (d > maxValue) {
+                return x(maxValue) + 20;
+            } else {
+                return x(d) + 20;
+            }
+        })
+        .text(function (d) {
+            return d;
+        });
+}
