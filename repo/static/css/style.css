@@ -128,3 +128,7 @@ div.tooltip {
     fill: white;
 }
 
+.backgroundRect {
+    fill: lightgray;
+    opacity: 0.2;
+}

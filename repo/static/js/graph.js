@@ -30,9 +30,15 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             .tickFormat("")
         );
 
-    //Define Histogramm
-    var gLeft = g.append("g")
+    //Define Histogram
+    var histogram = g.append("g")
         .attr("class", "histogram");
+
+    //Define Histogram-Background
+    histogram.append("rect")
+        .attr("class", "backgroundRect")
+        .attr("height", height)
+        .attr("width", gap);
 
     //Define the div for the tooltip
     var div = d3.select("body")
@@ -70,8 +76,19 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         .attr("y", -margin.top / 2)
         .text(">1");
 
+    //Define ScatterPlot-Area
+    var scatterPlot = g.append("g")
+        .attr("class", "scatterPlot");
+
+    //Define ScatterPlot-Background
+    scatterPlot.append("rect")
+        .attr("class", "backgroundRect")
+        .attr("height", height)
+        .attr("width", width - gap - 20)
+        .attr("transform", "translate(" + (gap + 20) + ",0)");
+
     //Draw Circles
-    var circles = g.append("g")
+    var circles = scatterPlot.append("g")
         .attr("class", "circles");
 
     circles.selectAll("circle")
@@ -132,7 +149,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
 
     var bWidth = y(yBins[0].x0) - y(yBins[0].x1) - 1;
 
-    var yBar = gLeft.selectAll(".rect")
+    var yBar = histogram.selectAll(".rect")
         .data(yBins)
         .enter()
         .append("rect")
@@ -225,7 +242,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                 .style("opacity", 0);
         });
 
-    gLeft.selectAll("text")
+    histogram.selectAll("text")
         .data(yBins)
         .enter()
         .append("text")
