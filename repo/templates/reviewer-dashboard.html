@@ -17,15 +17,22 @@
 <body class="w-100 sans-serif" data-page="reviewer-dashboard">
 {% include 'partials/reviewer-dashboard-header.html' %}
 <div class="w-100 b--black-10 mw8 center">
-    <h1 class="f4">Personal Dashboard</h1>
+    <h1 class="f3">Personal Dashboard</h1>
     <p>
         This is a personal dashboard which should help the assistant to improve on writing radiology reports.
     </p>
+    <h1 class="f4">Reports List</h1>
     {% include 'partials/exam-list.html' %}
-    <h1 class="f5">Relative Document Changes g->f</h1>
-    <svg id="WordsAddedBarChart" width="500" height="300"></svg>
-    <svg id="WordsDeletedBarChart" width="500" height="300"></svg>
-        <h1 class="f5">Writer List</h1>
+    <h1 class="f4">Relative Document Changes g->f</h1>
+    <svg id="WordsAddedBarChart" class="ph4-l" width="440" height="250"></svg>
+    <svg id="WordsDeletedBarChart" class="ph4-l" width="440" height="250"></svg>
+    <h3 class="f5 di-ns pl6-l pr7-l ">
+        Words added
+    </h3>
+    <h3 class="f5 di-ns ph6-l">
+        Words deleted
+    </h3>
+        <h1 class="f4">Writer List</h1>
     {% include 'partials/writer-list.html' %}
 </div>
 {% assets "js_all" %}

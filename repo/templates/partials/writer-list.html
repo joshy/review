@@ -1,8 +1,7 @@
 <div class="w-100 b--black-10">
-    <div class="pa4">
+    <div class="ph4 pv3">
         <div class="overflow-auto">
             <table class="f6 w-100 mw8 center" cellspacing="0">
-                </thead>
                 <tbody class="lh-copy">
                 {% set writerlist = rows|map(attribute ='schreiber')|unique|list %}
                 {% for writer in writerlist %}
@@ -13,10 +12,10 @@
                             <div id="graphs{{ writer }}" class="b--black-10 mw8 center dn writerGraphs">
                             <h1 class="f5">Words added</h1>
                             <svg id="WordsAddedGraph{{ writer }}" width="900" height="500"></svg>
-                            <svg id="WordsAddedBarChart{{ writer }}" width="900" height="300"></svg>
+                            <svg id="WordsAddedBarChart{{ writer }}" class="ph6-l" width="600" height="250"></svg>
                             <h1 class="f5">Words deleted</h1>
                             <svg id="WordsDeletedGraph{{ writer }}" width="900" height="500"></svg>
-                            <svg id="WordsDeletedBarChart{{ writer }}" width="900" height="300"></svg>
+                            <svg id="WordsDeletedBarChart{{ writer }}" class="ph6-l" width="600" height="250"></svg>
                             </div>
                         </td>
                     </tr>

@@ -42,7 +42,7 @@ def _update_metrics():
         logging.debug('Row {} with new calculations: {}'.format(i,calculations[0]['jaccard']))
         update_metrics(review_cursor, row['unters_schluessel'], calculations)
         logging.debug('Updated row %s of %s', i, count)
-        if (i % 10 == 0):
+        if i % 10 == 0:
             review_db.commit()
     review_db.commit()
     review_cursor.close()
