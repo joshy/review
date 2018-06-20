@@ -1,6 +1,6 @@
 $(function () {
 
-    if ('diff' == $('body').data('page')) {
+    if ('diff' === $('body').data('page')) {
         diff();
     }
 

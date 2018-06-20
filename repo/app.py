@@ -51,10 +51,10 @@ if not os.path.exists(REPORTS_FOLDER):
 
 assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
-            "js/pikaday.jquery.js", "js/writerDashboard.js", "js/reviewerDashboard.js",
-            "js/diffHandling.js", "js/checkBoxHandling.js", "js/datePickerHandling.js",
-            "js/graph.js", "js/pieChart.js", "js/barChart.js", "js/median.js",
-            "js/clearHandling.js", "js/dataHandling.js",
+            "js/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
+            "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
+            "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/median.js",
+            "js/handlers/clearHandling.js", "js/handlers/dataHandling.js", "js/handlers/infoHandling.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 

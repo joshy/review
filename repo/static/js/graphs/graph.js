@@ -114,7 +114,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                 .style("opacity", 1);
             div.html(d.untart_name + "<br/>" + "Date: " +
                 formatTime(d.unters_beginn) + "<br/>" +
-                classNames[3] + ": " + d[value])
+                classNames[3] + ": " + d[value].toPrecision(2))
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 40) + "px");
         })
@@ -153,7 +153,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         .data(yBins)
         .enter()
         .append("rect")
-        .attr("class", classNames[0])
+        .attr("class", classNames[0] + " pointer")
         .attr("transform", function (d) {
             return "translate(" + 0 + "," + y(d.x1) + ")";
         })
@@ -384,7 +384,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
 
     //Add Report Button
     var reportButton = svg.append("g")
-            .attr("class", "reportButton"),
+            .attr("class", "reportButton pointer"),
         buttonWidth = 150,
         buttonHeight = 20,
         x0 = width - 100,
@@ -453,7 +453,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
 
     //Add Reset Button
     var resetButton = svg.append("g")
-        .attr("class", "resetButton");
+        .attr("class", "resetButton pointer");
     x0 = width - 260;
 
     resetButton.append("rect")
@@ -485,6 +485,25 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             drawDivContentsWriter();
         }
     });
+
+    //Brushtool Infotext
+    brushArea.on("mouseover", function () {
+        div.transition()
+            .duration(200)
+            .style("opacity", 1);
+        div.html(function () {
+            return "To define time area: <br>" +
+                "Click on one of the coloured handles and move it by dragging the mouse to the desired direction"
+        })
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY) + "px");
+    })
+
+        .on("mouseout", function (d) {
+            div.transition()
+                .duration(200)
+                .style("opacity", 0);
+        });
 
 
     //Brush function
