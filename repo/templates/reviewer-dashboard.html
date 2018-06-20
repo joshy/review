@@ -17,19 +17,20 @@
 <body class="w-100 sans-serif" data-page="reviewer-dashboard">
 {% include 'partials/reviewer-dashboard-header.html' %}
 <div class="w-100 b--black-10 mw8 center">
-    <h1 class="f3">Personal Dashboard</h1>
-    <p>
-        This is a personal dashboard which should help the supervisor to keep track of radiological assistant reports.
+    <div class="w-100 flex items-center">
+        <h1 class="f3 di-ns pr2">Personal Dashboard</h1>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoDashboard">Info</button>
+    </div>
+    <p>This is a personal dashboard which should help the supervisor to keep track of radiological assistant reports.
     </p>
     <div class="w-100 flex items-center">
         <h1 class="f4 di-ns pr2">Reports List</h1>
-        <button class="black f7 ba bg-yellow b--yellow infoReportsList">Info</button>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
     </div>
     {% include 'partials/exam-list.html' %}
     <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns">Relative Document Changes</h1>
-        <h1 class="f5 i-ns di-ns pl3-l pr2">gegengelesen -> final</h1>
-        <button class="black f7 ba bg-yellow b--yellow infoDocumentChanges">Info</button>
+        <h1 class="f4 di-ns pr2">Relative Document Changes</h1>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoDocumentChanges">Info</button>
     </div>
     <svg id="WordsAddedBarChart" class="ph4-l" width="440" height="250"></svg>
     <svg id="WordsDeletedBarChart" class="pl2-l" width="440" height="250"></svg>
@@ -41,7 +42,7 @@
     </h3>
     <div class="w-100 flex items-center">
         <h1 class="f4 di-ns pr2">Writer List</h1>
-        <button class="black f7 ba bg-yellow b--yellow infoButton">Info</button>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoWriterList">Info</button>
     </div>
     {% include 'partials/writer-list.html' %}
 </div>

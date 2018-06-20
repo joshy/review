@@ -505,7 +505,6 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                 .style("opacity", 0);
         });
 
-
     //Brush function
     function brushed() {
         x.domain(d3.event.selection.map(x2.invert, x2));
