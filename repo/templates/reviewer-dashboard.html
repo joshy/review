@@ -19,12 +19,18 @@
 <div class="w-100 b--black-10 mw8 center">
     <h1 class="f3">Personal Dashboard</h1>
     <p>
-        This is a personal dashboard which should help the assistant to improve on writing radiology reports.
+        This is a personal dashboard which should help the supervisor to keep track of radiological assistant reports.
     </p>
-    <h1 class="f4">Reports List</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns pr2">Reports List</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     {% include 'partials/exam-list.html' %}
-    <h1 class="f4 di-ns">Relative Document Changes</h1>
-    <h1 class="f5 i-ns di-ns pl3-l pr7-l">gegengelesen -> final</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns">Relative Document Changes</h1>
+        <h1 class="f5 i-ns di-ns pl3-l pr2">gegengelesen -> final</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     <svg id="WordsAddedBarChart" class="ph4-l" width="440" height="250"></svg>
     <svg id="WordsDeletedBarChart" class="pl2-l" width="440" height="250"></svg>
     <h3 class="f5 di-ns pl6-l pr7-l ">
@@ -33,7 +39,10 @@
     <h3 class="f5 di-ns ph6-l">
         Words deleted
     </h3>
-        <h1 class="f4">Writer List</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns pr2">Writer List</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     {% include 'partials/writer-list.html' %}
 </div>
 {% assets "js_all" %}

@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@2.3.1"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.4.0"></script>
     <script type="text/javascript"> median_single = {{ median_single|tojson|safe}};
-                                    median_all = {{ median_all|tojson|safe }};
+    median_all = {{ median_all|tojson|safe }};
     </script>
 </head>
 
@@ -22,16 +22,30 @@
     <p>
         This is a personal dashboard which should help the assistant to improve on writing radiology reports
     </p>
-    <h1 class="f4">Reports List</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns pr2">Reports List</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     {% include 'partials/exam-list.html' %}
-    <h1 class="f4">Similarity</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns pr2">Similarity</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     <svg id="SimilarityGraph" width="1000" height="500"></svg>
     <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
     <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
-    <h1 class="f4">Relative Words added</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns">Words added</h1>
+        <h1 class="f5 i-ns di-ns pl2-l pr2">(relative)</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     <svg id="WordsAddedGraph" width="1000" height="500"></svg>
     <svg id="WordsAddedBarChart" class="ph6-l" width="700" height="200"></svg>
-    <h1 class="f4">Relative Words deleted</h1>
+    <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns">Words deleted</h1>
+        <h1 class="f5 i-ns di-ns pl2-l pr2">(relative)</h1>
+        <button class="black f7 ba bg-yellow b--yellow pointer infoButton">Info</button>
+    </div>
     <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
     <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
 </div>
