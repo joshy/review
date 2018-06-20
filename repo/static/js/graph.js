@@ -433,18 +433,18 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             else {
                 if (writer != null) {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(data, d3.select("#WordsAddedBarChart" + writer), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsAddedBarChart" + writer), value, specificValue, writer);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), value, specificValue, writer);
                     }
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(data, d3.select("#WordsAddedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsAddedBarChart"), value, specificValue, null);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"), value, specificValue);
+                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"), value, specificValue, null);
                     }
                 }
             }

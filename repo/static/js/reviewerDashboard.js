@@ -17,10 +17,10 @@ function drawWordsAddedGraphReviewer(data) {
         color = "green";
     if (writer != null) {
         drawGraph(data, d3.select("#WordsAddedGraph" + writer), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
-        drawBarChart(data, d3.select("#WordsAddedBarChart" + writer), "words_added_relative_s_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#WordsAddedBarChart" + writer), "words_added_relative_s_f", color, maxBarValue, writer);
     }
     else {
-        drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue, null);
     }
 }
 
@@ -32,10 +32,10 @@ function drawWordsDeletedGraphReviewer(data) {
         color = "red";
     if (writer != null) {
         drawGraph(data, d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
-        drawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_s_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_s_f", color, maxBarValue, writer);
     }
     else {
-        drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue);
+        drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue, null);
     }
 }
 

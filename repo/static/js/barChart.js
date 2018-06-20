@@ -1,8 +1,10 @@
-function drawBarChart(data, svg, value, color, maxValue) {
+function drawBarChart(data, svg, value, color, maxValue, writer) {
     var margin = {top: 30, right: 250, bottom: 10, left: 150},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    data = filterByWriter(data, writer);
 
     var median_single = calculateMedian(data, value);
 
@@ -74,9 +76,11 @@ function drawBarChart(data, svg, value, color, maxValue) {
         });
 }
 
-function redrawBarChart(data, svg, words, maxValue) {
-    var margin = {top: 50, right: 250, bottom: 50, left: 250},
+function redrawBarChart(data, svg, words, maxValue, writer) {
+    var margin = {top: 30, right: 250, bottom: 10, left: 150},
         width = +svg.attr("width") - margin.left - margin.right;
+
+    data = filterByWriter(data, writer);
 
     var median_single = calculateMedian(data, words);
 

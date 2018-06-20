@@ -30,7 +30,7 @@ function drawWordsAddedGraphWriter(data) {
         classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "WordsAdded"],
         color = "green";
     drawGraph(data, d3.select("#WordsAddedGraph"), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, null);
-    drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue);
+    drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_s_f", color, maxBarValue, null);
 }
 
 function drawWordsDeletedGraphWriter(data) {
@@ -40,5 +40,5 @@ function drawWordsDeletedGraphWriter(data) {
         classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "WordsDeleted"],
         color = "red";
     drawGraph(data, d3.select("#WordsDeletedGraph"), "words_deleted_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, null);
-    drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue);
+    drawBarChart(data, d3.select("#WordsDeletedBarChart"), "words_deleted_relative_s_f", color, maxBarValue, null);
 }
