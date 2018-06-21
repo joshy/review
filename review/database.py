@@ -369,7 +369,7 @@ def query_by_reviewer_and_date_and_department(cursor, reviewer, start_date, end_
     return cursor.fetchall()
 
 
-def query_calculations(cursor, departments):
+def query_all_by_departments(cursor, departments):
     """
     Query all reports in the review db which have status final
     """
@@ -399,6 +399,7 @@ def query_calculations(cursor, departments):
               a.pp_misc_mfd_1_kuerzel = ANY(%s)
           ORDER BY
               a.unters_beginn desc
+          LIMIT 20000
           """
     cursor.execute(sql, [departments])
     return cursor.fetchall()

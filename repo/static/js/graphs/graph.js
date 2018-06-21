@@ -158,7 +158,6 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             return "translate(" + 0 + "," + y(d.x1) + ")";
         })
         .attr("y", 1)
-        .attr("class", classNames[0])
         .attr("width", function (d) {
             return yx(d.length);
         })

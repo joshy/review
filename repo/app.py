@@ -10,7 +10,7 @@ from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer_and_department, query_calculations, query_by_writer_and_date_and_department, \
+from review.database import query_by_writer_and_department, query_all_by_departments, query_by_writer_and_date_and_department, \
     query_by_reviewer_and_date_and_department, query_by_reviewer_and_department
 from review.calculations import relative, calculate_median
 
@@ -207,7 +207,7 @@ def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, department
 def load_all_data(departments):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
-    return query_calculations(cursor, departments)
+    return query_all_by_departments(cursor, departments)
 
 
 @app.route('/cm')
