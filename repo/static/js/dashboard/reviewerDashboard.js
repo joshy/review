@@ -16,8 +16,8 @@ function drawWordsAddedGraphReviewer(data) {
         classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words Added"],
         color = "green";
     if (writer != null) {
-        drawGraph(data, d3.select("#WordsAddedGraph" + writer), "words_added_relative_s_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
-        drawBarChart(data, d3.select("#WordsAddedBarChart" + writer), "words_added_relative_s_f", color, maxBarValue, writer);
+        drawGraph(data, d3.select("#WordsAddedGraph" + writer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
+        drawBarChart(data, d3.select("#WordsAddedBarChart" + writer), "words_added_relative_g_f", color, maxBarValue, writer);
     }
     else {
         drawBarChart(data, d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue, null);

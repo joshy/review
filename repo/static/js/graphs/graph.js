@@ -406,7 +406,15 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             return x0 + buttonWidth * i + buttonWidth / 2;
         })
         .attr("y", y0 + buttonHeight / 2)
-        .text("schreiben -> final");
+        .text(function() {
+             var checkValue = value.substr(value.length - 3);
+             if (checkValue === "s_f") {
+                 return "schreiben -> final";
+             }
+             else {
+                 return "gegengelesen -> final";
+             }
+        });
 
     reportButton.on("click", function () {
         if (counter === 0) {
@@ -415,7 +423,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
 
             if (checkValue === "s_f") {
                 value = tempValue + "g_f";
-                d3.selectAll("." + classNames[2]).text("gegenlesen -> final");
+                d3.selectAll("." + classNames[2]).text("gegengelesen -> final");
             }
             else {
                 value = tempValue + "s_f";
