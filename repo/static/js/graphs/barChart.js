@@ -6,10 +6,8 @@ function drawBarChart(data, svg, value, color, maxValue, writer) {
 
     data = filterByWriter(data, writer);
 
-    var median_single = calculateMedian(data, value);
-
-    var medianData = [{"name": "personal Median", "value": median_single.toPrecision(2), "color": color},
-        {"name": "overall Median", "value": median_all[value].toPrecision(2), "color": "#666967"}];
+    var medianData = [{"name": "personal Median", "value": data['median_single'][value].toPrecision(2), "color": color},
+        {"name": "overall Median", "value": data['median_all'][value].toPrecision(2), "color": "#666967"}];
 
     var x = d3.scaleLinear()
         .domain([0, maxValue])
@@ -82,9 +80,7 @@ function redrawBarChart(data, svg, words, maxValue, writer) {
 
     data = filterByWriter(data, writer);
 
-    var median_single = calculateMedian(data, words);
-
-    var medianData = [median_single.toPrecision(2), median_all[words].toPrecision(2)];
+    var medianData = [data['median_single'][value].toPrecision(2), data['median_all'][value].toPrecision(2)];
 
     var x = d3.scaleLinear()
         .domain([0, maxValue])

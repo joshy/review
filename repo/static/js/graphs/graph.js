@@ -256,24 +256,22 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             return data.length;
         });
 
-    var median_single = calculateMedian(data, value);
-
     //Draw Median Line single
     g.append("line")
         .attr("class", "medianLineSingle")
         .style("stroke", color)
         .attr("x1", 0)
-        .attr("y1", checkGraphArea(y(median_single), height))
+        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
         .attr("x2", width)
-        .attr("y2", checkGraphArea(y(median_single), height));
+        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
 
     //Draw Median Line overall
     g.append("line")
         .attr("class", "medianLineAll")
         .attr("x1", 0)
-        .attr("y1", checkGraphArea(y(median_all[value]), height))
+        .attr("y1", checkGraphArea(y(data['median_all'][value]), height))
         .attr("x2", width)
-        .attr("y2", checkGraphArea(y(median_all[value]), height));
+        .attr("y2", checkGraphArea(y(data['median_all'][value]), height));
 
     //Draw Axes
     g.append("g")
@@ -433,9 +431,8 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
 
             if (tempValue === "jaccard_") {
-                median_single = calculateMedian(data, value);
-                redrawPieChart(d3.select("#SimilarityPieChartSingle"), median_single, ".pieChartFontSingle", specificValue, pieSegments);
-                redrawPieChart(d3.select("#SimilarityPieChartAll"), median_all[value], ".pieChartFontAll", specificValue, pieSegments)
+                redrawPieChart(d3.select("#SimilarityPieChartSingle"), data['median_single'][value], ".pieChartFontSingle", specificValue, pieSegments);
+                redrawPieChart(d3.select("#SimilarityPieChartAll"), data['median_all'][value], ".pieChartFontAll", specificValue, pieSegments)
             }
             else {
                 if (writer != null) {
@@ -648,16 +645,14 @@ function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, min
             return data.length;
         });
 
-    var median_single = calculateMedian(data, value);
-
     //Redraw Median Lines
     svg.select(".medianLineSingle").transition()
-        .attr("y1", checkGraphArea(y(median_single), height))
-        .attr("y2", checkGraphArea(y(median_single), height));
+        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
+        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
 
     svg.select(".medianLineAll").transition()
-        .attr("y1", checkGraphArea(y(median_all[value]), height))
-        .attr("y2", checkGraphArea(y(median_all[value]), height));
+        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
+        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
 }
 
 function checkGraphArea(value, height) {

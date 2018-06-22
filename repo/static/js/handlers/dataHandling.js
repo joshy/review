@@ -1,6 +1,7 @@
 function drawDivContentsWriter() {
     d3.csv(dataUrl('writer'), function (error, data) {
         if (error) throw error;
+        console.log(data)
         drawSimilarityGraphWriter(data);
         drawWordsAddedGraphWriter(data);
         drawWordsDeletedGraphWriter(data);
@@ -8,10 +9,11 @@ function drawDivContentsWriter() {
 }
 
 function drawDivContentsReviewer() {
-    d3.csv(dataUrl('reviewer'), function (error, data) {
+    d3.json(dataUrl('reviewer'), function (error, data) {
         if (error) throw error;
         drawWordsAddedGraphReviewer(data);
         drawWordsDeletedGraphReviewer(data);
+
     });
 }
 

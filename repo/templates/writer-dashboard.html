@@ -6,13 +6,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <script src="https://cdn.jsdelivr.net/npm/vega@3.2.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2.3.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3.4.0"></script>
-    <script type="text/javascript"> median_single = {{ median_single|tojson|safe}};
-    median_all = {{ median_all|tojson|safe }};
-    </script>
 </head>
 
 <body class="w-100 sans-serif" data-page="writer-dashboard">

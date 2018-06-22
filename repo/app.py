@@ -54,7 +54,7 @@ assets = Environment(app)
 js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
-            "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/median.js",
+            "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js",
             "js/handlers/clearHandling.js", "js/handlers/dataHandling.js", "js/handlers/infoHandling.js",
             "js/treeMap.js",
             filters='jsmin', output='gen/packed.js')
@@ -115,17 +115,18 @@ def writer_dashboard():
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
-    df = pd.DataFrame(rows)
-    df = relative(df).to_dict('records')
-    median_single = calculate_median(df)
+    df_rows = pd.DataFrame(rows)
+    df_rows = relative(df_rows).to_dict('records')
+    median_single = calculate_median(df_rows)
     all_rows = load_all_data(departments)
-    df = pd.DataFrame(all_rows)
-    df = relative(df).to_dict('records')
-    median_all = calculate_median(df)
+    df_all_rows = pd.DataFrame(all_rows)
+    df_all_rows = relative(df_all_rows).to_dict('records')
+    median_all = calculate_median(df_all_rows)
+    data = {'rows': df_rows, 'median_single': median_single, 'median_all': median_all}
+    print(data['median_single'])
     return render_template('writer-dashboard.html',
-                           rows=rows, writer=writer, last_exams=last_exams,
-                           start_date=start_date, end_date=end_date, version=version,
-                           median_single=median_single, median_all=median_all, departments=departments)
+                           data=data, writer=writer, last_exams=last_exams,
+                           start_date=start_date, end_date=end_date, version=version, departments=departments)
 
 
 @app.route('/review/writer-dashboard/data')
@@ -138,11 +139,15 @@ def data_writer():
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     logging.debug(rows)
-    if len(rows) > 0:
-        df = pd.DataFrame(rows)
-        df = relative(df).sort_values('unters_beginn')
-        return df.to_csv(index_label='index')
-    return pd.DataFrame().to_csv(index_label='index')
+    df_rows = pd.DataFrame(rows)
+    df_rows = relative(df_rows).to_dict('records')
+    median_single = calculate_median(df_rows)
+    all_rows = load_all_data(departments)
+    df_all_rows = pd.DataFrame(all_rows)
+    df_all_rows = relative(df_all_rows).to_dict('records')
+    median_all = calculate_median(df_all_rows)
+    data = {'rows': df_rows, 'median_single': median_single, 'median_all': median_all}
+    return jsonify(data)
 
 
 @app.route('/review/reviewer-dashboard')

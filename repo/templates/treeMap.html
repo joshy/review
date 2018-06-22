@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html style="height: 100%; margin: 0 0 0 0">
+<html lang="en">
 <head>
-    <title>TreeMap API for JavaScript</title>
+    <title>Report Review Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="TreeMap/TreeMapAPI.css") }}">
 
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename="TreeMap/TreeMapAPI.css")}}">
 </head>
-<body style="width: 100%; height: 100%; margin: 0 0 0 0; overflow: hidden">
-<!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
-<div style="position: absolute; width: 100%; height: 100%">
-    <div style="height: 100px">
-    <h1>TreeMap API for JavaScript</h1>
-    </div>
 
-    <div style="height: 100%; ">
-        <div id="treeMap" style="width: 100%;height: 80%"></div>
+<body class="w-100 sans-serif" data-page="treeMap">
+{% include 'partials/treeMap-header.html' %}
+<div class="w-100 b--black-10 mw8 center">
+    <div class="w-100 items-center">
+        <h1>TreeMap</h1>
+        <div id="treeMap" style="width: 700px;height: 600px;"></div>
     </div>
 </div>
-
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
