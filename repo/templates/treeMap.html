@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html style="height: 100%; margin: 0 0 0 0">
+<head>
+    <title>TreeMap API for JavaScript</title>
+
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename="TreeMap/TreeMapAPI.css")}}">
+
+    <!-- This script is required bootstrap stuff.   -->
+    <script type="text/javascript" language="javascript"
+            src="{{ url_for('static', filename="TreeMap/TreeMap.nocache.js")}}"></script>
+</head>
+<body style="width: 100%; height: 100%; margin: 0 0 0 0; overflow: hidden">
+<!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+<div style="position: absolute; width: 100%; height: 100%">
+    <div style="height: 100px">
+    <h1>TreeMap API for JavaScript</h1>
+    </div>
+
+    <div style="height: 100%; ">
+        <div id="treeMap" style="width: 100%;height: 80%"></div>
+    </div>
+</div>
+
+{% assets "treeMap" %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+</body>
+</html>
