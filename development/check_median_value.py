@@ -4,12 +4,11 @@ import pandas as pd
 import psycopg2
 import daiquiri.formatter
 import daiquiri
-from psycopg2.extras import DictCursor, RealDictCursor
-
+from psycopg2.extras import RealDictCursor
 from repo.app import REVIEW_DB_SETTINGS
-from review.calculations import _calculate_median, relative, calculate_median
+from review.calculations import relative, calculate_median
 from review.compare import diffs
-from review.database import query_review_reports_development, update_metrics, query_all_by_departments
+from review.database import query_all_by_departments
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -44,12 +43,8 @@ def _check_median():
         logging.debug('Current median-value{}'.format(median_values[i]))
 
     logging.debug("Median-Value by row 1000: {}".format(median_values[1000]))
-    logging.debug("")
     logging.debug("Median-Value by row 10000: {}".format(median_values[10000]))
-    logging.debug("")
     logging.debug("Median-Value by row 20000: {}".format(median_values[20000]))
-
-
 
 
 if __name__ == '__main__':
