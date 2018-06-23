@@ -1,4 +1,4 @@
-function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments, writer) {
+function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments, writer) {
     var margin = {top: 50, right: 20, bottom: 150, left: 45},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
@@ -46,15 +46,16 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+    var filtered_data = filterByWriter(data['rows'], writer);
+
     //Get Data
-    data.forEach(function (data) {
+    filtered_data.forEach(function (data) {
         data[value] = +data[value];
         data.unters_beginn = new Date(data.unters_beginn);
     });
 
-    data = filterByWriter(data, writer);
 
-    x.domain(d3.extent(data, function (d) {
+    x.domain(d3.extent(filtered_data, function (d) {
         return d.unters_beginn;
     }));
 
@@ -92,7 +93,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         .attr("class", "circles");
 
     circles.selectAll("circle")
-        .data(data)
+        .data(filtered_data)
         .enter()
         .append("circle")
         .attr("class", "circle")
@@ -141,7 +142,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             } else {
                 return d[value];
             }
-        })(data);
+        })(filtered_data);
 
     yx.domain([0, d3.max(yBins, function (d) {
         return d.length;
@@ -190,7 +191,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         })
         .on("mouseout", function () {
             g.selectAll("circle")
-                .data(data)
+                .data(filtered_data)
                 .attr("r", 4)
                 .style("fill", color);
             div.transition()
@@ -205,7 +206,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                 maxIntervalValue = Math.round(d.x1 * 10) / 10;
 
                 //Filter Interval Data
-                data.forEach(function (data) {
+                filtered_data.forEach(function (data) {
                     data[value] = +data[value];
                     data.unters_beginn = new Date(data.unters_beginn);
                     if (minIntervalValue === 0) {
@@ -219,9 +220,9 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                     }
                 });
 
-                data = tempData;
-                data = filterByWriter(data, writer);
-                redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
+                filtered_data = tempData;
+                filtered_data = filterByWriter(filtered_data, writer);
+                redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
             }
             else {
                 if (writer != null) {
@@ -257,13 +258,21 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
         });
 
     //Draw Median Line single
+    var median_single;
+    if (writer != null) {
+        median_single = data['median_' + writer];
+    }
+    else {
+        median_single = data['median_single']
+    }
+
     g.append("line")
         .attr("class", "medianLineSingle")
         .style("stroke", color)
         .attr("x1", 0)
-        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
+        .attr("y1", checkGraphArea(y(median_single[value]), height))
         .attr("x2", width)
-        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
+        .attr("y2", checkGraphArea(y(median_single[value]), height));
 
     //Draw Median Line overall
     g.append("line")
@@ -404,14 +413,14 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             return x0 + buttonWidth * i + buttonWidth / 2;
         })
         .attr("y", y0 + buttonHeight / 2)
-        .text(function() {
-             var checkValue = value.substr(value.length - 3);
-             if (checkValue === "s_f") {
-                 return "schreiben -> final";
-             }
-             else {
-                 return "gegengelesen -> final";
-             }
+        .text(function () {
+            var checkValue = value.substr(value.length - 3);
+            if (checkValue === "s_f") {
+                return "schreiben -> final";
+            }
+            else {
+                return "gegengelesen -> final";
+            }
         });
 
     reportButton.on("click", function () {
@@ -428,7 +437,7 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
                 d3.selectAll("." + classNames[2]).text("schreiben -> final");
             }
 
-            redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
+            redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
 
             if (tempValue === "jaccard_") {
                 redrawPieChart(d3.select("#SimilarityPieChartSingle"), data['median_single'][value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -437,18 +446,18 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
             else {
                 if (writer != null) {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(data, d3.select("#WordsAddedBarChart" + writer), value, specificValue, writer);
+                        redrawBarChart(d3.select("#WordsAddedBarChart" + writer), value, specificValue, writer);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#WordsDeletedBarChart" + writer), value, specificValue, writer);
+                        redrawBarChart(d3.select("#WordsDeletedBarChart" + writer), value, specificValue, writer);
                     }
                 }
                 else {
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(data, d3.select("#WordsAddedBarChart"), value, specificValue, null);
+                        redrawBarChart(d3.select("#WordsAddedBarChart"), value, specificValue, null);
                     }
                     else {
-                        redrawBarChart(data, d3.select("#WordsDeletedBarChart"), value, specificValue, null);
+                        redrawBarChart(d3.select("#WordsDeletedBarChart"), value, specificValue, null);
                     }
                 }
             }
@@ -537,12 +546,13 @@ function drawGraph(data, svg, value, maxIntervalValue, minIntervalValue, classNa
     }
 }
 
-function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer) {
-    data.forEach(function (data) {
+function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer) {
+    filtered_data = filterByWriter(filtered_data, writer);
+
+    filtered_data.forEach(function (data) {
         data[value] = +data[value];
         data.unters_beginn = new Date(data.unters_beginn);
     });
-    data = filterByWriter(data, writer);
 
     var intervalDivisor = 5;
 
@@ -568,7 +578,7 @@ function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, min
 
     //Redraw Circles
     var circles = svg.selectAll("circle")
-        .data(data);
+        .data(filtered_data);
 
     circles.exit().remove();
 
@@ -597,7 +607,7 @@ function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, min
             } else {
                 return d[value];
             }
-        })(data);
+        })(filtered_data);
 
     yx.domain([0, d3.max(yBins, function (d) {
         return d.length;
@@ -646,13 +656,21 @@ function redrawGraph(data, svg, height, width, gap, margin, y, yx, x, value, min
         });
 
     //Redraw Median Lines
+    var median_single;
+    if (writer != null) {
+        median_single = data['median_' + writer];
+    }
+    else {
+        median_single = data['median_single']
+    }
+
     svg.select(".medianLineSingle").transition()
-        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
-        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
+        .attr("y1", checkGraphArea(y(median_single[value]), height))
+        .attr("y2", checkGraphArea(y(median_single[value]), height));
 
     svg.select(".medianLineAll").transition()
-        .attr("y1", checkGraphArea(y(data['median_single'][value]), height))
-        .attr("y2", checkGraphArea(y(data['median_single'][value]), height));
+        .attr("y1", checkGraphArea(y(data['median_all'][value]), height))
+        .attr("y2", checkGraphArea(y(data['median_all'][value]), height));
 }
 
 function checkGraphArea(value, height) {

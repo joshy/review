@@ -19,6 +19,16 @@ def _relative(total, changes):
     return changes / t
 
 
+def calculate_median_by_writer(df):
+    rows = {}
+    median = {}
+    writer_list = df['schreiber'].drop_duplicates()
+    for writer in writer_list:
+        rows[writer] = df.loc[df['schreiber'] == writer].to_dict('records')
+        median['median_' + writer] = calculate_median(rows[writer])
+    return median
+
+
 def calculate_median(rows):
     keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",
             "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f"]

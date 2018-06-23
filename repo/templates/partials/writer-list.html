@@ -3,7 +3,7 @@
         <div class="overflow-auto">
             <table class="f6 w-100 mw8 center" cellspacing="0">
                 <tbody class="lh-copy">
-                {% set writerlist = rows|map(attribute ='schreiber')|unique|list %}
+                {% set writerlist = data['rows']|map(attribute ='schreiber')|unique|list %}
                 {% for writer in writerlist %}
                     <tr>
                         <td class="pa1 bb b--black-10 writerName">{{ writer }}

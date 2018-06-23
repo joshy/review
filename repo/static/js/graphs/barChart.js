@@ -1,12 +1,18 @@
-function drawBarChart(data, svg, value, color, maxValue, writer) {
+function drawBarChart(svg, value, color, maxValue, writer) {
     var margin = {top: 30, right: 250, bottom: 10, left: 150},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
-        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
+        median_single;
 
-    data = filterByWriter(data, writer);
+    if (writer != null) {
+        median_single = data['median_'+writer];
+    }
+    else {
+        median_single = data['median_single']
+    }
 
-    var medianData = [{"name": "personal Median", "value": data['median_single'][value].toPrecision(2), "color": color},
+    var medianData = [{"name": "personal Median", "value": median_single[value].toPrecision(2), "color": color},
         {"name": "overall Median", "value": data['median_all'][value].toPrecision(2), "color": "#666967"}];
 
     var x = d3.scaleLinear()
@@ -74,13 +80,19 @@ function drawBarChart(data, svg, value, color, maxValue, writer) {
         });
 }
 
-function redrawBarChart(data, svg, words, maxValue, writer) {
+function redrawBarChart(svg, value, maxValue, writer) {
     var margin = {top: 30, right: 250, bottom: 10, left: 150},
-        width = +svg.attr("width") - margin.left - margin.right;
+        width = +svg.attr("width") - margin.left - margin.right,
+        median_single;
 
-    data = filterByWriter(data, writer);
+    if (writer != null) {
+        median_single = data['median_'+writer];
+    }
+    else {
+        median_single = data['median_single']
+    }
 
-    var medianData = [data['median_single'][value].toPrecision(2), data['median_all'][value].toPrecision(2)];
+    var medianData = [median_single[value].toPrecision(2), data['median_all'][value].toPrecision(2)];
 
     var x = d3.scaleLinear()
         .domain([0, maxValue])

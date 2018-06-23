@@ -6,14 +6,14 @@ import psycopg2
 import schedule
 import numpy as np
 import pandas as pd
-from flask import Flask, g, jsonify, render_template, request, make_response
+from flask import Flask, g, json, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer_and_department, query_all_by_departments, \
     query_by_writer_and_date_and_department, \
     query_by_reviewer_and_date_and_department, query_by_reviewer_and_department, query_review_reports_development
-from review.calculations import relative, calculate_median
+from review.calculations import relative, calculate_median, calculate_median_by_writer
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -116,38 +116,16 @@ def writer_dashboard():
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     df_rows = pd.DataFrame(rows)
-    df_rows = relative(df_rows).to_dict('records')
-    median_single = calculate_median(df_rows)
+    rows = relative(df_rows).to_dict('records')
+    median_single = calculate_median(rows)
     all_rows = load_all_data(departments)
     df_all_rows = pd.DataFrame(all_rows)
-    df_all_rows = relative(df_all_rows).to_dict('records')
-    median_all = calculate_median(df_all_rows)
-    data = {'rows': df_rows, 'median_single': median_single, 'median_all': median_all}
-    print(data['median_single'])
+    all_rows = relative(df_all_rows).to_dict('records')
+    median_all = calculate_median(all_rows)
+    data = {'rows': rows, 'median_single': median_single, 'median_all': median_all}
     return render_template('writer-dashboard.html',
                            data=data, writer=writer, last_exams=last_exams,
                            start_date=start_date, end_date=end_date, version=version, departments=departments)
-
-
-@app.route('/review/writer-dashboard/data')
-def data_writer():
-    writer = request.args.get('w', '')
-    last_exams = request.args.get('last_exams', 30)
-    start_date = request.args.get('start_date', '')
-    end_date = request.args.get('end_date', '')
-    departments = request.args.getlist('departments[]')
-    departments = '{' + ','.join(departments) + '}'
-    rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
-    logging.debug(rows)
-    df_rows = pd.DataFrame(rows)
-    df_rows = relative(df_rows).to_dict('records')
-    median_single = calculate_median(df_rows)
-    all_rows = load_all_data(departments)
-    df_all_rows = pd.DataFrame(all_rows)
-    df_all_rows = relative(df_all_rows).to_dict('records')
-    median_all = calculate_median(df_all_rows)
-    data = {'rows': df_rows, 'median_single': median_single, 'median_all': median_all}
-    return jsonify(data)
 
 
 @app.route('/review/reviewer-dashboard')
@@ -159,31 +137,21 @@ def reviewer_dashboard():
     departments = request.args.getlist('departments')
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
+    df_rows = pd.DataFrame(rows)
+    df_rows = relative(df_rows)
+    data = calculate_median_by_writer(df_rows)
+    rows = df_rows.to_dict('records')
+    median_single = calculate_median(rows)
     all_rows = load_all_data(departments)
-    df = pd.DataFrame(all_rows)
-    df = relative(df).to_dict('records')
-    median_all = calculate_median(df)
+    df_all_rows = pd.DataFrame(all_rows)
+    all_rows = relative(df_all_rows).to_dict('records')
+    median_all = calculate_median(all_rows)
+    data['rows'] = rows
+    data['median_single'] = median_single
+    data['median_all'] = median_all
     return render_template('reviewer-dashboard.html',
-                           rows=rows, reviewer=reviewer, last_exams=last_exams,
-                           start_date=start_date, end_date=end_date, version=version,
-                           median_all=median_all, departments=departments)
-
-
-@app.route('/review/reviewer-dashboard/data')
-def data_reviewer():
-    reviewer = request.args.get('r', '')
-    last_exams = request.args.get('last_exams', 30)
-    start_date = request.args.get('start_date', '')
-    end_date = request.args.get('end_date', '')
-    departments = request.args.getlist('departments[]')
-    departments = '{' + ','.join(departments) + '}'
-    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
-    logging.debug(rows)
-    if len(rows) > 0:
-        df = pd.DataFrame(rows)
-        df = relative(df).sort_values('unters_beginn')
-        return df.to_csv(index_label='index')
-    return pd.DataFrame().to_csv(index_label='index')
+                           data=data, reviewer=reviewer, last_exams=last_exams,
+                           start_date=start_date, end_date=end_date, version=version, departments=departments)
 
 
 @app.route('/review/treeMap')
