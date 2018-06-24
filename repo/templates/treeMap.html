@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename="TreeMap/TreeMapAPI.css") }}">
 
+    <script type="text/javascript"> rows = {{ rows|tojson|safe }};
+    </script>
+
 </head>
 
 <body class="w-100 sans-serif" data-page="treeMap">

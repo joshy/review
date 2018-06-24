@@ -4,10 +4,9 @@ $(function () {
 
 });
 
-
 function treeMapModuleLoaded() {
-    com.macrofocus.treemap.TreeMap.setLicenseKey("Kevin Streiter",
-        "TG2GS-W57BU-4CLVB-866AK-QQFBT-DGV3W");
+    console.log(rows)
+    com.macrofocus.treemap.TreeMap.setLicenseKey("My Company", "ABC12-ABC12-ABC12-ABC12-ABC12-ABC12");
     treeMap = new com.macrofocus.treemap.TreeMap("treeMap");
     treeMap.loadJsonString("{\"data\": [" +
         "{\"Name\": \"Hello\", \"Value\": 12, \"Strength\": 3.0}, " +
@@ -16,7 +15,6 @@ function treeMapModuleLoaded() {
         "{\"Name\": \"TreeMap\", \"Value\": 8, \"Strength\": 6.0}, " +
         "{\"Name\": \"World!\", \"Value\": 7, \"Strength\": 7.0}" +
         "]}");
-
 }
 
 function treeMapModelLoaded() {
@@ -26,5 +24,3 @@ function treeMapModelLoaded() {
     var fieldSettings = treeMapSettings.getDefaultFieldSettings();
     fieldSettings.setAlgorithm(com.macrofocus.treemap.AlgorithmFactory.SQUARIFIED);
 }
-
-

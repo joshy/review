@@ -12,7 +12,8 @@ from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer_and_department, query_all_by_departments, \
     query_by_writer_and_date_and_department, \
-    query_by_reviewer_and_date_and_department, query_by_reviewer_and_department, query_review_reports_development
+    query_by_reviewer_and_date_and_department, query_by_reviewer_and_department, query_review_reports_development, \
+    query_by_date, query_by_last_exams
 from review.calculations import relative, calculate_median, calculate_median_by_writer
 
 from repo.converter import rtf_to_text
@@ -157,14 +158,12 @@ def reviewer_dashboard():
 @app.route('/review/treeMap')
 def tree_map():
     last_exams = request.args.get('last_exams', 30)
+    print(type(last_exams))
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    con = get_review_db()
-    cursor = con.cursor(cursor_factory=RealDictCursor)
-    rows = query_review_reports_development(cursor)
+    rows = load_tree_map_data(last_exams, start_date, end_date)
     df = pd.DataFrame(rows)
     rows = relative(df).to_dict('records')
-
     return render_template('treeMap.html',
                            rows=rows, last_exams=last_exams,
                            start_date=start_date, end_date=end_date, version=version)
@@ -191,6 +190,18 @@ def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, department
         rows = query_by_reviewer_and_date_and_department(cursor, reviewer, s_d, e_d, departments)
     else:
         rows = query_by_reviewer_and_department(cursor, reviewer, last_exams, departments)
+    return rows
+
+
+def load_tree_map_data(last_exams, start_date, end_date):
+    con = get_review_db()
+    cursor = con.cursor(cursor_factory=RealDictCursor)
+    if start_date and end_date:
+        s_d = datetime.strptime(start_date, '%d.%m.%Y')
+        e_d = datetime.strptime(end_date, '%d.%m.%Y')
+        rows = query_by_date(cursor, s_d, e_d)
+    else:
+        rows = query_by_last_exams(cursor, last_exams)
     return rows
 
 
