@@ -22,20 +22,22 @@ def _relative(total, changes):
 def calculate_median_by_writer(df):
     rows = {}
     median = {}
-    writer_list = df['schreiber'].drop_duplicates()
-    for writer in writer_list:
-        rows[writer] = df.loc[df['schreiber'] == writer].to_dict('records')
-        median['median_' + writer] = calculate_median(rows[writer])
+    if df.shape[0] > 0:
+        writer_list = df['schreiber'].drop_duplicates()
+        for writer in writer_list:
+            rows[writer] = df.loc[df['schreiber'] == writer].to_dict('records')
+            median['median_' + writer] = calculate_median(rows[writer])
     return median
 
 
 def calculate_median_by_reviewer(df):
     rows = {}
     median = {}
-    reviewer_list = df['freigeber'].drop_duplicates()
-    for reviewer in reviewer_list:
-        rows[reviewer] = df.loc[df['freigeber'] == reviewer].to_dict('records')
-        median['median_' + reviewer] = calculate_median(rows[reviewer])
+    if df.shape[0] > 0:
+        reviewer_list = df['freigeber'].drop_duplicates()
+        for reviewer in reviewer_list:
+            rows[reviewer] = df.loc[df['freigeber'] == reviewer].to_dict('records')
+            median['median_' + reviewer] = calculate_median(rows[reviewer])
     return median
 
 

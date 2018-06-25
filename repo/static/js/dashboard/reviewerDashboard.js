@@ -3,7 +3,7 @@ $(function () {
         console.log('on reviewer-dashboard page');
         buttonHandlerReviewer();
         checkboxHandler();
-        drawDivContentsReviewer()
+        drawDivContentsReviewer();
     }
 });
 

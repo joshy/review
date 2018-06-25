@@ -17,7 +17,9 @@
         <h1 class="f3 di-ns pr2">Personal Dashboard</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoDashboard">Info</button>
     </div>
-    <p> This is a personal dashboard which should help the assistant to improve on writing radiology reports</p>
+    <p> This is a personal dashboard which should help the assistant to improve on writing radiology reports
+        Currently <b> {{ data['rows']|length }} records </b> are shown.
+    </p>
     <div class="w-100 flex items-center">
         <h1 class="f4 di-ns pr2">Reports List</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
@@ -54,7 +56,7 @@
         <button class="black f7 ba bg-light-yellow b--light-yellow infoMedian">Info</button>
     </div>
     <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
-   <div class="w-100 flex items-center">
+    <div class="w-100 flex items-center">
         <h1 class="f4 di-ns pr2">Reviewer List</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReviewerList">Info</button>
     </div>
