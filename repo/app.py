@@ -57,9 +57,10 @@ js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
             "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js",
             "js/handlers/clearHandling.js", "js/handlers/dataHandling.js", "js/handlers/infoHandling.js",
-            "js/treeMap.js",
+            "js/handlers/reportListHandling.js", "js/treeMap.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
+
 
 @app.route('/')
 def main():
