@@ -1,4 +1,4 @@
-function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments, writer) {
+function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, color, specificValue, pieSegments, writer, reviewer) {
     var margin = {top: 50, right: 20, bottom: 150, left: 45},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
@@ -47,6 +47,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         .style("opacity", 0);
 
     var filtered_data = filterByWriter(data['rows'], writer);
+    filtered_data = filterByReviewer(filtered_data, reviewer);
 
     //Get Data
     filtered_data.forEach(function (data) {
@@ -222,16 +223,22 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
 
                 filtered_data = tempData;
                 filtered_data = filterByWriter(filtered_data, writer);
-                redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
+                filtered_data = filterByReviewer(filtered_data, reviewer);
+                redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer, reviewer);
             }
             else {
                 if (writer != null) {
                     clearContent(writer);
                     drawDivContentsReviewer();
                 }
+                else if (reviewer != null) {
+                    clearContent(reviewer);
+                    drawDivContentsWriter();
+                }
                 else {
                     clearAllContent();
                     drawDivContentsWriter();
+                    drawDivContentsReviewer();
                 }
             }
             g.selectAll("circle")
@@ -260,7 +267,12 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
     //Draw Median Line single
     var median_single;
     if (writer != null) {
+        reviewer = null;
         median_single = data['median_' + writer];
+    }
+    else if (reviewer != null) {
+        writer = null;
+        median_single = data['median_' + reviewer];
     }
     else {
         median_single = data['median_single']
@@ -437,7 +449,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
                 d3.selectAll("." + classNames[2]).text("schreiben -> final");
             }
 
-            redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer);
+            redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer, reviewer);
 
             if (tempValue === "jaccard_") {
                 redrawPieChart(d3.select("#SimilarityPieChartSingle"), data['median_single'][value], ".pieChartFontSingle", specificValue, pieSegments);
@@ -445,11 +457,21 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
             }
             else {
                 if (writer != null) {
+                    reviewer = null;
                     if (tempValue === "words_added_relative_") {
-                        redrawBarChart(d3.select("#WordsAddedBarChart" + writer), value, specificValue, writer);
+                        redrawBarChart(d3.select("#WordsAddedBarChart" + writer), value, specificValue, writer, null);
                     }
                     else {
-                        redrawBarChart(d3.select("#WordsDeletedBarChart" + writer), value, specificValue, writer);
+                        redrawBarChart(d3.select("#WordsDeletedBarChart" + writer), value, specificValue, writer, null);
+                    }
+                }
+                else if (reviewer != null) {
+                    writer = null;
+                    if (tempValue === "words_added_relative_") {
+                        redrawBarChart(d3.select("#WordsAddedBarChart" + reviewer), value, specificValue, null, reviewer);
+                    }
+                    else {
+                        redrawBarChart(d3.select("#WordsDeletedBarChart" + reviewer), value, specificValue, null, reviewer);
                     }
                 }
                 else {
@@ -493,9 +515,15 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
             clearContent(writer);
             drawDivContentsReviewer();
         }
+        else if (reviewer != null) {
+            clearContent(reviewer);
+            drawDivContentsWriter();
+        }
         else {
+
             clearAllContent();
             drawDivContentsWriter();
+            drawDivContentsReviewer();
         }
     });
 
@@ -546,8 +574,9 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
     }
 }
 
-function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer) {
+function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer, reviewer) {
     filtered_data = filterByWriter(filtered_data, writer);
+    filtered_data = filterByReviewer(filtered_data, reviewer);
 
     filtered_data.forEach(function (data) {
         data[value] = +data[value];
@@ -658,7 +687,12 @@ function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, v
     //Redraw Median Lines
     var median_single;
     if (writer != null) {
+        reviewer = null;
         median_single = data['median_' + writer];
+    }
+    else if (reviewer != null) {
+        writer = null;
+        median_single = data['median_' + reviewer];
     }
     else {
         median_single = data['median_single']
@@ -695,6 +729,20 @@ function filterByWriter(data, writer) {
     if (writer != null) {
         data = data.filter(function (d) {
             if (d["schreiber"] === writer) {
+                return d;
+            }
+        });
+        return data;
+    }
+    else {
+        return data;
+    }
+}
+
+function filterByReviewer(data, reviewer) {
+    if (reviewer != null) {
+        data = data.filter(function (d) {
+            if (d["freigeber"] === reviewer) {
                 return d;
             }
         });

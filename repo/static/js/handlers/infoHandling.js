@@ -10,9 +10,9 @@ $(".infoDashboard").hover(
 
 $(".infoReportsList").hover(
     function () {
-        $(this).append($("<span>: The List below shows the latest five reports which have been concluded with status final <br>" +
-            "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report <b>s->f: &#39schreiben -> final&#39<br>" +
-            "or g->f: &#39gegengelesen -> final&#39</b> -- Click on the Button at the right bottom to expand the list</span>"));
+        $(this).append($("<span>: The List below shows the specified reports which have been concluded with status final <br>" +
+            "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report. <br>" +
+            "<b>s->f: &#39schreiben -> final&#39 / g->f: &#39gegengelesen -> final&#39</b> </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });

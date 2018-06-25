@@ -1,8 +1,8 @@
-function clearContent(writer) {
-    d3.select("#WordsAddedBarChart" + writer).selectAll("g").remove();
-    d3.select("#WordsDeletedBarChart" + writer).selectAll("g").remove();
-    d3.select("#WordsAddedGraph" + writer).selectAll("g").remove();
-    d3.select("#WordsDeletedGraph" + writer).selectAll("g").remove();
+function clearContent(operator) {
+    d3.select("#WordsAddedBarChart" + operator).selectAll("g").remove();
+    d3.select("#WordsDeletedBarChart" + operator).selectAll("g").remove();
+    d3.select("#WordsAddedGraph" + operator).selectAll("g").remove();
+    d3.select("#WordsDeletedGraph" + operator).selectAll("g").remove();
     d3.selectAll(".tooltip").remove();
 }
 

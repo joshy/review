@@ -29,6 +29,16 @@ def calculate_median_by_writer(df):
     return median
 
 
+def calculate_median_by_reviewer(df):
+    rows = {}
+    median = {}
+    reviewer_list = df['freigeber'].drop_duplicates()
+    for reviewer in reviewer_list:
+        rows[reviewer] = df.loc[df['freigeber'] == reviewer].to_dict('records')
+        median['median_' + reviewer] = calculate_median(rows[reviewer])
+    return median
+
+
 def calculate_median(rows):
     keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",
             "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f"]

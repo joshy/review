@@ -54,6 +54,11 @@
         <button class="black f7 ba bg-light-yellow b--light-yellow infoMedian">Info</button>
     </div>
     <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
+   <div class="w-100 flex items-center">
+        <h1 class="f4 di-ns pr2">Reviewer List</h1>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoReviewerList">Info</button>
+    </div>
+    {% include 'partials/reviewer-list.html' %}
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>

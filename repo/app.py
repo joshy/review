@@ -14,7 +14,7 @@ from review.database import query_by_writer_and_department, query_all_by_departm
     query_by_writer_and_date_and_department, \
     query_by_reviewer_and_date_and_department, query_by_reviewer_and_department, query_review_reports_development, \
     query_by_date, query_by_last_exams
-from review.calculations import relative, calculate_median, calculate_median_by_writer
+from review.calculations import relative, calculate_median, calculate_median_by_writer, calculate_median_by_reviewer
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
@@ -57,7 +57,7 @@ js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
             "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js",
             "js/handlers/clearHandling.js", "js/handlers/dataHandling.js", "js/handlers/infoHandling.js",
-            "js/handlers/reportListHandling.js", "js/treeMap.js",
+            "js/treeMap.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -118,13 +118,20 @@ def writer_dashboard():
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     df_rows = pd.DataFrame(rows)
-    rows = relative(df_rows).to_dict('records')
+    df_rows = relative(df_rows)
+    df_rows = remove_NaT_format(df_rows)
+    data = calculate_median_by_reviewer(df_rows)
+    rows = df_rows.to_dict('records')
     median_single = calculate_median(rows)
     all_rows = load_all_data(departments)
     df_all_rows = pd.DataFrame(all_rows)
+    df_all_rows = remove_NaT_format(df_all_rows)
     all_rows = relative(df_all_rows).to_dict('records')
     median_all = calculate_median(all_rows)
-    data = {'rows': rows, 'median_single': median_single, 'median_all': median_all}
+    data['rows'] = rows
+    data['median_single'] = median_single
+    data['median_all'] = median_all
+
     return render_template('writer-dashboard.html',
                            data=data, writer=writer, last_exams=last_exams,
                            start_date=start_date, end_date=end_date, version=version, departments=departments)
@@ -141,11 +148,13 @@ def reviewer_dashboard():
     rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
+    df_rows = remove_NaT_format(df_rows)
     data = calculate_median_by_writer(df_rows)
     rows = df_rows.to_dict('records')
     median_single = calculate_median(rows)
     all_rows = load_all_data(departments)
     df_all_rows = pd.DataFrame(all_rows)
+    df_all_rows = remove_NaT_format(df_all_rows)
     all_rows = relative(df_all_rows).to_dict('records')
     median_all = calculate_median(all_rows)
     data['rows'] = rows
@@ -163,6 +172,7 @@ def tree_map():
     end_date = request.args.get('end_date', '')
     rows = load_tree_map_data(last_exams, start_date, end_date)
     df = pd.DataFrame(rows)
+    df = remove_NaT_format(df)
     rows = relative(df).to_dict('records')
     return render_template('treeMap.html',
                            rows=rows, last_exams=last_exams,
@@ -210,6 +220,9 @@ def load_all_data(departments):
     cursor = con.cursor(cursor_factory=RealDictCursor)
     return query_all_by_departments(cursor, departments)
 
+
+def remove_NaT_format(df):
+    return df.fillna('None')
 
 @app.route('/cm')
 def cm():

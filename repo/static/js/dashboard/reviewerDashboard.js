@@ -1,7 +1,7 @@
 $(function () {
     if ('reviewer-dashboard' === $('body').data('page')) {
         console.log('on reviewer-dashboard page');
-        buttonHandler();
+        buttonHandlerReviewer();
         checkboxHandler();
         drawDivContentsReviewer()
     }
@@ -16,11 +16,11 @@ function drawWordsAddedGraphReviewer() {
         classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words Added"],
         color = "green";
     if (writer != null) {
-        drawGraph(d3.select("#WordsAddedGraph" + writer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
-        drawBarChart(d3.select("#WordsAddedBarChart" + writer), "words_added_relative_g_f", color, maxBarValue, writer);
+        drawGraph(d3.select("#WordsAddedGraph" + writer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer, null);
+        drawBarChart(d3.select("#WordsAddedBarChart" + writer), "words_added_relative_g_f", color, maxBarValue, writer, null);
     }
     else {
-        drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue, null);
+        drawBarChart(d3.select("#WordsAddedBarChart"), "words_added_relative_g_f", color, maxBarValue, null, null);
     }
 }
 
@@ -31,15 +31,15 @@ function drawWordsDeletedGraphReviewer() {
         classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words Deleted"],
         color = "red";
     if (writer != null) {
-        drawGraph(d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer);
-        drawBarChart(d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_g_f", color, maxBarValue, writer);
+        drawGraph(d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer, null);
+        drawBarChart(d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_g_f", color, maxBarValue, writer, null);
     }
     else {
-        drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue, null);
+        drawBarChart(d3.select("#WordsDeletedBarChart"), "words_deleted_relative_g_f", color, maxBarValue, null, null);
     }
 }
 
-function buttonHandler() {
+function buttonHandlerReviewer() {
     $(".writerButton").click(function () {
         writer = $(this).closest("tr")
             .find(".writerName")

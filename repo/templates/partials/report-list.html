@@ -1,10 +1,10 @@
 <div class="w-100 b--black-10">
     <div class="ph4 pv3">
-        <div class="overflow-auto">
+        <div class="h5-l overflow-y-scroll">
             <table class="f6 w-100 mw8 center" cellspacing="0">
                 <thead>
                 <tr>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-15">Date of exam</th>
+                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-15">Date of exam
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-15">Patient</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-30">Type of exam</th>
                     <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
@@ -18,7 +18,6 @@
                 </thead>
                 <tbody class="lh-copy">
                 {% for row in data['rows'] %}
-                    {% if loop.index <= 5 %}
                     <tr>
                         <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M') }}</td>
                         <td class="pa1 bb b--black-10">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
@@ -35,30 +34,9 @@
                             {% endif %}
                         </td>
                     </tr>
-                    {% else %}
-                           <tr class=" expandedReportList dn">
-                        <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M') }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['untart_name'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['schreiber'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['freigeber'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_s_f']|float }}</td>
-                        <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_g_f']|float }}</td>
-                        <td class="bb b--black-10">
-                            {% if row['befund_status'] == 'f' %}
-                                <a href="diff/{{ row['befund_schluessel'] }}">Show changes</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="w-100 mw8 pa3-ns">
-            <button class="black fr f7 input-reset pa1 ba bg-yellow b--yellow pointer examListButton">Expand List</button>
         </div>
     </div>
 </div>

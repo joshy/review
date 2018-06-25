@@ -1,4 +1,4 @@
-function drawBarChart(svg, value, color, maxValue, writer) {
+function drawBarChart(svg, value, color, maxValue, writer, reviewer) {
     var margin = {top: 30, right: 250, bottom: 10, left: 150},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,
@@ -6,7 +6,10 @@ function drawBarChart(svg, value, color, maxValue, writer) {
         median_single;
 
     if (writer != null) {
-        median_single = data['median_'+writer];
+        median_single = data['median_' + writer];
+    }
+    else if (reviewer != null) {
+        median_single = data['median_' + reviewer];
     }
     else {
         median_single = data['median_single']
@@ -80,13 +83,16 @@ function drawBarChart(svg, value, color, maxValue, writer) {
         });
 }
 
-function redrawBarChart(svg, value, maxValue, writer) {
+function redrawBarChart(svg, value, maxValue, writer, reviewer) {
     var margin = {top: 30, right: 250, bottom: 10, left: 150},
         width = +svg.attr("width") - margin.left - margin.right,
         median_single;
 
     if (writer != null) {
-        median_single = data['median_'+writer];
+        median_single = data['median_' + writer];
+    }
+    else if (reviewer != null) {
+        median_single = data['median_' + reviewer];
     }
     else {
         median_single = data['median_single']

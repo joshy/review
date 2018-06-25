@@ -15,7 +15,7 @@ function treeMapModuleLoaded() {
 function treeMapModelLoaded() {
     treeMap.setToolTipByNames("befund_freigabe", "schreiber", "freigeber", "jaccard_s_f", "jaccard_g_f",
         "words_added_relative_s_f", "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f");
-    treeMap.setColorByName("jaccard_s_f");
+    treeMap.setColorByName("jaccard_g_f");
     treeMap.setGroupByByNames("pp_misc_mfd_1_kuerzel", "schreiber");
     var treeMapModel = treeMap.getModel();
     var treeMapSettings = treeMapModel.getSettings();
