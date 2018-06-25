@@ -159,7 +159,6 @@ def reviewer_dashboard():
 @app.route('/review/treeMap')
 def tree_map():
     last_exams = request.args.get('last_exams', 30)
-    print(type(last_exams))
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_tree_map_data(last_exams, start_date, end_date)
