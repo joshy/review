@@ -14,15 +14,28 @@ function treeMapModuleLoaded() {
 }
 
 function treeMapModelLoaded() {
-    treeMap.setToolTipByNames("befund_freigabe", "schreiber", "freigeber", "jaccard_s_f", "jaccard_g_f",
+    treeMap.setToolTipByNames("schreiber", "freigeber", "befund_freigabe", "jaccard_s_f", "jaccard_g_f",
         "words_added_relative_s_f", "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f");
     treeMap.setColorByName($('#selectValue option:selected').val());
-    setGroupByByNames();
     treeMap.setRendering(com.macrofocus.treemap.RenderingFactory.FLAT_NO_BORDER);
+    treeMap.getView().getToolTip().setPreferredWidth(350);
     var treeMapModel = treeMap.getModel();
     var treeMapSettings = treeMapModel.getSettings();
+    treeMapSettings.setShowPopup(treeMap.getModel().getTreeMapField(), true);
+    treeMapSettings.getFieldSettings(treeMap.getModel().getTreeMapField()).setShowLabel(true);
     var fieldSettings = treeMapSettings.getDefaultFieldSettings();
+    fieldSettings.setBorderThickness(0.5);
+    fieldSettings.setLabelingMinimumCharactersToDisplay(3);
     fieldSettings.setAlgorithm(com.macrofocus.treemap.AlgorithmFactory.SQUARIFIED);
+
+    setGroupByByNames();
+    clickHandler(treeMapModel);
+}
+
+function clickHandler(treeMapModel) {
+    $("#treeMap").click(function () {
+        console.log(treeMapModel);
+    })
 }
 
 function selectionHandler() {
