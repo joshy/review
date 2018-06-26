@@ -18,8 +18,31 @@
 <div class="w-100 b--black-10 mw8 center">
     <div class="w-100 items-center">
         <h1>TreeMap</h1>
-        <div id="treeMap" style="width: 700px;height: 600px;"></div>
+        <div class="w-100 flex justify-center">
+            <label >Group by:</label>
+            <select class="f6 pa1 ba bg-yellow pointer b--yellow black selectGroup">
+                <option value="pp_misc_mfd_1_kuerzel" selected="selected">Department</option>
+                <option value="schreiber">Writer</option>
+                <option value="freigeber">Reviewer</option>
+                <option value="pp_misc_mfd_1_kuerzel, schreiber">Department / Writer</option>
+                <option value="pp_misc_mfd_1_kuerzel, freigeber">Department / Reviewer</option>
+                <option value="schreiber, freigeber">Writer / Reviewer</option>
+                <option value="freigeber, schreiber">Reviewer / Writer</option>
+                <option value="pp_misc_mfd_1_kuerzel, schreiber, freigeber">Department / Writer / Reviewer</option>
+                <option value="pp_misc_mfd_1_kuerzel, freigeber, schreiber">Department / Reviewer / Writer</option>
+            </select>
+            <label>Change Metric:</label>
+            <select class="f6 pa1 ba bg-yellow pointer b--yellow black selectValue">
+                <option value="jaccard_s_f" selected="selected">Similarity s -> f</option>
+                <option value="jaccard_g_f">Similarity g -> f</option>
+                <option value="words_added_relative_s_f">Relative Words added s -> f</option>
+                <option value="words_added_relative_g_f">Relative Words added g -> f</option>
+                <option value="words_deleted_relative_s_f">Relative Words deleted s -> f</option>
+                <option value="words_deleted_relative_g_f">Relative Words deleted g -> f</option>
+            </select>
+        </div>
     </div>
+    <div id="treeMap" class="pv4" style="width: 100%;height: 600px;"></div>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>

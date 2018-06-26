@@ -530,7 +530,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
     //Brushtool Infotext
     brushArea.on("mouseover", function () {
         div.transition()
-            .duration(200)
+            .duration(800)
             .style("opacity", 1);
         div.html(function () {
             return "To define time area: <br>" +
