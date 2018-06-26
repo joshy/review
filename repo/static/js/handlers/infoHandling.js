@@ -69,3 +69,19 @@ $(".infoWriterList").hover(
     }, function () {
         $(this).find("span:last").remove();
     });
+
+$(".infoReviewerList").hover(
+    function () {
+        $(this).append($("<span>: The following List shows the <b>graphs of all supervisor</b> over the specified time period. <br>" +
+            "Click on <b>&#39Show&#39</b> to view all corresponding graphs</span>"));
+    }, function () {
+        $(this).find("span:last").remove();
+    });
+
+$(".infoTreeMap").hover(
+    function () {
+        $(this).append($("<span>: The following graph shows all reports over the specified time period. <br>" +
+            "Click on <b>&#39Show&#39</b> to view all corresponding graphs</span>"));
+    }, function () {
+        $(this).find("span:last").remove();
+    });

@@ -17,10 +17,13 @@
 {% include 'partials/treeMap-header.html' %}
 <div class="w-100 b--black-10 mw8 center">
     <div class="w-100 items-center">
-        <h1>TreeMap</h1>
-        <div class="w-100 flex justify-center">
-            <label >Group by:</label>
-            <select class="f6 pa1 ba bg-yellow pointer b--yellow black selectGroup">
+        <div class="w-100 flex items-center">
+            <h1 class="f3 di-ns pr2">TreeMap</h1>
+            <button class="black f7 ba bg-light-yellow b--light-yellow infoTreeMap">Info</button>
+        </div>
+        <div class="w-100 flex center justify-center mw8">
+            <label class="f6 pa2" for="selectGroup">Group by:</label>
+            <select id="selectGroup" class="f6 pa1 ba bg-yellow pointer b--yellow black">
                 <option value="pp_misc_mfd_1_kuerzel" selected="selected">Department</option>
                 <option value="schreiber">Writer</option>
                 <option value="freigeber">Reviewer</option>
@@ -31,8 +34,8 @@
                 <option value="pp_misc_mfd_1_kuerzel, schreiber, freigeber">Department / Writer / Reviewer</option>
                 <option value="pp_misc_mfd_1_kuerzel, freigeber, schreiber">Department / Reviewer / Writer</option>
             </select>
-            <label>Change Metric:</label>
-            <select class="f6 pa1 ba bg-yellow pointer b--yellow black selectValue">
+            <label class="f6 pa2" for="selectValue">Change Metric:</label>
+            <select id="selectValue" class="f6 pa1 ba bg-yellow pointer b--yellow black">
                 <option value="jaccard_s_f" selected="selected">Similarity s -> f</option>
                 <option value="jaccard_g_f">Similarity g -> f</option>
                 <option value="words_added_relative_s_f">Relative Words added s -> f</option>
@@ -41,13 +44,18 @@
                 <option value="words_deleted_relative_g_f">Relative Words deleted g -> f</option>
             </select>
         </div>
+        <div class="w-100 flex center justify-center mw8">
+            <label id="colorScaleLabel" class="f6 pa3" for="colorScale">Similarity s -> f:</label>
+            <svg id="colorScale" width="170" height="55"></svg>
+        </div>
     </div>
-    <div id="treeMap" class="pv4" style="width: 100%;height: 600px;"></div>
+    <div id="treeMap" class="pv3" style="width: 100%;height: 600px;"></div>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='TreeMap/TreeMap.nocache.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
 {% endassets %}
 </body>
 </html>

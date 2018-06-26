@@ -1,6 +1,7 @@
 $(function () {
     if ('treeMap' === $('body').data('page')) {
         selectionHandler();
+        drawColorScale();
     }
 
 });
@@ -15,7 +16,7 @@ function treeMapModuleLoaded() {
 function treeMapModelLoaded() {
     treeMap.setToolTipByNames("befund_freigabe", "schreiber", "freigeber", "jaccard_s_f", "jaccard_g_f",
         "words_added_relative_s_f", "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f");
-    treeMap.setColorByName($('.selectValue option:selected').val());
+    treeMap.setColorByName($('#selectValue option:selected').val());
     setGroupByByNames();
     treeMap.setRendering(com.macrofocus.treemap.RenderingFactory.FLAT_NO_BORDER);
     var treeMapModel = treeMap.getModel();
@@ -25,18 +26,20 @@ function treeMapModelLoaded() {
 }
 
 function selectionHandler() {
-    $('.selectValue').change(function () {
-        var selection = $(".selectValue option:selected").val();
-        treeMap.setColorByName(selection);
+    $('#selectValue').change(function () {
+        var selection = $("#selectValue option:selected"),
+            selectionValue = selection.val();
+        treeMap.setColorByName(selectionValue);
+        $('#colorScaleLabel').text(selection.text())
     });
-    $('.selectGroup').change(function () {
+    $('#selectGroup').change(function () {
         setGroupByByNames();
     });
 }
 
 function setGroupByByNames() {
-    var selection = $(".selectGroup option:selected").val();
-    var selectionParts = selection.split(",", 3);
+    var selection = $("#selectGroup option:selected").val(),
+        selectionParts = selection.split(",", 3);
     selectionParts = selectionParts.map(function (part) {
         return part.trim();
     });
