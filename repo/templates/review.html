@@ -9,44 +9,51 @@
 
 <body class="w-100 sans-serif">
 {% include 'partials/review-header.html' %}
-<div class="w-100 b--black-10">
-    <div class="pa4">
-        <div class="overflow-auto">
-            <table class="f6 w-100 mw8 center" cellspacing="0">
-                <thead>
+<div class="w-100 b--black-10 mw8 center">
+    <div class="w-100 flex items-center">
+        <h1 class="f3 di-ns pr2">Reports List</h1>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoReview">Info</button>
+    </div>
+
+    <div class="overflow-auto">
+        <table class="f6 w-100 center" cellspacing="0">
+            <thead>
+            <tr>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white">#</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20">Patient</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25">Type of exam</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Date of exam</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Reviewer</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Status</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">History</th>
+            </tr>
+            </thead>
+            <tbody class="lh-copy" style="padding: auto">
+            {% for row in rows %}
                 <tr>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white">#</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20">Patient</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25">Type of exam</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Date of exam</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Reviewer</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Status</th>
-                    <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">History</th>
+                    <td class="pl0 pa1 bb b--black-10 w-5">{{ loop.index }}</td>
+                    <td class="pa1 bb b--black-10 w-25">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
+                    <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
+                    <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
+                    <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
+                    <td class="pa1 bb b--black-10 dashboardRow"><a
+                            href="review/writer-dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS&departments=MAM&departments=NR&departments=UKBB">{{ row['schreiber'] }}</a>
+                    </td>
+                    <td class="pa1 bb b--black-10 dashboardRow"><a
+                            href="review/reviewer-dashboard?r={{ row['freigeber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS&departments=MAM&departments=NR&departments=UKBB">{{ row['freigeber'] }}</a>
+                    </td>
+                    <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
+                    <td class="bb b--black-10">
+                        {% if row['befund_status'] == 'f' %}
+                            <a href="review/diff/{{ row['befund_schluessel'] }}">Show changes</a>
+                        {% endif %}
+                    </td>
                 </tr>
-                </thead>
-                <tbody class="lh-copy" style="padding: auto">
-                {% for row in rows %}
-                    <tr>
-                        <td class="pl0 pa1 bb b--black-10 w-5">{{ loop.index }}</td>
-                        <td class="pa1 bb b--black-10 w-25">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
-                        <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
-                        <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
-                        <td class="pa1 bb b--black-10 dashboardRow"><a href="review/writer-dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['schreiber'] }}</a></td>
-                        <td class="pa1 bb b--black-10 dashboardRow"><a href="review/reviewer-dashboard?r={{ row['freigeber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS">{{ row['freigeber'] }}</a></td>
-                        <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
-                        <td class="bb b--black-10">
-                            {% if row['befund_status'] == 'f' %}
-                                <a href="review/diff/{{ row['befund_schluessel'] }}">Show changes</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% assets "js_all" %}

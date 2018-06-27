@@ -18,7 +18,7 @@
 <div class="w-100 b--black-10 mw8 center">
     <div class="w-100 items-center">
         <div class="w-100 flex items-center">
-            <h1 class="f3 di-ns pr2">TreeMap</h1>
+            <h1 class="f3 di-ns pr2">TreeMap</h1><span class="pr2"><i>({{ rows|length }} reports)</i></span>
             <button class="black f7 ba bg-light-yellow b--light-yellow infoTreeMap">Info</button>
         </div>
         <div class="w-100 flex center justify-center mw8">
@@ -45,7 +45,8 @@
             </select>
         </div>
         <div class="w-100 flex center justify-center mw8">
-            <label id="colorScaleLabel" class="f6 pa3" for="colorScale">Similarity s -> f:</label>
+            <label id="colorScaleLabelTitle" class="f6 pv3 pr2-l" for="colorScale">Color Scale:</label>
+            <label id="colorScaleLabelValue" class="f6 pv3" for="colorScale"></label>
             <svg id="colorScale" width="170" height="55"></svg>
         </div>
     </div>

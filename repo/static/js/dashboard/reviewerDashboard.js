@@ -3,13 +3,14 @@ $(function () {
         console.log('on reviewer-dashboard page');
         buttonHandlerReviewer();
         checkboxHandler();
-        drawDivContentsReviewer();
+        drawWordsAddedGraphReviewer(null);
+        drawWordsDeletedGraphReviewer(null);
     }
 });
 
 var writer;
 
-function drawWordsAddedGraphReviewer() {
+function drawWordsAddedGraphReviewer(writer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         maxBarValue = 1,
@@ -24,7 +25,7 @@ function drawWordsAddedGraphReviewer() {
     }
 }
 
-function drawWordsDeletedGraphReviewer() {
+function drawWordsDeletedGraphReviewer(writer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         maxBarValue = 1,
@@ -41,7 +42,7 @@ function drawWordsDeletedGraphReviewer() {
 
 function buttonHandlerReviewer() {
     $(".writerButton").click(function () {
-        writer = $(this).closest("tr")
+        var writer = $(this).closest("tr")
             .find(".writerName")
             .text();
         writer = writer.slice(0, writer.indexOf(" ")).trim();
@@ -50,10 +51,11 @@ function buttonHandlerReviewer() {
 
         if ($(this).text().trim() === "Show") {
             $(this).text("Hide");
-            drawDivContentsReviewer();
+            drawWordsAddedGraphReviewer(writer);
+            drawWordsDeletedGraphReviewer(writer);
         } else if ($(this).text().trim() === "Hide") {
             $(this).text("Show");
-            clearContent(writer);
+            clearListContent(writer);
         }
     });
 }

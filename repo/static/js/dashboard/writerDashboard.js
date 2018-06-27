@@ -1,15 +1,16 @@
 $(function () {
     if ('writer-dashboard' === $('body').data('page')) {
         console.log('on writer-dashboard page');
-        buttonHandlerWriter();
         checkboxHandler();
-        drawDivContentsWriter();
+        buttonHandlerWriter();
+        drawSimilarityGraphWriter(null);
+        drawWordsAddedGraphWriter(null);
+        drawWordsDeletedGraphWriter(null);
     }
 });
 
-var reviewer;
 
-function drawSimilarityGraphWriter() {
+function drawSimilarityGraphWriter(reviewer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         pieSegments = [
@@ -27,7 +28,7 @@ function drawSimilarityGraphWriter() {
     }
 }
 
-function drawWordsAddedGraphWriter() {
+function drawWordsAddedGraphWriter(reviewer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         maxBarValue = 1,
@@ -44,7 +45,7 @@ function drawWordsAddedGraphWriter() {
     }
 }
 
-function drawWordsDeletedGraphWriter() {
+function drawWordsDeletedGraphWriter(reviewer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         maxBarValue = 1,
@@ -63,7 +64,7 @@ function drawWordsDeletedGraphWriter() {
 
 function buttonHandlerWriter() {
     $(".reviewerButton").click(function () {
-        reviewer = $(this).closest("tr")
+        var reviewer = $(this).closest("tr")
             .find(".reviewerName")
             .text();
         reviewer = reviewer.slice(0, reviewer.indexOf(" ")).trim();
@@ -71,11 +72,13 @@ function buttonHandlerWriter() {
         $(graphId).toggle();
 
         if ($(this).text().trim() === "Show") {
+
             $(this).text("Hide");
-            drawDivContentsWriter();
+            drawWordsAddedGraphWriter(reviewer);
+            drawWordsDeletedGraphWriter(reviewer);
         } else if ($(this).text().trim() === "Hide") {
             $(this).text("Show");
-            clearContent(reviewer);
+            clearListContent(reviewer);
         }
     });
 }

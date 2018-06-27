@@ -10,13 +10,15 @@ function treeMapModuleLoaded() {
     com.macrofocus.treemap.TreeMap.setLicenseKey("Kevin Streiter",
         "TG2GS-W57BU-4CLVB-866AK-QQFBT-DGV3W");
     treeMap = new com.macrofocus.treemap.TreeMap("treeMap");
-    treeMap.loadJavaScriptArray(rows)
+    treeMap.loadJavaScriptArray(rows);
+    var selection = $('#selectValue option:selected');
+    treeMap.setColorByName(selection.val());
+    $('#colorScaleLabelValue').text("["+selection.text()+"]");
 }
 
 function treeMapModelLoaded() {
-    treeMap.setToolTipByNames("schreiber", "freigeber", "befund_freigabe", "jaccard_s_f", "jaccard_g_f",
+    treeMap.setToolTipByNames("untart_name", "schreiber", "freigeber", "befund_freigabe", "jaccard_s_f", "jaccard_g_f",
         "words_added_relative_s_f", "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f");
-    treeMap.setColorByName($('#selectValue option:selected').val());
     treeMap.setRendering(com.macrofocus.treemap.RenderingFactory.FLAT_NO_BORDER);
     treeMap.getView().getToolTip().setPreferredWidth(350);
     var treeMapModel = treeMap.getModel();
@@ -29,12 +31,12 @@ function treeMapModelLoaded() {
     fieldSettings.setAlgorithm(com.macrofocus.treemap.AlgorithmFactory.SQUARIFIED);
 
     setGroupByByNames();
-    clickHandler(treeMapModel);
+    clickHandler();
 }
 
-function clickHandler(treeMapModel) {
+function clickHandler() {
     $("#treeMap").click(function () {
-        console.log(treeMapModel);
+        console.log(treeMap.getModel().getSelection());
     })
 }
 
@@ -43,7 +45,7 @@ function selectionHandler() {
         var selection = $("#selectValue option:selected"),
             selectionValue = selection.val();
         treeMap.setColorByName(selectionValue);
-        $('#colorScaleLabel').text(selection.text())
+        $('#colorScaleLabelValue').text("["+selection.text()+"]");
     });
     $('#selectGroup').change(function () {
         setGroupByByNames();

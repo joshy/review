@@ -1,3 +1,12 @@
+$(".infoReview").hover(
+    function () {
+        $(this).append($("<span>: The List below shows the reports of the specified day.<br>" +
+            "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report. <br>" +
+            "Click on the abbreviation in the column <b>Writer/Reviewer</b> to redirect to the corresponding dashboard.</span>"));
+    }, function () {
+        $(this).find("span:last").remove();
+    });
+
 $(".infoDashboard").hover(
     function () {
         $(this).append($("<span>: The Dashboard visualizes the similarity calculation between three different states of each report: <br>" +
@@ -80,8 +89,10 @@ $(".infoReviewerList").hover(
 
 $(".infoTreeMap").hover(
     function () {
-        $(this).append($("<span>: The following graph shows all reports over the specified time period. <br>" +
-            "Click on <b>&#39Show&#39</b> to view all corresponding graphs</span>"));
+        $(this).append($("<span>: The following graph shows all reports over the specified time period. Each rectangle represents a specific report.<br>" +
+            "Choose a option by the category <b>Group by:</b> to change the hierarchical structure of the TreeMap. <br>"+
+    "Choose a option by the category <b>Change Metric:</b> to change the value which the color coding is based on.<br>"+
+    "The shown color scale represents the value range implemented by the corresponding color</span>"));
     }, function () {
         $(this).find("span:last").remove();
     });

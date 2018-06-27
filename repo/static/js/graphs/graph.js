@@ -62,21 +62,24 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
 
     x2.domain(x.domain());
 
-    //Draw ExceedingLine
-    g.append("line")
-        .attr("class", "exceedingLine")
-        .attr("x1", 0)
-        .attr("y1", -margin.top / 3)
-        .attr("x2", width)
-        .attr("y2", -margin.top / 3);
+    if (!(value.slice(0, -3) === 'jaccard_')) {
 
-    //Draw ExceedingLineText
-    g.append("text")
-        .attr("class", "exceedingLineAnnotation")
-        .attr("fill", color)
-        .attr("x", 7)
-        .attr("y", -margin.top / 2)
-        .text(">1");
+        //Draw ExceedingLine
+        g.append("line")
+            .attr("class", "exceedingLine")
+            .attr("x1", 0)
+            .attr("y1", -margin.top / 3)
+            .attr("x2", width)
+            .attr("y2", -margin.top / 3);
+
+        //Draw ExceedingLineText
+        g.append("text")
+            .attr("class", "exceedingLineAnnotation")
+            .attr("fill", color)
+            .attr("x", 7)
+            .attr("y", -margin.top / 2)
+            .text(">1");
+    }
 
     //Define ScatterPlot-Area
     var scatterPlot = g.append("g")
@@ -228,17 +231,31 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
             }
             else {
                 if (writer != null) {
-                    clearContent(writer);
-                    drawDivContentsReviewer();
+                    clearListContent(writer);
+                    drawWordsAddedGraphReviewer(writer);
+                    drawWordsDeletedGraphReviewer(writer);
                 }
                 else if (reviewer != null) {
-                    clearContent(reviewer);
-                    drawDivContentsWriter();
+                    clearListContent(reviewer);
+                    drawWordsAddedGraphWriter(reviewer);
+                    drawWordsDeletedGraphWriter(reviewer);
                 }
                 else {
-                    clearAllContent();
-                    drawDivContentsWriter();
-                    drawDivContentsReviewer();
+                    clearDashboardContent();
+                    var body = $('body');
+
+                    if ('reviewer-dashboard' === body.data('page')) {
+                        writer = null;
+                        drawWordsAddedGraphReviewer(writer);
+                        drawWordsDeletedGraphReviewer(writer);
+
+                    }
+                    else if ('writer-dashboard' === body.data('page')) {
+                        reviewer = null;
+                        drawSimilarityGraphWriter(reviewer);
+                        drawWordsAddedGraphWriter(reviewer);
+                        drawWordsDeletedGraphWriter(reviewer);
+                    }
                 }
             }
             g.selectAll("circle")
@@ -512,18 +529,31 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
 
     resetButton.on("click", function () {
         if (writer != null) {
-            clearContent(writer);
-            drawDivContentsReviewer();
+            clearListContent(writer);
+            drawWordsAddedGraphReviewer(writer);
+            drawWordsDeletedGraphReviewer(writer);
         }
         else if (reviewer != null) {
-            clearContent(reviewer);
-            drawDivContentsWriter();
+            clearListContent(reviewer);
+            drawWordsAddedGraphWriter(reviewer);
+            drawWordsDeletedGraphWriter(reviewer);
         }
         else {
+            clearDashboardContent();
+            var body = $('body');
 
-            clearAllContent();
-            drawDivContentsWriter();
-            drawDivContentsReviewer();
+            if ('reviewer-dashboard' === body.data('page')) {
+                writer = null;
+                drawWordsAddedGraphReviewer(writer);
+                drawWordsDeletedGraphReviewer(writer);
+
+            }
+            else if ('writer-dashboard' === body.data('page')) {
+                reviewer = null;
+                drawSimilarityGraphWriter(reviewer);
+                drawWordsAddedGraphWriter(reviewer);
+                drawWordsDeletedGraphWriter(reviewer);
+            }
         }
     });
 

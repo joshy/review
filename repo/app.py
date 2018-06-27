@@ -56,8 +56,7 @@ js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
             "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/graphs/colorScale.js",
-            "js/handlers/clearHandling.js", "js/handlers/dataHandling.js", "js/handlers/infoHandling.js",
-            "js/treeMap.js",
+            "js/handlers/clearHandling.js", "js/handlers/infoHandling.js", "js/treeMap.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -167,7 +166,7 @@ def reviewer_dashboard():
 
 @app.route('/review/treeMap')
 def tree_map():
-    last_exams = request.args.get('last_exams', 30)
+    last_exams = request.args.get('last_exams', 1000)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
     rows = load_tree_map_data(last_exams, start_date, end_date)
