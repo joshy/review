@@ -51,7 +51,6 @@ function drawPieChart(svg, medianValue, className, radius, pieSegments) {
         });
 }
 
-
 function redrawPieChart(svg, value, className, radius, pieSegments) {
     pieSegments[0].value = value;
     pieSegments[1].value = 1 - value;
