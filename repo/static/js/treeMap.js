@@ -3,7 +3,6 @@ $(function () {
         selectionHandler();
         drawColorScale();
     }
-
 });
 
 function treeMapModuleLoaded() {

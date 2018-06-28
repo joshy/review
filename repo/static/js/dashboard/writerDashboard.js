@@ -3,6 +3,7 @@ $(function () {
         console.log('on writer-dashboard page');
         checkboxHandler();
         buttonHandlerWriter();
+        floatThead();
         drawSimilarityGraphWriter(null);
         drawWordsAddedGraphWriter(null);
         drawWordsDeletedGraphWriter(null);

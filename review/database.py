@@ -580,7 +580,6 @@ def query_review_reports_development(cursor):
             befund_f is not null
           ORDER BY
             unters_beginn desc
-            LIMIT 1000
           """
     cursor.execute(sql)
     results = cursor.fetchall()

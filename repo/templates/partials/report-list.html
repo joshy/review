@@ -1,6 +1,6 @@
 <div class="w-100 b--black-10">
-    <div class="ph4 pv1">
-        <table class="f6 w-100 mw8 center" cellspacing="0">
+    <div class="ph4 pv1 h5-l tableWrapper overflow-auto">
+        <table class="f6 w-100 mw8 center tableDashboard" cellspacing="0">
             <thead>
             <tr>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20">Date of exam
@@ -15,10 +15,6 @@
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">History</th>
             </tr>
             </thead>
-        </table>
-    </div>
-    <div class="h5-l ph4 pv2 overflow-y-auto">
-        <table class="f6 w-100 mw8 center" cellspacing="0">
             <tbody class="lh-copy">
             {% for row in data['rows'] %}
                 <tr>

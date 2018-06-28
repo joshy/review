@@ -46,26 +46,6 @@
                    type="text" name="w" placeholder="Shortname">
             <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
         </div>
-        <div class="w-100 center pt2-ns justify-center mw8 fl-ns" id="checkboxes">
-            <fieldset class="w-30 center flex justify-center mw8">
-                <legend class="f6 pa1">Filter Departments</legend>
-                <input type="checkbox" id="AOD" name="departments" value="AOD" checked>
-                <label class="f6 pa1" for="AOD">AOD</label>
-                <input type="checkbox" id="CTD" name="departments" value="CTD" checked>
-                <label class="f6 pa1" for="CTD">CTD</label>
-                <input type="checkbox" id="MSK" name="departments" value="MSK" checked>
-                <label class="f6 pa1" for="MSK">MSK</label>
-                <input type="checkbox" id="NUK" name="departments" value="NUK" checked>
-                <label class="f6 pa1" for="NUK">NUK</label>
-                <input type="checkbox" id="IR" name="departments" value="IR" checked>
-                <label class="f6 pa1" for="IR">IR</label>
-                <input type="checkbox" id="MAM" name="departments" value="MAM" checked>
-                <label class="f6 pa1" for="MAM">MAM</label>
-                <input type="checkbox" id="NR" name="departments" value="NR" checked>
-                <label class="f6 pa1" for="NR">NR</label>
-                <input type="checkbox" id="FPS" name="departments" value="FPS" checked>
-                <label class="f6 pa1" for="FPS">FPS</label>
-            </fieldset>
-        </div>
+        {% include 'partials/checkbox.html' %}
     </form>
 </div>

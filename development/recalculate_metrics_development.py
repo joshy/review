@@ -29,7 +29,7 @@ def _update_metrics():
     before = []
     after = []
     review_db = get_review_db()
-    review_cursor =  review_db.cursor(cursor_factory=DictCursor)
+    review_cursor = review_db.cursor(cursor_factory=DictCursor)
     rows = query_review_reports_development(review_cursor)
     count = len(rows)
     logging.debug('Iterate over total of {} rows'.format(count))

@@ -138,3 +138,7 @@ div.tooltip {
     stroke: lightgray;
     stroke-width: 0.5px;
 }
+
+.treeMapHeader {
+    color: black !important;
+}

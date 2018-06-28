@@ -66,7 +66,7 @@ $(".infoDocumentChanges").hover(
     function () {
         $(this).append($("<span>: The following graphs show the <b>personal calculated Median of all relative added / deleted words <br>" +
             "over the specified reports</b> and the <b>calculated Median over all reports</b>. <br>" +
-            "The calculation bases upon the following comparison: <b>&#39gegengelesen -> final&#39</b></span>"));
+            "The calculation is based upon the following comparison: <b>&#39gegengelesen -> final&#39</b></span>"));
     }, function () {
         $(this).find("span:last").remove();
     });

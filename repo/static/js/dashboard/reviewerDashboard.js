@@ -3,6 +3,7 @@ $(function () {
         console.log('on reviewer-dashboard page');
         buttonHandlerReviewer();
         checkboxHandler();
+        floatThead();
         drawWordsAddedGraphReviewer(null);
         drawWordsDeletedGraphReviewer(null);
     }
