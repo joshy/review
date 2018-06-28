@@ -10,7 +10,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         brushArea = svg.append("g")
             .attr("class", "brushArea")
             .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom - margin.top / 10) + ")"),
-        formatTime = d3.timeFormat("%d.%m"),
+        formatTime = d3.timeFormat("%x"),
         brush = d3.brushX()
             .extent([[gap + margin.right, -margin.bottom / 3], [width, 1]])
             .on("brush", brushed),
@@ -46,6 +46,8 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+    var unfiltered_data = data['rows'];
+
     var filtered_data = filterByWriter(data['rows'], writer);
     filtered_data = filterByReviewer(filtered_data, reviewer);
 
@@ -55,10 +57,26 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         data.unters_beginn = new Date(data.unters_beginn);
     });
 
+    unfiltered_data.forEach(function (data) {
+        data[value] = +data[value];
+        data.unters_beginn = new Date(data.unters_beginn);
+    });
 
-    x.domain(d3.extent(filtered_data, function (d) {
+    x.domain(d3.extent(unfiltered_data, function (d) {
         return d.unters_beginn;
     }));
+
+    unfiltered_data = unfiltered_data.filter(
+        function (element) {
+            return this.indexOf(element) < 0;
+        },
+        filtered_data
+    );
+
+    unfiltered_data.forEach(function (data) {
+        data[value] = +data[value];
+        data.unters_beginn = new Date(data.unters_beginn);
+    });
 
     x2.domain(x.domain());
 
@@ -85,6 +103,10 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
     var scatterPlot = g.append("g")
         .attr("class", "scatterPlot");
 
+    //Define ScatterPlotHidden-Area
+    var scatterPlotHidden = g.append("g")
+        .attr("class", "scatterPlotHidden");
+
     //Define ScatterPlot-Background
     scatterPlot.append("rect")
         .attr("class", "backgroundRect")
@@ -92,10 +114,33 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         .attr("width", width - gap - 20)
         .attr("transform", "translate(" + (gap + 20) + ",0)");
 
+
+    //Draw HiddenCircles
+    var hidden_circles = scatterPlotHidden.append("g");
+
+    if (writer != null || reviewer != null) {
+
+        //Draw unfiltered_data Circles
+        hidden_circles.selectAll("circle")
+            .data(unfiltered_data)
+            .enter()
+            .append("circle")
+            .style("fill", "darkgray")
+            .attr("cx", function (d) {
+                return x(d.unters_beginn);
+            })
+            .attr("cy", function (d) {
+                return checkCircleValue(d[value], margin, y);
+            })
+            .attr("r", 4)
+            .style("opacity", 0.3);
+    }
+
     //Draw Circles
     var circles = scatterPlot.append("g")
         .attr("class", "circles");
 
+    //Draw filtered_data Circles
     circles.selectAll("circle")
         .data(filtered_data)
         .enter()
@@ -168,7 +213,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         })
         .attr("height", bWidth)
         .on("mouseover", function (data) {
-            g.selectAll("circle")
+            scatterPlot.selectAll("circle")
                 .filter(function (d) {
                     if (data.x0 > minIntervalValue && data.x1 === maxIntervalValue) {
                         return d[value] > data.x0;
@@ -194,7 +239,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
                 .style("top", (d3.event.pageY) + "px");
         })
         .on("mouseout", function () {
-            g.selectAll("circle")
+            scatterPlot.selectAll("circle")
                 .data(filtered_data)
                 .attr("r", 4)
                 .style("fill", color);
@@ -258,7 +303,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
                     }
                 }
             }
-            g.selectAll("circle")
+            circles.selectAll("circle")
                 .attr("r", 4)
                 .style("fill", color);
             div.transition()
@@ -602,8 +647,17 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
 }
 
 function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer, reviewer) {
+    var unfiltered_data = data['rows'];
+
     filtered_data = filterByWriter(filtered_data, writer);
     filtered_data = filterByReviewer(filtered_data, reviewer);
+
+    unfiltered_data = unfiltered_data.filter(
+        function (element) {
+            return this.indexOf(element) < 0;
+        },
+        filtered_data
+    );
 
     filtered_data.forEach(function (data) {
         data[value] = +data[value];
@@ -633,7 +687,7 @@ function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, v
             .tickFormat(""));
 
     //Redraw Circles
-    var circles = svg.selectAll("circle")
+    var circles = svg.select(".scatterPlot").selectAll("circle")
         .data(filtered_data);
 
     circles.exit().remove();
@@ -652,6 +706,29 @@ function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, v
         .attr("cy", function (d) {
             return checkCircleValue(d[value], margin, y);
         });
+
+    if (writer != null || reviewer != null) {
+        //Redraw Hidden Circles
+        var circlesHidden = svg.select(".scatterPlotHidden").selectAll("circle")
+            .data(unfiltered_data);
+
+        circlesHidden.exit().remove();
+
+        circlesHidden.enter().append("circle");
+
+        circlesHidden.transition()
+            .attr("cx", function (d) {
+                if (x(d.unters_beginn) < gap + margin.right) {
+                    return -100;
+                }
+                else {
+                    return x(d.unters_beginn);
+                }
+            })
+            .attr("cy", function (d) {
+                return checkCircleValue(d[value], margin, y);
+            });
+    }
 
     //Redraw Histogram
     var yBins = d3.histogram()
