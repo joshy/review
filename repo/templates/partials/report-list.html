@@ -27,10 +27,10 @@
                     <td class="pa1 bb b--black-10 w-15">{{ row['untart_name'] }}</td>
                     <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                     <td class="pa1 bb b--black-10 dashboardRow"><a
-                            href="writer-dashboard?w={{ row['schreiber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS&departments=MAM&departments=NR&departments=UKBB">{{ row['schreiber'] }}</a>
+                            href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
                     </td>
                     <td class="pa1 bb b--black-10 dashboardRow"><a
-                            href="reviewer-dashboard?r={{ row['freigeber'] }}&departments=AOD&departments=CTD&departments=MSK&departments=NUK&departments=IR&departments=FPS&departments=MAM&departments=NR&departments=UKBB">{{ row['freigeber'] }}</a>
+                            href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
                     </td>
                     <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
                     <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_s_f']|float }}</td>

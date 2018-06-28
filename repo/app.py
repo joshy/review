@@ -113,7 +113,8 @@ def writer_dashboard():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    departments = request.args.getlist('departments')
+    departments = request.args.getlist('departments') or \
+                  ['AOD', 'CTD', 'MSK', 'NUK', 'IR', 'FPS', 'MAM', 'NR', 'UKBB']
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
     df_rows = pd.DataFrame(rows)
@@ -142,7 +143,8 @@ def reviewer_dashboard():
     last_exams = request.args.get('last_exams', 30)
     start_date = request.args.get('start_date', '')
     end_date = request.args.get('end_date', '')
-    departments = request.args.getlist('departments')
+    departments = request.args.getlist('departments') or \
+                  ['AOD', 'CTD', 'MSK', 'NUK', 'IR', 'FPS', 'MAM', 'NR', 'UKBB']
     departments = '{' + ','.join(departments) + '}'
     rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
     df_rows = pd.DataFrame(rows)
