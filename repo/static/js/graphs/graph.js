@@ -46,9 +46,8 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    var unfiltered_data = data['rows'];
-
-    var filtered_data = filterByWriter(data['rows'], writer);
+    var unfiltered_data = data['rows'],
+    filtered_data = filterByWriter(data['rows'], writer);
     filtered_data = filterByReviewer(filtered_data, reviewer);
 
     //Get Data
@@ -250,26 +249,10 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
         .on("click", function (d) {
             if (counter < 2) {
                 counter++;
-                var tempData = [];
                 minIntervalValue = Math.round(d.x0 * 10) / 10;
                 maxIntervalValue = Math.round(d.x1 * 10) / 10;
 
-                //Filter Interval Data
-                filtered_data.forEach(function (data) {
-                    data[value] = +data[value];
-                    data.unters_beginn = new Date(data.unters_beginn);
-                    if (minIntervalValue === 0) {
-                        if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
-                            tempData.push(data);
-                        }
-                    } else {
-                        if (data[value] > minIntervalValue && data[value] <= maxIntervalValue) {
-                            tempData.push(data)
-                        }
-                    }
-                });
-
-                filtered_data = tempData;
+                filtered_data = filterByInterval(filtered_data, minIntervalValue, maxIntervalValue, value);
                 filtered_data = filterByWriter(filtered_data, writer);
                 filtered_data = filterByReviewer(filtered_data, reviewer);
                 redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, classNames[0], writer, reviewer);
@@ -647,17 +630,22 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
 }
 
 function redrawGraph(filtered_data, svg, height, width, gap, margin, y, yx, x, value, minIntervalValue, maxIntervalValue, className, writer, reviewer) {
-    var unfiltered_data = data['rows'];
 
     filtered_data = filterByWriter(filtered_data, writer);
     filtered_data = filterByReviewer(filtered_data, reviewer);
 
+    var unfiltered_data = data['rows'];
     unfiltered_data = unfiltered_data.filter(
         function (element) {
             return this.indexOf(element) < 0;
         },
         filtered_data
     );
+
+    if (minIntervalValue !== 0 && maxIntervalValue !== 1) {
+
+        unfiltered_data = filterByInterval(unfiltered_data, minIntervalValue, maxIntervalValue, value);
+    }
 
     filtered_data.forEach(function (data) {
         data[value] = +data[value];
@@ -855,4 +843,23 @@ function filterByReviewer(data, reviewer) {
     else {
         return data;
     }
+}
+
+function filterByInterval(data, minIntervalValue, maxIntervalValue, value) {
+
+    var filteredData = [];
+    data.forEach(function (data) {
+        data[value] = +data[value];
+        data.unters_beginn = new Date(data.unters_beginn);
+        if (minIntervalValue === 0) {
+            if (data[value] >= minIntervalValue && data[value] <= maxIntervalValue) {
+                filteredData.push(data);
+            }
+        } else {
+            if (data[value] > minIntervalValue && data[value] <= maxIntervalValue) {
+                filteredData.push(data)
+            }
+        }
+    });
+    return filteredData;
 }
