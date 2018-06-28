@@ -341,22 +341,19 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
     brushArea.selectAll("rect.handle")
         .attr("fill", color);
 
-    var rightHandle = $(".handle--e"),
-        leftHandle = $(".handle--w");
-
     brushArea.append("line")
         .attr("class", "brushLineLeft")
         .attr("stroke", color)
-        .attr("x1", parseInt(leftHandle.attr("x")) + 3)
-        .attr("x2", parseInt(leftHandle.attr("x")) + 3)
+        .attr("x1", gap + 20)
+        .attr("x2", gap + 20)
         .attr("y1", -95)
         .attr("y2", -50);
 
     brushArea.append("line")
         .attr("class", "brushLineRight")
         .attr("stroke", color)
-        .attr("x1", parseInt(rightHandle.attr("x")) + 3)
-        .attr("x2", parseInt(rightHandle.attr("x")) + 3)
+        .attr("x1", width)
+        .attr("x2", width)
         .attr("y1", -95)
         .attr("y2", -50);
 
