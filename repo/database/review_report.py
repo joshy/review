@@ -44,7 +44,8 @@ def query_review_reports(cursor, day, writer, reviewer):
             a.words_added_g_f,
             a.words_deleted_g_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a
           WHERE

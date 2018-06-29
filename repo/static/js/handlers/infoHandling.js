@@ -92,7 +92,8 @@ $(".infoTreeMap").hover(
         $(this).append($("<span>: The following graph shows all reports over the specified time period. Each rectangle represents a specific report.<br>" +
             "Choose a option by the category <b>Group by:</b> to change the hierarchical structure of the TreeMap. <br>"+
     "Choose a option by the category <b>Change Metric:</b> to change the value which the color coding is based on.<br>"+
-    "The shown color scale represents the value range implemented by the corresponding color</span>"));
+    "The shown color scale represents the value range implemented by the corresponding color.<br>"+
+    "<b>Right click</b> on a rectangle to redirect to the corresponding report / <b>Double-left-click</b> to zoom< or zoom-out the hierarchical structure </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });

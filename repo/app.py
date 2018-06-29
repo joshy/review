@@ -10,9 +10,9 @@ from flask import Flask, g, json, jsonify, render_template, request, make_respon
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer_and_department, query_all_by_departments, \
-    query_by_writer_and_date_and_department, \
-    query_by_reviewer_and_date_and_department, query_by_reviewer_and_department, query_review_reports_development, \
+from review.database import query_by_writer_and_department_and_modality, query_all_by_departments, \
+    query_by_writer_and_date_and_department_and_modality, \
+    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality, query_review_reports_development, \
     query_by_date, query_by_last_exams
 from review.calculations import relative, calculate_median, calculate_median_by_writer, calculate_median_by_reviewer
 
@@ -116,7 +116,10 @@ def writer_dashboard():
     departments = request.args.getlist('departments') or \
                   ['AOD', 'CTD', 'MSK', 'NUK', 'IR', 'FPS', 'MAM', 'NR', 'UKBB']
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments)
+    modalities = request.args.getlist('modalities') or \
+                  ['CT', 'MRI', 'US', 'RX', 'OTHER']
+    modalities = '{' + ','.join(modalities) + '}'
+    rows = load_data_by_writer(writer, last_exams, start_date, end_date, departments, modalities)
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
     df_rows = remove_NaT_format(df_rows)
@@ -146,7 +149,10 @@ def reviewer_dashboard():
     departments = request.args.getlist('departments') or \
                   ['AOD', 'CTD', 'MSK', 'NUK', 'IR', 'FPS', 'MAM', 'NR', 'UKBB']
     departments = '{' + ','.join(departments) + '}'
-    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments)
+    modalities = request.args.getlist('modalities') or \
+                 ['CT', 'MRI', 'US', 'RX', 'OTHER']
+    modalities = '{' + ','.join(modalities) + '}'
+    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments, modalities)
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
     df_rows = remove_NaT_format(df_rows)
@@ -180,27 +186,27 @@ def tree_map():
                            start_date=start_date, end_date=end_date, version=version)
 
 
-def load_data_by_writer(writer, last_exams, start_date, end_date, departments):
+def load_data_by_writer(writer, last_exams, start_date, end_date, departments, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
         s_d = datetime.strptime(start_date, '%d.%m.%Y')
         e_d = datetime.strptime(end_date, '%d.%m.%Y')
-        rows = query_by_writer_and_date_and_department(cursor, writer, s_d, e_d, departments)
+        rows = query_by_writer_and_date_and_department_and_modality(cursor, writer, s_d, e_d, departments, modalities)
     else:
-        rows = query_by_writer_and_department(cursor, writer, last_exams, departments)
+        rows = query_by_writer_and_department_and_modality(cursor, writer, last_exams, departments, modalities)
     return rows
 
 
-def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments):
+def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, departments, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
         s_d = datetime.strptime(start_date, '%d.%m.%Y')
         e_d = datetime.strptime(end_date, '%d.%m.%Y')
-        rows = query_by_reviewer_and_date_and_department(cursor, reviewer, s_d, e_d, departments)
+        rows = query_by_reviewer_and_date_and_department_and_modality(cursor, reviewer, s_d, e_d, departments, modalities)
     else:
-        rows = query_by_reviewer_and_department(cursor, reviewer, last_exams, departments)
+        rows = query_by_reviewer_and_department_and_modality(cursor, reviewer, last_exams, departments, modalities)
     return rows
 
 

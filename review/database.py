@@ -143,7 +143,7 @@ def update(cursor, row, befund_status):
                     row['unters_schluessel']))
 
 
-def query_by_writer_and_department(cursor, writer, last_exams, departments):
+def query_by_writer_and_department_and_modality(cursor, writer, last_exams, departments, modalities):
     """
     Query all reports in the review db by writer.
     """
@@ -176,7 +176,8 @@ def query_by_writer_and_department(cursor, writer, last_exams, departments):
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a
           INNER JOIN 
@@ -191,15 +192,17 @@ def query_by_writer_and_department(cursor, writer, last_exams, departments):
               a.schreiber != b.freigeber
           AND 
               a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          AND 
+              a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (writer.upper(), departments, last_exams))
+    cursor.execute(sql, (writer.upper(), departments, modalities, last_exams))
     return cursor.fetchall()
 
 
-def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date, departments):
+def query_by_writer_and_date_and_department_and_modality(cursor, writer, start_date, end_date, departments, modalities):
     """
     Query all reports in the review db by writer.
     """
@@ -232,7 +235,8 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a 
           INNER JOIN 
@@ -249,14 +253,16 @@ def query_by_writer_and_date_and_department(cursor, writer, start_date, end_date
               a.schreiber != b.freigeber
           AND
               a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          AND
+              a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.upper(), start_date, end_date, departments))
+    cursor.execute(sql, (writer.upper(), start_date, end_date, departments, modalities))
     return cursor.fetchall()
 
 
-def query_by_reviewer_and_department(cursor, reviewer, last_exams, departments):
+def query_by_reviewer_and_department_and_modality(cursor, reviewer, last_exams, departments, modalities):
     """
     Query all reports in the review db by reviewer.
     """
@@ -289,7 +295,8 @@ def query_by_reviewer_and_department(cursor, reviewer, last_exams, departments):
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a
           INNER JOIN 
@@ -304,15 +311,17 @@ def query_by_reviewer_and_department(cursor, reviewer, last_exams, departments):
               a.schreiber != b.freigeber
           AND 
               a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          AND 
+              a.modality= ANY(%s)
           ORDER BY
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (reviewer.upper(), departments, last_exams))
+    cursor.execute(sql, (reviewer.upper(), departments, modalities, last_exams))
     return cursor.fetchall()
 
 
-def query_by_reviewer_and_date_and_department(cursor, reviewer, start_date, end_date, departments):
+def query_by_reviewer_and_date_and_department_and_modality(cursor, reviewer, start_date, end_date, departments, modalities):
     """
     Query all reports in the review db by reviewer, date and department.
     """
@@ -345,7 +354,8 @@ def query_by_reviewer_and_date_and_department(cursor, reviewer, start_date, end_
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a 
           INNER JOIN 
@@ -362,10 +372,12 @@ def query_by_reviewer_and_date_and_department(cursor, reviewer, start_date, end_
               a.schreiber != b.freigeber
           AND
               a.pp_misc_mfd_1_kuerzel = ANY(%s)
+          AND
+              a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (reviewer.upper(), start_date, end_date, departments))
+    cursor.execute(sql, (reviewer.upper(), start_date, end_date, departments, modalities))
     return cursor.fetchall()
 
 
@@ -540,13 +552,27 @@ def update_department_development(cursor, row, item):
     cursor.execute(sql, (item, row))
 
 
+def update_modality(cursor, row, item):
+    """
+       Temporary Method to fill existing rows with the modality description
+    """
+    sql = """
+              UPDATE reports SET 
+                modality = %s
+              WHERE
+                unters_schluessel = %s
+              """
+    cursor.execute(sql, (item, row))
+
+
 def query_all_rows(cursor):
     """
     Temporary Method: query all rows (development)
     """
     sql = """
               SELECT
-                 unters_schluessel
+                 unters_schluessel,
+                 unters_art
               FROM reports
             
                """

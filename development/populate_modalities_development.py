@@ -7,7 +7,7 @@ import daiquiri
 from psycopg2.extras import DictCursor
 
 from repo.app import REVIEW_DB_SETTINGS
-from review.database import query_all_rows, update_department_development
+from review.database import query_all_rows, update_department_development, update_modality
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -25,27 +25,41 @@ def get_review_db():
     return db
 
 
-def generate_department():
-    departments = ['AOD', 'CTD', 'MSK', 'NUK', 'IR', 'FPS']
-    return random.choice(departments)
+def get_modality(unters_art):
+    unters_art = unters_art[1:2]
+    print(unters_art)
+    if unters_art == 'M':
+        return 'MRI'
+
+    elif unters_art == 'C':
+        return 'CT'
+
+    elif unters_art == 'U':
+        return 'US'
+
+    elif unters_art == 'S' or unters_art == 'R':
+        return 'RX'
+
+    else:
+        return 'OTHER'
 
 
-def update_departments():
+def update_modalities():
     review_db = get_review_db()
     review_cursor = review_db.cursor(cursor_factory=DictCursor)
     rows = query_all_rows(review_cursor)
     count = len(rows)
-    logging.debug('Iterate over total of {} rows with department description'.format(count))
+    logging.debug('Iterate over total of {} rows with modality description'.format(count))
     for i, row in enumerate(rows, start=1):
         logging.debug('Iterating over row {}/{} rows'.format(i, count))
-        department = generate_department()
-        logging.debug('Department {} generated'.format((department)))
-        update_department_development(review_cursor, row['unters_schluessel'], department)
-    logging.info('Inserting departments done')
+        modality = get_modality(row['unters_art'])
+        logging.debug('Modality {} generated'.format(modality))
+        update_modality(review_cursor, row['unters_schluessel'], modality)
+    logging.info('Inserting modality done')
     review_db.commit()
     review_cursor.close()
 
 
 if __name__ == '__main__':
-    update_departments()
+    update_modalities()
 
