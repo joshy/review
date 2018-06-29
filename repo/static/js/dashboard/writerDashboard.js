@@ -34,7 +34,7 @@ function drawWordsAddedGraphWriter(reviewer) {
         minIntervalValue = 0,
         maxBarValue = 1,
         classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words Added"],
-        color = "green";
+        color = "#009418";
 
     if (reviewer != null) {
         drawGraph(d3.select("#WordsAddedGraph" + reviewer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, null, reviewer);
@@ -51,7 +51,7 @@ function drawWordsDeletedGraphWriter(reviewer) {
         minIntervalValue = 0,
         maxBarValue = 1,
         classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words Deleted"],
-        color = "red";
+        color = "#f5070d";
 
     if (reviewer != null) {
         drawGraph(d3.select("#WordsDeletedGraph" + reviewer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, null, reviewer);

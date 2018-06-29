@@ -17,11 +17,11 @@ div.tooltip {
 }
 
 .barWordsAdded {
-    fill: green;
+    fill: #009418;
 }
 
 .barWordsDeleted {
-    fill: red;
+    fill: #f5070d;
 }
 
 .barSimilarity:hover, .barWordsAdded:hover, .barWordsDeleted:hover {

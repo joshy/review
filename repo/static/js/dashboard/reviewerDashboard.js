@@ -31,7 +31,7 @@ function drawWordsDeletedGraphReviewer(writer) {
         minIntervalValue = 0,
         maxBarValue = 1,
         classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words Deleted"],
-        color = "red";
+        color = "#db020f";
     if (writer != null) {
         drawGraph(d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer, null);
         drawBarChart(d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_g_f", color, maxBarValue, writer, null);
