@@ -12,7 +12,7 @@ function treeMapModuleLoaded() {
     treeMap.loadJavaScriptArray(rows);
     var selection = $('#selectValue option:selected');
     treeMap.setColorByName(selection.val());
-    $('#colorScaleLabelValue').text("["+selection.text()+"]");
+    $('#colorScaleLabelValue').text("[" + selection.text() + "]");
 }
 
 function treeMapModelLoaded() {
@@ -28,15 +28,26 @@ function treeMapModelLoaded() {
     fieldSettings.setBorderThickness(0.5);
     fieldSettings.setLabelingMinimumCharactersToDisplay(3);
     fieldSettings.setAlgorithm(com.macrofocus.treemap.AlgorithmFactory.SQUARIFIED);
-
     setGroupByByNames();
-    clickHandler();
+    clickHandler(treeMapModel);
 }
 
-function clickHandler() {
-    $("#treeMap").click(function () {
-        console.log(treeMap.getModel().getSelection());
-    })
+function clickHandler(treeMapModel) {
+
+    var treeMap = $("#treeMap");
+
+    treeMap.contextmenu(function () {
+
+        var node = treeMapModel.getProbing()["a"],
+            befund_schluessel = treeMapModel.getValueAt(node, "befund_schluessel");
+
+        if (befund_schluessel != null) {
+            $(document).contextmenu(function () {
+                return false;
+            });
+            window.location = "diff/" + befund_schluessel;
+        }
+    });
 }
 
 function selectionHandler() {
@@ -44,7 +55,7 @@ function selectionHandler() {
         var selection = $("#selectValue option:selected"),
             selectionValue = selection.val();
         treeMap.setColorByName(selectionValue);
-        $('#colorScaleLabelValue').text("["+selection.text()+"]");
+        $('#colorScaleLabelValue').text("[" + selection.text() + "]");
     });
     $('#selectGroup').change(function () {
         setGroupByByNames();
