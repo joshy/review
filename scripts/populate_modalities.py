@@ -1,13 +1,11 @@
 import logging
-import random
 
 import psycopg2
-import daiquiri.formatter
 import daiquiri
 from psycopg2.extras import DictCursor
 
 from repo.app import REVIEW_DB_SETTINGS
-from review.database import query_all_rows, update_department_development, update_modality
+from review.database import query_all_rows, update_modality
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -27,7 +25,6 @@ def get_review_db():
 
 def get_modality(unters_art):
     unters_art = unters_art[1:2]
-    print(unters_art)
     if unters_art == 'M':
         return 'MRI'
 

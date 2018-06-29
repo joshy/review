@@ -1,13 +1,11 @@
 import logging
 import psycopg2
-import daiquiri.formatter
 import daiquiri
 from psycopg2.extras import DictCursor
 
 from repo.app import REVIEW_DB_SETTINGS
-from review.calculations import _calculate_median, calculate_median
 from review.compare import diffs
-from review.database import query_review_reports_development, update_metrics
+from review.database import query_review_reports_old_metrics, update_metrics
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -32,7 +30,7 @@ def _update_metrics():
     after_list = []
     review_db = get_review_db()
     review_cursor = review_db.cursor(cursor_factory=DictCursor)
-    rows = query_review_reports_development(review_cursor)
+    rows = query_review_reports_old_metrics(review_cursor)
     count = len(rows)
     logging.debug('Iterate over total of {} rows'.format(count))
     for i, row in enumerate(rows, start=0):

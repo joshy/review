@@ -9,16 +9,15 @@ $(function () {
     }
 });
 
-var writer;
-
 function drawWordsAddedGraphReviewer(writer) {
     var maxIntervalValue = 1,
         minIntervalValue = 0,
         maxBarValue = 1,
         classNames = ["barWordsAdded", "buttonWordsAdded", "buttonAnnotationWordsAdded", "Words Added"],
-        color = "green";
+        color = "#009418";
     if (writer != null) {
-        drawGraph(d3.select("#WordsAddedGraph" + writer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer, null);
+        drawGraph(d3.select("#WordsAddedGraph" + writer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue,
+            classNames, color, maxBarValue, null, writer, null);
         drawBarChart(d3.select("#WordsAddedBarChart" + writer), "words_added_relative_g_f", color, maxBarValue, writer, null);
     }
     else {
@@ -33,7 +32,8 @@ function drawWordsDeletedGraphReviewer(writer) {
         classNames = ["barWordsDeleted", "buttonWordsDeleted", "buttonAnnotationWordsDeleted", "Words Deleted"],
         color = "#db020f";
     if (writer != null) {
-        drawGraph(d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue, classNames, color, maxBarValue, null, writer, null);
+        drawGraph(d3.select("#WordsDeletedGraph" + writer), "words_deleted_relative_g_f", maxIntervalValue, minIntervalValue,
+            classNames, color, maxBarValue, null, writer, null);
         drawBarChart(d3.select("#WordsDeletedBarChart" + writer), "words_deleted_relative_g_f", color, maxBarValue, writer, null);
     }
     else {
@@ -41,22 +41,3 @@ function drawWordsDeletedGraphReviewer(writer) {
     }
 }
 
-function buttonHandlerReviewer() {
-    $(".writerButton").click(function () {
-        var writer = $(this).closest("tr")
-            .find(".writerName")
-            .text();
-        writer = writer.slice(0, writer.indexOf(" ")).trim();
-        var graphId = "#graphs" + writer;
-        $(graphId).toggle();
-
-        if ($(this).text().trim() === "Show") {
-            $(this).text("Hide");
-            drawWordsAddedGraphReviewer(writer);
-            drawWordsDeletedGraphReviewer(writer);
-        } else if ($(this).text().trim() === "Hide") {
-            $(this).text("Show");
-            clearListContent(writer);
-        }
-    });
-}

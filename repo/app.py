@@ -1,18 +1,16 @@
 import logging
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import psycopg2
-import schedule
-import numpy as np
 import pandas as pd
-from flask import Flask, g, json, jsonify, render_template, request, make_response
+from flask import Flask, g, jsonify, render_template, request, make_response
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer_and_department_and_modality, query_all_by_departments, \
     query_by_writer_and_date_and_department_and_modality, \
-    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality, query_review_reports_development, \
+    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality, \
     query_by_date, query_by_last_exams
 from review.calculations import relative, calculate_median, calculate_median_by_writer, calculate_median_by_reviewer
 
@@ -56,7 +54,8 @@ js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
             "js/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
             "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/graphs/colorScale.js",
-            "js/handlers/clearHandling.js", "js/handlers/infoHandling.js", "js/treeMap.js", "js/floatThead.js",
+            "js/handlers/clearHandling.js", "js/handlers/infoHandling.js", "js/handlers/buttonHandling.js",
+            "js/treeMap.js", "js/floatThead.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 

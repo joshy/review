@@ -1,5 +1,4 @@
 $(function () {
-
     if ('diff' === $('body').data('page')) {
         diff();
     }

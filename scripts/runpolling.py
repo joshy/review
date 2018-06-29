@@ -15,6 +15,7 @@ from repo.database.report import query_report_by_befund_status
 
 from review.compare import diffs
 from review.database import insert, update, query_review_reports, update_metrics
+from scripts.populate_modalities import update_modalities
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
@@ -98,6 +99,7 @@ def job():
     review_db.commit()
     review_cursor.close()
     calculate_comparison()
+    update_modalities()
 
 
 def run_schedule():
