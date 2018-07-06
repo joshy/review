@@ -25,14 +25,20 @@
             <label class="f6 pa2" for="selectGroup">Group by:</label>
             <select id="selectGroup" class="f6 pa1 ba bg-yellow pointer b--yellow black">
                 <option value="pp_misc_mfd_1_kuerzel" selected="selected">Department</option>
+                <option value="modality">Modality</option>
                 <option value="schreiber">Writer</option>
                 <option value="freigeber">Reviewer</option>
                 <option value="pp_misc_mfd_1_kuerzel, schreiber">Department / Writer</option>
                 <option value="pp_misc_mfd_1_kuerzel, freigeber">Department / Reviewer</option>
+                <option value="pp_misc_mfd_1_kuerzel, modality">Department / Modality</option>
+                <option value="modality, schreiber">Modality / Writer</option>
+                <option value="modality, freigeber">Modality / Reviewer</option>
                 <option value="schreiber, freigeber">Writer / Reviewer</option>
                 <option value="freigeber, schreiber">Reviewer / Writer</option>
                 <option value="pp_misc_mfd_1_kuerzel, schreiber, freigeber">Department / Writer / Reviewer</option>
                 <option value="pp_misc_mfd_1_kuerzel, freigeber, schreiber">Department / Reviewer / Writer</option>
+                <option value="modality, schreiber, freigeber">Modality / Writer / Reviewer</option>
+                <option value="modality, freigeber, schreiber">Modality / Reviewer / Writer</option>
             </select>
             <label class="f6 pa2" for="selectValue">Change Metric:</label>
             <select id="selectValue" class="f6 pa1 ba bg-yellow pointer b--yellow black">
@@ -45,7 +51,7 @@
             </select>
         </div>
         <div class="w-100 flex center justify-center mw8">
-            <label id="colorScaleLabelTitle" class="f6 pv3 pr2-l" for="colorScale">Color Scale:</label>
+            <label id="colorScaleLabelTitle" class="f6 pv3 pr2-l" for="colorScale">Colorscale</label>
             <label id="colorScaleLabelValue" class="f6 pv3" for="colorScale"></label>
             <svg id="colorScale" width="170" height="55"></svg>
         </div>
@@ -53,10 +59,11 @@
     <div id="treeMap" class="pv3" style="width: 100%;height: 600px;"></div>
 </div>
 {% assets "js_all" %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/pikaday.js') }}"></script>
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='TreeMap/TreeMap.nocache.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='js/plugins/TreeMap/TreeMap.nocache.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/d3.v4.min.js') }}"></script>
 {% endassets %}
 </body>
 </html>

@@ -13,7 +13,7 @@
         factory(require('jquery'), require('../pikaday'));
     } else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['jquery', 'pikaday'], factory);
+        define(['jquery', 'repo/static/js/plugins/pikaday'], factory);
     } else {
         // Browser globals
         factory(root.jQuery, root.Pikaday);

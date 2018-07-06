@@ -50,10 +50,10 @@
     {% include 'partials/writer-list.html' %}
 </div>
 {% assets "js_all" %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/pikaday.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/pikaday.js') }}"></script>
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.v4.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.floatThead.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/d3.v4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/jquery.floatThead.js') }}"></script>
 {% endassets %}
 </body>
 </html>

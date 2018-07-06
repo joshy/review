@@ -4,7 +4,7 @@ $(".dashboardRow").on('click', function () {
 });
 
 function checkboxHandler() {
-    var checkboxValues = JSON.parse(localStorage.getItem('departments')) || {};
+    var checkboxValues = JSON.parse(localStorage.getItem('checkBoxValues')) || {};
     $.each(checkboxValues, function (key, value) {
         $("#" + key).prop('checked', value);
     });
@@ -12,18 +12,18 @@ function checkboxHandler() {
     var checkboxes = $('#checkboxes :checkbox');
 
     checkboxes.on('change', function () {
-        var departments = [];
+        var checkboxValueList = [];
         checkboxes.each(function () {
             checkboxValues[this.id] = this.checked;
             if (this.checked) {
-                departments.push(this.id);
+                checkboxValueList.push(this.id);
                 this.value = this.id;
             }
             else {
                 this.value = null
             }
         });
-        localStorage.setItem('departments', JSON.stringify(checkboxValues));
-        $('#departments').val(departments);
+        localStorage.setItem('checkBoxValues', JSON.stringify(checkboxValues));
+        $('#checkboxes').val(checkboxValueList);
     });
 }

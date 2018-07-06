@@ -50,12 +50,12 @@ if not os.path.exists(REPORTS_FOLDER):
     os.makedirs(REPORTS_FOLDER, exist_ok=True)
 
 assets = Environment(app)
-js = Bundle("js/jquery-3.1.0.min.js", "js/moment.min.js", "js/pikaday.js",
-            "js/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
+js = Bundle("js/plugins/jquery-3.1.0.min.js", "js/plugins/moment.min.js", "js/plugins/pikaday.js",
+            "js/plugins/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
             "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/graphs/colorScale.js",
             "js/handlers/clearHandling.js", "js/handlers/infoHandling.js", "js/handlers/buttonHandling.js",
-            "js/treeMap.js", "js/floatThead.js",
+            "js/treeMap/treeMap.js", "js/handlers/floatTheadHandling.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 

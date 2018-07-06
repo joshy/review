@@ -12,7 +12,7 @@ function treeMapModuleLoaded() {
     treeMap.loadJavaScriptArray(rows);
     var selection = $('#selectValue option:selected');
     treeMap.setColorByName(selection.val());
-    $('#colorScaleLabelValue').text("[" + selection.text() + "]");
+    $('#colorScaleLabelValue').text("[" + selection.text() + "]:");
 }
 
 function treeMapModelLoaded() {

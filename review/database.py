@@ -446,7 +446,8 @@ def query_by_last_exams(cursor, last_exams):
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a
           INNER JOIN 
@@ -498,7 +499,8 @@ def query_by_date(cursor, start_date, end_date):
             a.total_words_g,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung
+            a.pp_misc_mfd_1_bezeichnung,
+            a.modality
           FROM
             reports a 
           INNER JOIN 
