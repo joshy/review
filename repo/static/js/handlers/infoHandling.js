@@ -89,11 +89,22 @@ $(".infoReviewerList").hover(
 
 $(".infoTreeMap").hover(
     function () {
-        $(this).append($("<span>: The following graph shows all reports over the specified time period. Each rectangle represents a specific report.<br>" +
+        $(this).append($("<span>: The following graph shows all reports over the specified time period. Each colored rectangle represents a specific report.<br>" +
             "Choose a option by the category <b>Group by:</b> to change the hierarchical structure of the TreeMap. <br>"+
     "Choose a option by the category <b>Change Metric:</b> to change the value which the color coding is based on.<br>"+
     "The shown color scale represents the value range implemented by the corresponding color.<br>"+
     "<b>Right click</b> on a rectangle to redirect to the corresponding report / <b>Double-left-click</b> to zoom< or zoom-out the hierarchical structure </span>"));
+    }, function () {
+        $(this).find("span:last").remove();
+    });
+
+$(".infoDiffView").hover(
+    function () {
+        $(this).append($("<span>: The left column shows the choosen report by the states: <b>&#39schreiben&#39</b>  or <b>&#39gegengelesen&#39.</b> " +
+            "Choose on the top of the this column which of the two states should be diplayed. <br>"+
+    "The middle column shows the choosen report by the state <b>&#39final&#39</b>. The right column shows the difference between the other columns: Added Words are green and deleted Words are red.<br>"+
+    "<b>Cave!</b> Since the Jaccard-Index-Calculation has been optimized, only changes in the Sections <b>&#39Befund&#39</b> and <b>&#39Beurteilung&#39</b> " +
+            "are going to be considered, regardless of the coloring in other sections.</span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
