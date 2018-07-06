@@ -10,14 +10,12 @@ from psycopg2.extras import RealDictCursor
 
 from review.database import query_by_writer_and_department_and_modality, query_all_by_departments, \
     query_by_writer_and_date_and_department_and_modality, \
-    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality, \
-    query_by_date, query_by_last_exams
+    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality
 from review.calculations import relative, calculate_median, calculate_median_by_writer, calculate_median_by_reviewer
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
-from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
 from repo.report import get_as_txt, get_as_rtf, get_with_file, q
@@ -53,9 +51,8 @@ assets = Environment(app)
 js = Bundle("js/plugins/jquery-3.1.0.min.js", "js/plugins/moment.min.js", "js/plugins/pikaday.js",
             "js/plugins/pikaday.jquery.js", "js/dashboard/writerDashboard.js", "js/dashboard/reviewerDashboard.js",
             "js/handlers/diffHandling.js", "js/handlers/checkBoxHandling.js", "js/handlers/datePickerHandling.js",
-            "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js", "js/graphs/colorScale.js",
             "js/handlers/clearHandling.js", "js/handlers/infoHandling.js", "js/handlers/buttonHandling.js",
-            "js/treeMap/treeMap.js", "js/handlers/floatTheadHandling.js",
+            "js/handlers/floatTheadHandling.js", "js/graphs/graph.js", "js/graphs/pieChart.js", "js/graphs/barChart.js",
             filters='jsmin', output='gen/packed.js')
 assets.register('js_all', js)
 
@@ -171,20 +168,6 @@ def reviewer_dashboard():
                            start_date=start_date, end_date=end_date, version=version, departments=departments)
 
 
-@app.route('/review/treeMap')
-def tree_map():
-    last_exams = request.args.get('last_exams', 1000)
-    start_date = request.args.get('start_date', '')
-    end_date = request.args.get('end_date', '')
-    rows = load_tree_map_data(last_exams, start_date, end_date)
-    df = pd.DataFrame(rows)
-    df = remove_NaT_format(df)
-    rows = relative(df).to_dict('records')
-    return render_template('treeMap.html',
-                           rows=rows, last_exams=last_exams,
-                           start_date=start_date, end_date=end_date, version=version)
-
-
 def load_data_by_writer(writer, last_exams, start_date, end_date, departments, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
@@ -206,18 +189,6 @@ def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, department
         rows = query_by_reviewer_and_date_and_department_and_modality(cursor, reviewer, s_d, e_d, departments, modalities)
     else:
         rows = query_by_reviewer_and_department_and_modality(cursor, reviewer, last_exams, departments, modalities)
-    return rows
-
-
-def load_tree_map_data(last_exams, start_date, end_date):
-    con = get_review_db()
-    cursor = con.cursor(cursor_factory=RealDictCursor)
-    if start_date and end_date:
-        s_d = datetime.strptime(start_date, '%d.%m.%Y')
-        e_d = datetime.strptime(end_date, '%d.%m.%Y')
-        rows = query_by_date(cursor, s_d, e_d)
-    else:
-        rows = query_by_last_exams(cursor, last_exams)
     return rows
 
 

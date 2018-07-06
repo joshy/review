@@ -1,7 +1,5 @@
 import logging
 import psycopg2
-from psycopg2.extras import execute_values
-import datetime
 
 
 def query_review_reports(cursor):
@@ -410,113 +408,6 @@ def query_by_reviewer_and_date_and_department_and_modality(cursor, reviewer, sta
               a.unters_beginn desc
           """
     cursor.execute(sql, (reviewer.upper(), start_date, end_date, departments, modalities))
-    return cursor.fetchall()
-
-
-def query_by_last_exams(cursor, last_exams):
-    """
-    Query all reports in the review db by last exams.
-    """
-    sql = """
-          SELECT
-            a.patient_schluessel,
-            a.unters_schluessel,
-            a.unters_art,
-            a.unters_beginn,
-            a.befund_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.befund_freigabe,
-            a.befund_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
-            a.untart_name,
-            a.jaccard_s_f,
-            a.jaccard_g_f,
-            a.words_added_s_f,
-            a.words_added_g_f,
-            a.words_deleted_s_f,
-            a.words_deleted_g_f,
-            a.total_words_s,
-            a.total_words_g,
-            a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
-            a.modality
-          FROM
-            reports a
-          INNER JOIN 
-            reports b 
-          ON 
-            a.unters_schluessel = b.unters_schluessel
-          WHERE
-              a.befund_status = 'f'
-          AND
-              a.schreiber != b.freigeber
-          ORDER BY
-              a.unters_beginn desc
-          LIMIT %s
-          """
-    cursor.execute(sql, [last_exams])
-    return cursor.fetchall()
-
-
-def query_by_date(cursor, start_date, end_date):
-    """
-    Query all reports in the review by date.
-    """
-    sql = """
-          SELECT
-            a.patient_schluessel,
-            a.unters_schluessel,
-            a.unters_art,
-            a.unters_beginn,
-            a.befund_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.befund_freigabe,
-            a.befund_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
-            a.untart_name,
-            a.jaccard_s_f,
-            a.jaccard_g_f,
-            a.words_added_s_f,
-            a.words_added_g_f,
-            a.words_deleted_s_f,
-            a.words_deleted_g_f,
-            a.total_words_s,
-            a.total_words_g,
-            a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
-            a.modality
-          FROM
-            reports a 
-          INNER JOIN 
-            reports b 
-          ON 
-            a.unters_schluessel = b.unters_schluessel
-          WHERE
-              a.unters_beginn between %s and %s
-          AND
-              a.befund_status = 'f'
-          AND
-              a.schreiber != b.freigeber
-          ORDER BY
-              a.unters_beginn desc
-          """
-    cursor.execute(sql, (start_date, end_date))
     return cursor.fetchall()
 
 

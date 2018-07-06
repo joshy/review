@@ -132,13 +132,3 @@ div.tooltip {
     fill: lightgray;
     opacity: 0.2;
 }
-
-.colorScale {
-    font: 10px sans-serif;
-    stroke: lightgray;
-    stroke-width: 0.5px;
-}
-
-.treeMapHeader {
-    color: black !important;
-}
