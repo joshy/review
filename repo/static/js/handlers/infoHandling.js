@@ -37,8 +37,8 @@ $(".infoSimilarity").hover(
 
 $(".infoWordsAdded").hover(
     function () {
-        $(this).append($("<span>: The following graph shows the <b>relative amount of all added words of each concluded report over time</b>. Click on a<br>" + "" +
-            "specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
+        $(this).append($("<span>: The following graph shows the <b>relative amount of all added words of each concluded report over time</b>.<br>" +
+            "Click on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
             "&#39gegengelesen -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
@@ -46,14 +46,14 @@ $(".infoWordsAdded").hover(
 
 $(".infoWordsDeleted").hover(
     function () {
-        $(this).append($("<span>: The following graph shows the <b>relative amount of all deleted words of each concluded report over time</b>. Click on a<br>" + "" +
-            "specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
+        $(this).append($("<span>: The following graph shows the <b>relative amount of all deleted words of each concluded report over time</b>.<br>"+
+            "Click on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
             "&#39gegengelesen -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
 
-$(".infoMedian").hover(
+$(".infoMedianSimilarity").hover(
     function () {
         $(this).append($("<span>: The following graph shows your <b>personal calculated Median over the specified reports</b> and the <b>calculated Median over all<br>" +
             "reports</b>. By clicking on the button at the top right corner of the specific graph you can switch between <br>" +
@@ -62,11 +62,20 @@ $(".infoMedian").hover(
         $(this).find("span:last").remove();
     });
 
+$(".infoMedianDocumentChanges").hover(
+    function () {
+        $(this).append($("<span>: The following chart shows the <b>Median of personal and overall document changes</b> in comparison to the whole corresponding report<br>" +
+            "in percent. By clicking on the button at the top right corner of the specific graph you can switch between <br>" +
+            "<b>&#39schreiben -> final&#39 and &#39gegengelesen -> final&#39</b> values. </span>"));
+    }, function () {
+        $(this).find("span:last").remove();
+    });
+
 $(".infoDocumentChanges").hover(
     function () {
-        $(this).append($("<span>: The following graphs show the <b>personal calculated Median of all relative added / deleted words <br>" +
-            "over the specified reports</b> and the <b>calculated Median over all reports</b>. <br>" +
-            "The calculation is based upon the following comparison: <b>&#39gegengelesen -> final&#39</b></span>"));
+        $(this).append($("<span>: The following graphs show the <b>personal calculated Median of all added / deleted words over <br>" +
+            "the specified reports</b> and the <b>calculated Median over all reports</b> in comparison to the whole corresponding report <br>" +
+            "in percent. The calculation is based upon the following comparison: <b>&#39gegengelesen -> final&#39</b></span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
