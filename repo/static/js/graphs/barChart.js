@@ -126,6 +126,6 @@ function redrawBarChart(svg, value, maxValue, writer, reviewer) {
             }
         })
         .text(function (d) {
-            return (d * 100).toPrecision(2) + "%";
+            return (Math.round(d*1000) / 10) + "%";
         });
 }

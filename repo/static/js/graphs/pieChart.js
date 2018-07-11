@@ -51,9 +51,9 @@ function drawPieChart(svg, medianValue, className, radius, pieSegments) {
         });
 }
 
-function redrawPieChart(svg, value, className, radius, pieSegments) {
-    pieSegments[0].value = value;
-    pieSegments[1].value = 1 - value;
+function redrawPieChart(svg, medinaValue, className, radius, pieSegments) {
+    pieSegments[0].medinaValue = medinaValue;
+    pieSegments[1].medinaValue = 1 - medinaValue;
 
     var arc = d3.arc()
         .outerRadius(radius - 10)

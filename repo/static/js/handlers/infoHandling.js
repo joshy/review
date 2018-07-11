@@ -19,7 +19,7 @@ $(".infoDashboard").hover(
 
 $(".infoReportsList").hover(
     function () {
-        $(this).append($("<span>: The List below shows the specified reports which have been concluded with status final <br>" +
+        $(this).append($("<span>: The List below shows the specified reports which have been concluded by status final <br>" +
             "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report. <br>" +
             "<b>s->f: &#39schreiben -> final&#39 / g->f: &#39gegengelesen -> final&#39</b> </span>"));
     }, function () {
@@ -46,8 +46,8 @@ $(".infoWordsAdded").hover(
 
 $(".infoWordsDeleted").hover(
     function () {
-        $(this).append($("<span>: The following graph shows the <b>relative amount of all deleted words of each concluded report over time</b>.<br>"+
-            "Click on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
+        $(this).append($("<span>: The following graph shows the <b>relative amount of all deleted words of each concluded report over time</b>. Click<br>"+
+            "on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
             "&#39gegengelesen -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
