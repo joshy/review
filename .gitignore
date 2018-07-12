@@ -98,6 +98,9 @@ ENV/
 # application logs
 logs/
 
+# instance configuration
+instance
+
 # downloaded reports
 reports
 
