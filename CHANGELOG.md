@@ -1,7 +1,11 @@
 # Changelog
 
+## v3.1.0 - 25.07.2018
+ * Integrated Kevin Streiters Bachelor thesis work. Thanks for the awesome work!
+
 ## v3.0.4 - 26.02.2018
  * Dashboard was always showing old data (side-effect of showing last exams)
+
 ## v3.0.3 - 09.02.2018
  * Download RTF report
 
