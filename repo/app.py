@@ -2,23 +2,27 @@ import logging
 import os
 from datetime import datetime
 
-import psycopg2
 import pandas as pd
-from flask import Flask, g, jsonify, render_template, request, make_response
+import psycopg2
+from flask import Flask, g, jsonify, make_response, render_template, request
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-from review.database import query_by_writer_and_department_and_modality, query_all_by_departments, \
-    query_by_writer_and_date_and_department_and_modality, \
-    query_by_reviewer_and_date_and_department_and_modality, query_by_reviewer_and_department_and_modality
-from review.calculations import relative, calculate_median, calculate_median_by_writer, calculate_median_by_reviewer
-
+from distiller import process
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
-from repo.report import get_as_txt, get_as_rtf, get_with_file, q
+from repo.report import get_as_rtf, get_as_txt, get_with_file, parse_report, q
+from review.calculations import (calculate_median,
+                                 calculate_median_by_reviewer,
+                                 calculate_median_by_writer, relative)
+from review.database import (query_all_by_departments,
+                             query_by_reviewer_and_date_and_department_and_modality,
+                             query_by_reviewer_and_department_and_modality,
+                             query_by_writer_and_date_and_department_and_modality,
+                             query_by_writer_and_department_and_modality)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('repo.default_config')
@@ -238,7 +242,40 @@ def show():
                                version=app.config['VERSION'],
                                accession_number=accession_number,
                                meta_data=meta_data,
-                               report=report_as_html)
+report=report_as_html)
+
+@app.route('/distill')
+def distill():
+    """ Renders RIS Report as HTML. """
+    accession_number = request.args.get('accession_number', '')
+    output = request.args.get('output', 'html')
+    # if no accession number is given -> render main page
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
+        return main()
+
+    con = get_ris_db()
+    report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
+    report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
+    result = process(report_as_text, meta_data)
+
+    output = request.args.get('output', 'html')
+    if output == 'json':
+        j = {}
+        j['report'] = report_as_text
+        j['meta_data'] = meta_data
+        j['distill'] = result
+        j['report_parts'] = parse_report(report_as_text)
+        return jsonify(j)
+    elif output == 'text':
+        return report_as_text
+    else:
+        return render_template('distill.html',
+                                version=app.config['VERSION'],
+                                accession_number=accession_number,
+                                meta_data=meta_data,
+                                nlp=result,
+                                report=report_as_html)
 
 
 @app.route('/download')

@@ -1,0 +1,40 @@
+<div>
+    <table class="w-100 table f6">
+        <thead>
+            <tr>
+                <th class="pl0 pa1 bb b--navy bw1 tl">Linke Ventrikel Funktion</th>
+                <th class="pa1 bb b--navy bw1 tr">Norm Frau-/Mann</th>
+                <th class="pa1 bb b--navy bw1 tr">gemessen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in nlp.ventricle_function.left.items() %}
+            <tr>
+                <td class="pl0 pa1 v-top tl">{{ key|e }}</td>
+                {% for kkey, vvalue in value.items() %}
+                    <td class="pl0 pa1 v-top tr">{{ vvalue|e }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table class="w-100 table f6 pt3">
+            <thead>
+                <tr>
+                    <th class="pl0 pa1 bb b--navy bw1 tl">Rechte Ventrikel Funktion</th>
+                    <th class="pa1 bb b--navy bw1 tr">Norm Frau-/Mann</th>
+                    <th class="pa1 bb b--navy bw1 tr">gemessen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in nlp.ventricle_function.right.items() %}
+                <tr>
+                    <td class="pl0 pa1 v-top tl">{{ key|e }}</td>
+                    {% for kkey, vvalue in value.items() %}
+                        <td class="pl0 pa1 v-top tr">{{ vvalue|e }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>

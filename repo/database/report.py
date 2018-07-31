@@ -152,9 +152,13 @@ def _select_by_accession_number(cursor, accession_number):
     """
     sql = """
           SELECT
-            A.BEFUND_SCHLUESSEL, A.UNTERS_BEGINN, A.BEFUND_STATUS
+            A.BEFUND_SCHLUESSEL, A.UNTERS_BEGINN, A.BEFUND_STATUS, A.UNTERS_SCHLUESSEL, A.UNTERS_ART, B.UNTART_NAME
           FROM
             A_BEFUND A
+          INNER JOIN
+            A_UNTARTEN B
+          ON
+            A.UNTERS_ART = B.UNTART_KUERZEL
           WHERE
             A.UNTERS_SCHLUESSEL = :accession_number
           """
@@ -166,7 +170,9 @@ def _select_by_accession_number(cursor, accession_number):
         else:
             meta_data = {
                 'StudyDate': row[1].strftime('%d.%m.%Y %H:%M:%S'),
-                'BefundStatus': row[2]
+                'AccessionNumber': row[3],
+                'BefundStatus': row[2],
+                'Untersuchung': row[5]
             }
             return row[0], meta_data if row is not None else None
     except cx_Oracle.DatabaseError as e:

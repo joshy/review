@@ -69,6 +69,15 @@ class TestCompare(unittest.TestCase):
         self.assertEqual(r['jaccard'], 0.0)
 
 
+    def test_compare8(self):
+        l1 = "Mary Sue"
+        l2 = ""
+        r = _diff(l1,l2)
+        self.assertEqual(r['deletions'], 2)
+        self.assertEqual(r['additions'], 0)
+        self.assertEqual(r['jaccard'], 0.0)
+
+
 class TestLength(unittest.TestCase):
     def test_length(self):
         l1 = "Hello Mary Sue from Johnny"

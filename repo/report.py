@@ -21,6 +21,10 @@ def q(cursor, day: datetime, parse_report: bool):
     return rows
 
 
+def parse_report(text):
+    return parse(text.splitlines())
+
+
 def get_with_file(cursor, accession_number):
     # cursor, string -> Optional[str]
     report_file, meta_data_file = _load_write(cursor, accession_number)
