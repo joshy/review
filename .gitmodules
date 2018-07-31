@@ -1,4 +1,0 @@
-[submodule "mlzoo"]
-	path = mlzoo
-	url = https://github.com/fatkaratekid/mlzoo
-	branch = master
