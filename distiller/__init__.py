@@ -1,5 +1,5 @@
-from distill.calcium import extract_score
-from distill.ventricle_function import extract_ventricle_function
+from distiller.calcium import extract_score
+from distiller.ventricle_function import extract_ventricle_function
 
 def process(report, meta_data):
     if meta_data['Untersuchung'] == 'CT Herz':

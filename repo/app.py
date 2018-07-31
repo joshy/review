@@ -9,15 +9,14 @@ from flask import Flask, g, jsonify, make_response, render_template, request
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-import distill
+from distiller import process
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
-
-from repo.report import get_as_rtf, get_as_txt, get_with_file, q, parse_report
+from repo.report import get_as_rtf, get_as_txt, get_with_file, parse_report, q
 from review.calculations import relative
 from review.database import query_by_writer
 
@@ -133,7 +132,34 @@ def cm():
 
 
 @app.route('/show')
-def nlp():
+def show():
+    """ Renders RIS Report as HTML. """
+    accession_number = request.args.get('accession_number', '')
+    output = request.args.get('output', 'html')
+    # if no accession number is given -> render main page
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
+        return main()
+
+    con = get_ris_db()
+    if output == 'text':
+        report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
+        if report_as_text:
+            return report_as_text
+        else:
+            # don't throw an error, no report found -> return empty response
+            # because not all accession numbers have a valid report
+            return ""
+    else:
+        report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
+        return render_template('report.html',
+                               version=app.config['VERSION'],
+                               accession_number=accession_number,
+                               meta_data=meta_data,
+report=report_as_html)
+
+@app.route('/distill')
+def distill():
     """ Renders RIS Report as HTML. """
     accession_number = request.args.get('accession_number', '')
     output = request.args.get('output', 'html')
@@ -145,7 +171,7 @@ def nlp():
     con = get_ris_db()
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
     report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
-    result = distill.process(report_as_text, meta_data)
+    result = process(report_as_text, meta_data)
 
     output = request.args.get('output', 'html')
     if output == 'json':
@@ -158,7 +184,7 @@ def nlp():
     elif output == 'text':
         return report_as_text
     else:
-        return render_template('nlp.html',
+        return render_template('distill.html',
                                 version=app.config['VERSION'],
                                 accession_number=accession_number,
                                 meta_data=meta_data,
