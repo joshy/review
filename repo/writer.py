@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from typing import Dict, Optional, Tuple
 
 FILE_PREFIX = 'ris-report-'
