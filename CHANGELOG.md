@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.0 - 31.07.2018
+ * Extraction of tables added to master.
+
 ## v3.1.0 - 25.07.2018
  * Integrated Kevin Streiters Bachelor thesis work. Thanks for the awesome work!
 

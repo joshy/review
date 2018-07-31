@@ -1,6 +1,6 @@
 import unittest
 
-from distill import extract_score
+from distiller import extract_score
 
 class TestParse(unittest.TestCase):
     def test_a(self):

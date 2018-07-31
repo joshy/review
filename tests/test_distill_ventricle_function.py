@@ -1,7 +1,7 @@
 import unittest
 from collections import OrderedDict
 
-from distill.ventricle_function import (ED, EDI, EDV, EDVI, ESV, LVEF, RVEF,
+from distiller.ventricle_function import (ED, EDI, EDV, EDVI, ESV, LVEF, RVEF,
                                         SV, extract_ventricle_function)
 
 
