@@ -16,7 +16,7 @@ from repo.database.contrast_medium import query_contrast_medium
 from repo.database.report import query_report_by_befund_status
 from repo.database.review_report import (query_review_report,
                                          query_review_reports)
-from repo.nlp import classify
+
 from repo.report import get_as_rtf, get_as_txt, get_with_file, q, parse_report
 from review.calculations import relative
 from review.database import query_by_writer
@@ -146,8 +146,6 @@ def nlp():
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
     report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
     result = distill.process(report_as_text, meta_data)
-    #clas = {'nlp': classify(report_as_text)}
-    #z = {**result, **clas}
 
     output = request.args.get('output', 'html')
     if output == 'json':
