@@ -227,6 +227,14 @@ def show():
         print('No accession number found in request, use accession_number=XXX')
         return main()
 
+    if not accession_number.isdigit():
+        logging.error('Accession number "{}" can\'t be converted to a number'.format(accession_number))
+        return render_template('report.html',
+                               version=app.config['VERSION'],
+                               accession_number=accession_number,
+                               meta_data={},
+                               report=None)
+
     con = get_ris_db()
     if output == 'text':
         report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
@@ -251,8 +259,16 @@ def distill():
     output = request.args.get('output', 'html')
     # if no accession number is given -> render main page
     if not accession_number:
-        print('No accession number found in request, use accession_number=XXX')
+        logging.warn('No accession number found in request, use accession_number=XXX')
         return main()
+
+    if not accession_number.isdigit():
+        logging.error('Accession number "{}" can\'t be converted to a number'.format(accession_number))
+        return render_template('report.html',
+                               version=app.config['VERSION'],
+                               accession_number=accession_number,
+                               meta_data={},
+                               report=None)
 
     con = get_ris_db()
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
