@@ -51,6 +51,9 @@
         {% if nlp.ventricle_function %}
             {% include 'partials/ventricle_function.html' %}
         {% endif %}
+        {% if nlp.aorta %}
+        {% include 'partials/aorta.html' %}
+        {% endif %}
     </div>
 </body>
 <script>

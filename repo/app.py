@@ -274,7 +274,6 @@ def distill():
     report_as_text, meta_data = get_as_txt(con.cursor(), accession_number)
     report_as_html, meta_data = get_with_file(con.cursor(), accession_number)
     result = process(report_as_text, meta_data)
-
     output = request.args.get('output', 'html')
     if output == 'json':
         j = {}
