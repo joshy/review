@@ -35,8 +35,6 @@ def extract_ventricle_function(report, meta_data):
     left_index = left_index_v1 or left_index_v2
     right_index = right_index_v1 or right_index_v2
     variant = 1 if left_index_v1 else 2
-    print(left_index, right_index)
-    print(lines[left_index[0]:left_index[0]+8])
     if left_index:
         for l in lines[left_index[0] : (left_index[0] + 10)]:
             left = _extract(l, LVEF, left, variant)
