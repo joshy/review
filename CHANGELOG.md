@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.1 - 03.09.2018
+ * Heart ventricle functions tested with over 1'000 reports
+
 ## v3.2.0 - 31.07.2018
  * Extraction of tables added to master.
 
