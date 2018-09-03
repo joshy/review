@@ -5,14 +5,16 @@ RVEF = 'Rechtsventrikuläre Auswurffraktion (RVEF)'
 EDV = 'Enddiastolisches Volumen (EDV)'
 EDVI = 'Enddiastolisches Volumen indexiert (EDVI)'
 ESV = 'Endsystolisches Volumen (ESV)'
+ESVI = 'Endsystolisches Volumen indexiert (ESVI)'
 SV = 'Schlagvolumen (SV)'
+SVI = 'Schlagvolumen indexiert (SVI)'
 ED = 'Myokardmasse (ED)'
 EDI = 'Myokardmasse indexiert (ED)'
 
 RESULT_KEY_VENCTRICLE_FUNCTION = 'ventricle_function'
 
-LEFT_INDEX_START_V1 = 'Linksventrikuläre.*Funktion.*Norm.*Frau.*Mann.*gemessen'
-RIGHT_INDEX_START_V1 = 'Rechtsventrikuläre.*Funktion.*Norm.*Frau.*Mann.*gemessen'
+LEFT_INDEX_START_V1 = 'Linksventrikuläre.*Funktion.*Norm.*Frau.*Mann.*emessen'
+RIGHT_INDEX_START_V1 = 'Rechtsventrikuläre.*Funktion.*Norm.*Frau.*Mann.*emessen'
 
 LEFT_INDEX_START_V2 = 'Linksventrikuläre.*Funktion.*gemessen.*Norm.*Frau.*Mann'
 RIGHT_INDEX_START_V2 = 'Rechtsventrikuläre.*Funktion.*gemessen.*Norm.*Frau.*Mann'
@@ -40,7 +42,9 @@ def extract_ventricle_function(report, meta_data):
             left = _extract(l, EDV, left, variant)
             left = _extract(l, EDVI, left, variant)
             left = _extract(l, ESV, left, variant)
+            left = _extract(l, ESVI, left, variant)
             left = _extract(l, SV, left, variant)
+            left = _extract(l, SVI, left, variant)
             left = _extract(l, ED, left, variant)
             left = _extract(l, EDI, left, variant)
 
@@ -50,6 +54,7 @@ def extract_ventricle_function(report, meta_data):
             right = _extract(l, EDV, right, variant)
             right = _extract(l, EDVI, right, variant)
             right = _extract(l, ESV, right, variant)
+            right = _extract(l, ESVI, right, variant)
             right = _extract(l, SV, right, variant)
 
     return { RESULT_KEY_VENCTRICLE_FUNCTION : {'left': left, 'right': right}}
