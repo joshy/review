@@ -22,6 +22,5 @@ def contains_aorta(study_description):
         or study_description.startswith("CT Aorten")
         or study_description.startswith("CT Angio")
     )
-    print(x)
     return x
 

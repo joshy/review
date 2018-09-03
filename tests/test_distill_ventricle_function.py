@@ -1,8 +1,8 @@
 import unittest
 from collections import OrderedDict
 
-from distiller.ventricle_function import (ED, EDI, EDV, EDVI, ESV, LVEF, RVEF,
-                                        SV, extract_ventricle_function)
+from distiller.ventricle_function import (ED, EDI, EDV, EDVI, ESV, ESVI, LVEF,
+                                        RVEF, SV, extract_ventricle_function)
 
 
 class TestParse(unittest.TestCase):
@@ -91,3 +91,31 @@ class TestParse(unittest.TestCase):
         self.assertEqual(right[EDVI], OrderedDict({'norm': '48-112 / 61-121', 'gemessen': '61.97 ml/m²'}))
         self.assertEqual(right[ESV], OrderedDict({'norm': '41-117 / 41-117', 'gemessen': '44.29 ml'}))
         self.assertEqual(right[SV], OrderedDict({'norm': '48-120 / 68-144', 'gemessen': '89.42 ml'}))
+
+
+
+    def test_c(self):
+        sample_text = """
+        Linksventrikuläre Funktion|Norm. Frau / Mann*|Gemessen|
+        Linksventrikuläre Auswurffraktion (LVEF)|58-76 / 58-75|63 % |
+        Enddiastolisches Volumen (EDV) |88-168 / 115-198|214.88 ml |
+        Enddiastolisches Volumen indexiert (EDVI)|57-92 / 63-98|86.43 ml/m²|
+        Endsystolisches Volumen (ESV)|23-60 / 30-75|79.07 ml |
+        Endsystolisches Volumen indexiert (ESVI) |15-34 / 16-38|41.02 ml/m² |
+        Schlagvolumen (SV)|58-114 / 76-132|135.81 ml |
+        Schlagvolumen indexiert (SVI)|38-63 / 41-65|70.44 ml/m² |
+        Myokardmasse (ED)|72-144 / 108-184|140.57 g |
+        Myokardmasse indexiert (ED) |48-77 / 58-91|72.91 g/m² |
+        *Referenzwerte nach Maceira et al., 2006
+        """
+        result = extract_ventricle_function(sample_text, {'Untersuchung': 'MRI Herz'})
+
+        left = result['ventricle_function']['left']
+        self.assertEqual(left[LVEF], OrderedDict({'norm': '58-76 / 58-75', 'gemessen': '63 %'}))
+        self.assertEqual(left[EDV], OrderedDict({'norm': '88-168 / 115-198', 'gemessen': '214.88 ml'}))
+        self.assertEqual(left[EDVI], OrderedDict({'norm': '57-92 / 63-98', 'gemessen': '86.43 ml/m²'}))
+        self.assertEqual(left[ESV], OrderedDict({'norm': '23-60 / 30-75', 'gemessen': '79.07 ml'}))
+        self.assertEqual(left[ESVI], OrderedDict({'norm': '15-34 / 16-38', 'gemessen': '41.02 ml/m²'}))
+        self.assertEqual(left[SV], OrderedDict({'norm': '58-114 / 76-132', 'gemessen': '135.81 ml'}))
+        self.assertEqual(left[ED], OrderedDict({'norm': '72-144 / 108-184', 'gemessen': '140.57 g'}))
+        self.assertEqual(left[EDI], OrderedDict({'norm': '48-77 / 58-91', 'gemessen': '72.91 g/m²'}))
