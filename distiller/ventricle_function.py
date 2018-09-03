@@ -61,12 +61,12 @@ def extract_ventricle_function(report, meta_data):
 
 
 def _extract(line, prefix, result, variant):
-    if line.startswith(prefix):
-        parts = line.split('|')
+    parts = line.split('|')
+    if line.startswith(prefix) and len(parts) > 2:
         if variant == 1:
             result[parts[0].strip()] = OrderedDict({
                 'norm': parts[1].strip(),
-                'gemessen': parts[2].strip() if len(parts) > 2 else ''
+                'gemessen': parts[2].strip()
             })
         else:
             result[parts[0].strip()] = OrderedDict({
