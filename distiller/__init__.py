@@ -10,7 +10,7 @@ def process(report, meta_data):
         x = extract_score(report, meta_data)
         y = extract_table(report, meta_data)
         return {**x, **y}
-    elif meta_data["Untersuchung"] == "MRI Herz":
+    elif meta_data.get("Untersuchung","") == "MRI Herz":
         return extract_ventricle_function(report, meta_data)
     else:
         return {}
