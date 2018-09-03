@@ -6,7 +6,7 @@ from distiller.ventricle_function import extract_ventricle_function
 def process(report, meta_data):
     if meta_data is None:
         return {}
-    elif contains_aorta(meta_data["Untersuchung"]):
+    elif contains_aorta(meta_data.get("Untersuchung", "")):
         x = extract_score(report, meta_data)
         y = extract_table(report, meta_data)
         return {**x, **y}
