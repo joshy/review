@@ -10,17 +10,21 @@ def process(report, meta_data):
         x = extract_score(report, meta_data)
         y = extract_table(report, meta_data)
         return {**x, **y}
-    elif meta_data.get("Untersuchung","") == "MRI Herz":
+    elif meta_data.get("Untersuchung", "") == "MRI Herz":
         return extract_ventricle_function(report, meta_data)
     else:
         return {}
 
 
 def contains_aorta(study_description):
-    x =  (
-        study_description.startswith("CT Herz")
-        or study_description.startswith("CT Aorten")
-        or study_description.startswith("CT Angio")
+    return study_description.startswith(
+        (
+            "CT Herz",
+            "CT Aorten",
+            "CT Angio",
+            "CT Thorax",
+            "CT Linker",
+            "CT Coronar",
+            "CT Abdomen",
+        )
     )
-    return x
-
