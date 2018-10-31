@@ -152,7 +152,7 @@ def _select_by_accession_number(cursor, accession_number):
     """
     sql = """
           SELECT
-            A.BEFUND_SCHLUESSEL, A.UNTERS_BEGINN, A.BEFUND_STATUS, A.UNTERS_SCHLUESSEL, A.UNTERS_ART, B.UNTART_NAME
+            A.BEFUND_SCHLUESSEL, A.BEFUND_DATUM, A.BEFUND_STATUS, A.UNTERS_SCHLUESSEL, A.UNTERS_ART, B.UNTART_NAME
           FROM
             A_BEFUND A
           INNER JOIN
