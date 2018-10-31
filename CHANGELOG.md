@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.2 - 31.10.2018
+ * Changed from unters_date to befund_date which is never empty
+
 ## v3.2.1 - 03.09.2018
  * Heart ventricle functions tested with over 1'000 reports
 
