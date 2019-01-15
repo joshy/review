@@ -10,8 +10,8 @@ def extract_table(report, meta_data):
     for l in lines:
         if l.startswith('Anulus') or l.startswith('Annulus'):
             result['Anulus'] = l.split('|')[1]
-        if l.startswith('Sinus'):
-            result['Sinus'] = l.split('|')[1]
+        if l.startswith('Sinusportion'):
+            result['Sinusportion'] = l.split('|')[1]
         if l.startswith('Sinutubulärer'):
             result['Sinutubulärer'] = l.split('|')[1]
         if l.startswith('Aszendens'):
@@ -22,4 +22,6 @@ def extract_table(report, meta_data):
             result['Bogen zw'] = l.split('|')[1]
         if l.startswith('Bogen distal'):
             result['Bogen distal'] = l.split('|')[1]
+        if l.startswith('Ao Aszendens Ø'):
+            result['Ao Aszendens Ø'] = l.split('|')[1]
     return {'aorta': result}
