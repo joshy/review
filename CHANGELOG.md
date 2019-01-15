@@ -1,5 +1,8 @@
 # Changelog
 
+## v.3.2.3 - 15.01.2019
+ * More aorta data extraction added
+
 ## v3.2.2 - 31.10.2018
  * Changed from unters_date to befund_date which is never empty
 

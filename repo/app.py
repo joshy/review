@@ -29,7 +29,7 @@ app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 app.jinja_env.add_extension('jinja2.ext.do')
-version = app.config['VERSION'] = '3.2.2'
+version = app.config['VERSION'] = '3.2.3'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
