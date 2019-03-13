@@ -1,6 +1,9 @@
 # Changelog
 
-## v.3.2.3 - 15.01.2019
+## v3.2.4 - 13.03.2019
+ * Added more metadata to report view
+
+## v3.2.3 - 15.01.2019
  * More aorta data extraction added
 
 ## v3.2.2 - 31.10.2018
