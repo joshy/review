@@ -78,7 +78,7 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
           FROM
             A_BEFUND A
           INNER JOIN
-            BEFUND_TEXT B
+            A_UNTARTEN B
           ON
           	A.UNTERS_ART = B.UNTART_KUERZEL
           INNER JOIN
