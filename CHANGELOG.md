@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.5 - 02.03.2019
+ * Fixed wrong table name, was accidently commited
+
 ## v3.2.4 - 13.03.2019
  * Added more metadata to report view
 
