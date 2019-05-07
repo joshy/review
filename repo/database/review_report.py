@@ -1,6 +1,21 @@
 from jinja2 import Template
 
 
+def query_review_report_by_acc(cursor, id):
+    sql = """
+          SELECT
+            *
+          FROM
+            reports a
+          WHERE
+              a.unters_schluessel = %s
+          """
+    cursor.execute(sql, (id,))
+    desc = [d[0].lower() for d in cursor.description]
+    result = [dict(zip(desc, row)) for row in cursor]
+    return result[0] if result else []
+
+
 def query_review_report(cursor, id):
     sql = """
           SELECT
@@ -59,17 +74,20 @@ def query_review_reports(cursor, day, writer, reviewer):
           ORDER BY
               a.unters_beginn
           """
-    start = day.strftime('%Y-%m-%d 00:00:00')
-    end = day.strftime('%Y-%m-%d 23:59:59')
+    start = day.strftime("%Y-%m-%d 00:00:00")
+    end = day.strftime("%Y-%m-%d 23:59:59")
     template = Template(sql)
     if writer and not reviewer:
-        sql = template.render(writer_clause=' AND a.schreiber = %s')
+        sql = template.render(writer_clause=" AND a.schreiber = %s")
         cursor.execute(sql, (start, end, writer.upper()))
     elif reviewer and not writer:
-        sql = template.render(reviewer_clause=' AND a.freigeber = %s')
+        sql = template.render(reviewer_clause=" AND a.freigeber = %s")
         cursor.execute(sql, (start, end, reviewer.upper()))
     elif writer and reviewer:
-        sql = template.render(writer_clause=' AND a.schreiber = %s', reviewer_clause=' AND a.freigeber = %s')
+        sql = template.render(
+            writer_clause=" AND a.schreiber = %s",
+            reviewer_clause=" AND a.freigeber = %s",
+        )
         cursor.execute(sql, (start, end, writer.upper(), reviewer.upper()))
     else:
         sql = template.render()
