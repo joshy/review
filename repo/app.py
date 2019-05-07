@@ -12,8 +12,10 @@ from distiller import process
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.contrast_medium import query_contrast_medium
+from repo.database.fall import query_fall_id
 from repo.database.review_report import (query_review_report,
-                                         query_review_reports)
+                                         query_review_reports,
+                                         query_review_report_by_acc)
 from repo.report import get_as_rtf, get_as_txt, get_with_file, parse_report, q
 from review.calculations import (calculate_median,
                                  calculate_median_by_reviewer,
@@ -29,7 +31,7 @@ app.config.from_object('repo.default_config')
 app.config.from_pyfile('config.cfg')
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 app.jinja_env.add_extension('jinja2.ext.do')
-version = app.config['VERSION'] = '3.2.5'
+version = app.config['VERSION'] = '3.2.6'
 
 RIS_DB_SETTINGS = {
     'host': app.config['RIS_DB_HOST'],
@@ -97,6 +99,21 @@ def review():
 def diff(id):
     con = get_review_db()
     row = query_review_report(con.cursor(), id)
+    cases = ['befund_s', 'befund_g', 'befund_f']
+    for c in cases:
+        if c in row:
+            field = c + '_text'
+            v = row[c]
+            if v:
+                row[field] = rtf_to_text(v)
+    return render_template('diff.html', row=row, version=version)
+
+
+@app.route('/review/diff')
+def diff_by_accession():
+    con = get_review_db()
+    acc = request.args.get("accession_number", -1)
+    row = query_review_report_by_acc(con.cursor(), acc)
     cases = ['befund_s', 'befund_g', 'befund_f']
     for c in cases:
         if c in row:
@@ -214,6 +231,18 @@ def cm():
         return main()
     con = get_ris_db()
     result = query_contrast_medium(con.cursor(), accession_number)
+    return jsonify(result)
+
+
+@app.route('/fall')
+def fall():
+    "Queries for fallid for a accession number"
+    accession_number = request.args.get('accession_number', '')
+    if not accession_number:
+        print('No accession number found in request, use accession_number=XXX')
+        return main()
+    con = get_ris_db()
+    result = query_fall_id(con.cursor(), accession_number)
     return jsonify(result)
 
 

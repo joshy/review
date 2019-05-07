@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.6 - 07.05.2019
+ * Diff query now possible by accession number
+
 ## v3.2.5 - 02.03.2019
  * Fixed wrong table name, was accidently commited
 
