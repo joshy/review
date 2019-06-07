@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.2.7 - 07.06.2019
+ * Diff for accession number by befund id
+
 ## v3.2.6 - 07.05.2019
  * Diff query now possible by accession number
 
