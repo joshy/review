@@ -41,15 +41,15 @@
                     <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                     <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
                     <td class="pa1 bb b--black-10 dashboardRow"><a
-                            href="review/writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
+                            href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
                     </td>
                     <td class="pa1 bb b--black-10 dashboardRow"><a
-                            href="review/reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
+                            href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
                     </td>
                     <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
                     <td class="bb b--black-10">
                         {% if row['befund_status'] == 'f' %}
-                            <a href="review/diff/{{ row['befund_schluessel'] }}">Show changes</a>
+                            <a href="diff/{{ row['befund_schluessel'] }}">Show changes</a>
                         {% endif %}
                     </td>
                 </tr>

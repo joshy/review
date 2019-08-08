@@ -9,14 +9,14 @@ if not os.path.exists(LOG_DIR):
 
 daiquiri.setup(level=logging.DEBUG,
     outputs=(
-        daiquiri.output.File('logs/repo-errors.log', level=logging.ERROR),
+        daiquiri.output.File('logs/review-errors.log', level=logging.ERROR),
         daiquiri.output.RotatingFile(
-            'logs/repo-debug.log',
+            'logs/review-debug.log',
             level=logging.DEBUG,
             # 10 MB
             max_size_bytes=10000000)
     ))
 
-from repo.app import app
+from review.app import app
 
-app.run(host='0.0.0.0', port=7777)
+app.run(host='0.0.0.0', port=5555)
