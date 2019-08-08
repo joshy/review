@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.0.0 - 08.08.2019
+ * Review App become a own instance, separated from repo
+
 ## v3.2.7 - 07.06.2019
  * Diff for accession number by befund id
 

@@ -8,16 +8,13 @@ from flask import Flask, g, jsonify, make_response, render_template, request
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 
-
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
-
 from repo.database.review_report import (
     query_review_report,
-    query_review_reports,
     query_review_report_by_acc,
+    query_review_reports,
 )
-
 from review.calculations import (
     calculate_median,
     calculate_median_by_reviewer,
@@ -37,7 +34,7 @@ app.config.from_object("repo.default_config")
 app.config.from_pyfile("config.cfg")
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
-version = app.config["VERSION"] = "3.2.7"
+version = app.config["VERSION"] = "4.0.0"
 
 RIS_DB_SETTINGS = {
     "host": app.config["RIS_DB_HOST"],
@@ -287,7 +284,6 @@ def load_all_data(departments):
 
 def remove_NaT_format(df):
     return df.fillna("None")
-
 
 
 def get_review_db():

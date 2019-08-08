@@ -3,7 +3,7 @@ import psycopg2
 import daiquiri
 from psycopg2.extras import DictCursor
 
-from repo.app import REVIEW_DB_SETTINGS
+from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs
 from review.database import query_review_reports_old_metrics, update_metrics
 

@@ -4,7 +4,7 @@ import psycopg2
 import daiquiri
 from psycopg2.extras import DictCursor
 
-from repo.app import REVIEW_DB_SETTINGS
+from review.app import REVIEW_DB_SETTINGS
 from review.database import query_all_rows, update_modality
 
 daiquiri.setup(level=logging.DEBUG,

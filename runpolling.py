@@ -9,7 +9,7 @@ import schedule
 
 from psycopg2.extras import DictCursor
 
-from repo.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
+from review.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
 from repo.database.connection import open_connection
 from repo.database.report import query_report_by_befund_status
 

@@ -3,7 +3,7 @@ import psycopg2
 import daiquiri.formatter
 import daiquiri
 
-from repo.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
+from review.app import RIS_DB_SETTINGS, REVIEW_DB_SETTINGS
 from repo.database.connection import open_connection
 from repo.database.report import _query_departments
 from review.database import _update_department
