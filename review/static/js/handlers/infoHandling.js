@@ -1,7 +1,7 @@
 $(".infoReview").hover(
     function () {
         $(this).append($("<span>: The List below shows the reports of the specified day.<br>" +
-            "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report. <br>" +
+            "Click on <b>&#39Changes&#39</b> at the end of each row to see the particular report. <br>" +
             "Click on the abbreviation in the column <b>Writer/Reviewer</b> to redirect to the corresponding dashboard.</span>"));
     }, function () {
         $(this).find("span:last").remove();
@@ -20,7 +20,7 @@ $(".infoDashboard").hover(
 $(".infoReportsList").hover(
     function () {
         $(this).append($("<span>: The List below shows the specified reports which have been concluded by status final <br>" +
-            "Click on <b>&#39Show changes&#39</b> at the end of each row to see the particular report. <br>" +
+            "Click on <b>&#39Changes&#39</b> at the end of each row to see the particular report. <br>" +
             "<b>s->f: &#39schreiben -> final&#39 / g->f: &#39gegengelesen -> final&#39</b> </span>"));
     }, function () {
         $(this).find("span:last").remove();

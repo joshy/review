@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
 </head>
 
 <body class="w-100 sans-serif">
@@ -19,37 +20,37 @@
         <table class="f6 w-100 center" cellspacing="0">
             <thead>
             <tr>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white">#</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20">Patient</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25">Type of exam</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white ">Modality</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Date of exam</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Reviewer</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Status</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">History</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white tl">#</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">Patient</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25 tl">Type of exam</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Modality</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Department</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Writer</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Reviewer</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">Status</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">History</th>
             </tr>
             </thead>
             <tbody class="lh-copy" style="padding: auto">
             {% for row in rows %}
                 <tr>
-                    <td class="pl0 pa1 bb b--black-10 w-5">{{ loop.index }}</td>
-                    <td class="pa1 bb b--black-10 w-25">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
-                    <td class="pa1 bb b--black-10 w-25">{{ row['untart_name'] }}</td>
-                    <td class="pa1 bb b--black-10">{{ row['modality'] }}</td>
-                    <td class="pa1 bb b--black-10">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
-                    <td class="pa1 bb b--black-10">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
-                    <td class="pa1 bb b--black-10 dashboardRow"><a
+                    <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
+                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
+                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
+                    <td class="pa1 bb b--black-10 dashboardRow tr"><a
                             href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
                     </td>
-                    <td class="pa1 bb b--black-10 dashboardRow"><a
+                    <td class="pa1 bb b--black-10 dashboardRow tr"><a
                             href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
                     </td>
-                    <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
-                    <td class="bb b--black-10">
+                    <td class="pa1 bb b--black-10 tl">{{ row['befund_status'] }}</td>
+                    <td class="bb b--black-10 tr">
                         {% if row['befund_status'] == 'f' %}
-                            <a href="diff/{{ row['befund_schluessel'] }}">Show changes</a>
+                            <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-square-alt"></i></nobr></a>
                         {% endif %}
                     </td>
                 </tr>

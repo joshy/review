@@ -1,5 +1,5 @@
 <div class="w-100 b--black-10">
-    <div class="ph4 pv1 h5-l tableWrapper overflow-auto">
+    <div class="pv1 h5-l tableWrapper overflow-auto">
         <table class="f6 w-100 mw8 center tableDashboard" cellspacing="0">
             <thead>
             <tr>
@@ -10,10 +10,11 @@
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Department</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Writer</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Reviewer</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">Status</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">S->F</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">G->F</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white">History</th>
+                
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr"><nobr>S->F</nobr></th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr"><nobr>G->F</nobr></th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">Status</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">History</th>
             </tr>
             </thead>
             <tbody class="lh-copy">
@@ -30,12 +31,13 @@
                     <td class="pa1 bb b--black-10 dashboardRow"><a
                             href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
                     </td>
-                    <td class="pa1 bb b--black-10">{{ row['befund_status'] }}</td>
-                    <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_s_f']|float }}</td>
-                    <td class="pa1 bb b--black-10">{{ '%0.1f' % row['jaccard_g_f']|float }}</td>
-                    <td class="bb b--black-10">
+                    
+                    <td class="pa1 bb b--black-10 tr">{{ '%0.1f' % row['jaccard_s_f']|float }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ '%0.1f' % row['jaccard_g_f']|float }}</td>
+                    <td class="pa1 bb b--black-10 tl">{{ row['befund_status'] }}</td>
+                    <td class="bb b--black-10 tl">
                         {% if row['befund_status'] == 'f' %}
-                            <a href="diff/{{ row['befund_schluessel'] }}">Show changes</a>
+                            <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-square-alt"></i></nobr></a>
                         {% endif %}
                     </td>
                 </tr>
