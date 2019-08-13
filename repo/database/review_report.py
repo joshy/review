@@ -31,9 +31,10 @@ def query_review_report(cursor, id):
     return result[0] if result else []
 
 
-def query_review_reports(cursor, day, writer, reviewer):
+def query_review_reports(cursor, day, writer, reviewer, befund_status):
     """
-    Query all reports in the review db by day and writer (optional) and reviewer (optional).
+    Query all reports in the review db by day and writer (optional) and 
+    reviewer (optional) and befund status (optional).
     """
     sql = """
           SELECT
@@ -69,29 +70,22 @@ def query_review_reports(cursor, day, writer, reviewer):
                   %s
                     AND
                   %s
-            {{ writer_clause }}
-            {{ reviewer_clause}}
+            {{ other_clause }}
           ORDER BY
               a.unters_beginn
           """
     start = day.strftime("%Y-%m-%d 00:00:00")
     end = day.strftime("%Y-%m-%d 23:59:59")
     template = Template(sql)
-    if writer and not reviewer:
-        sql = template.render(writer_clause=" AND a.schreiber = %s")
-        cursor.execute(sql, (start, end, writer.upper()))
-    elif reviewer and not writer:
-        sql = template.render(reviewer_clause=" AND a.freigeber = %s")
-        cursor.execute(sql, (start, end, reviewer.upper()))
-    elif writer and reviewer:
-        sql = template.render(
-            writer_clause=" AND a.schreiber = %s",
-            reviewer_clause=" AND a.freigeber = %s",
-        )
-        cursor.execute(sql, (start, end, writer.upper(), reviewer.upper()))
-    else:
-        sql = template.render()
-        cursor.execute(sql, (start, end))
+    sql = ""
+    if writer:
+        sql += f" AND a.schreiber = '{writer.upper()}'"
+    if reviewer:
+        sql += f" AND a.freigeber = '{reviewer.upper()}'"
+    if befund_status:
+        sql += f" AND a.befund_status = '{befund_status.lower()}'"
+    sql = template.render(other_clause=sql) 
+    cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
     return result

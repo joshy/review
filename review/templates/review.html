@@ -10,7 +10,7 @@
 
 <body class="w-100 sans-serif">
 {% include 'partials/review-header.html' %}
-<div class="w-100 b--black-10 mw8 center">
+<div class="w-100 b--black-10 mw9 center">
     <div class="w-100 flex items-center">
         <h1 class="f3 di-ns pr2">Reports List</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReview">Info</button>
@@ -50,7 +50,7 @@
                     <td class="pa1 bb b--black-10 tl">{{ row['befund_status'] }}</td>
                     <td class="bb b--black-10 tr">
                         {% if row['befund_status'] == 'f' %}
-                            <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-square-alt"></i></nobr></a>
+                            <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-alt"></i></nobr></a>
                         {% endif %}
                     </td>
                 </tr>

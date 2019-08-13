@@ -86,9 +86,10 @@ def review():
     day = request.args.get("day", now)
     writer = request.args.get("writer", "")
     reviewer = request.args.get("reviewer", "")
+    befund_status = request.args.get("befund_status", "")
     dd = datetime.strptime(day, "%d.%m.%Y")
     con = get_review_db()
-    rows = query_review_reports(con.cursor(), dd, writer, reviewer)
+    rows = query_review_reports(con.cursor(), dd, writer, reviewer, befund_status)
     day = dd.strftime("%d.%m.%Y")
     return render_template(
         "review.html",
