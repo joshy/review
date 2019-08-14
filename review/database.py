@@ -95,8 +95,9 @@ def update_metrics(cursor, unters_schluessel, diffs):
         logging.error('Error %s', e)
 
 
-def insert(cursor, row):
-    sql = """
+def insert(cursor, row, befund_status):
+    field = 'befund_' + befund_status
+    sql = f"""
           INSERT INTO reports
             (patient_schluessel,
             unters_schluessel,
@@ -117,7 +118,9 @@ def insert(cursor, row):
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
           ON CONFLICT
             (unters_schluessel)
-          DO NOTHING
+          DO UPDATE
+          SET
+            {field} = %s
           """
     cursor.execute(sql,
                    (row['patient_schluessel'],
@@ -129,12 +132,13 @@ def insert(cursor, row):
                     row['freigeber'],
                     row['befund_freigabe'],
                     row['befund_status'],
-                    row['befund_s'],
+                    row[field],
                     row['untart_name'],
                     row['pat_name'],
                     row['pat_vorname'],
                     row['pp_misc_mfd_1_kuerzel'],
-                    row['pp_misc_mfd_1_bezeichnung']))
+                    row['pp_misc_mfd_1_bezeichnung'],
+                    row[field]))
 
 
 def update(cursor, row, befund_status):

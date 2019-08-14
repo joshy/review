@@ -53,19 +53,19 @@ def query_ris(befund_status="s", hours=3):
         con.cursor(), start_date, end_date, befund_status
     )
     logger.info(
-        f"Querying ris for befund_status {befund_status} returned #rows {len(rows)}"
+        f"Querying ris for befund_status {befund_status} returned {len(rows)} rows"
     )
     con.close()
     return rows
 
 
-def insert_reviews(review_cursor, hours=1):
-    rows = query_ris("s", hours)
+def insert_reviews(review_cursor, befund_status="s", hours=1):
+    rows = query_ris(befund_status, hours)
     count = len(rows)
     for i, row in enumerate(rows, start=1):
         logger.debug(f"Inserting row {i}/{count} rows")
-        insert(review_cursor, row)
-    logger.info("Inserting done")
+        insert(review_cursor, row, befund_status)
+    logger.info(f"Inserting {count} rows done")
 
 
 def update_reviews(review_cursor, befund_status="l", hours=2):
@@ -92,13 +92,14 @@ def calculate_comparison():
             db.commit()
     db.commit()
     cursor.close()
-    logger.debug("Updating metrics done")
+    logger.debug(f"Updating metrics done for {total} rows")
 
 
 def job():
     review_db = get_review_db()
     review_cursor = review_db.cursor()
     insert_reviews(review_cursor, hours=2)
+    insert_reviews(review_cursor, "g", hours=2)
     update_reviews(review_cursor, "l", hours=2)
     update_reviews(review_cursor, "g", hours=2)
     update_reviews(review_cursor, "f", hours=2)
