@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.0.1 - 14.08.2019
+ * Night shifts where missed because they go directly to befund status "g"
+
 ## v4.0.0 - 08.08.2019
  * Review App become a own instance, separated from repo
 
