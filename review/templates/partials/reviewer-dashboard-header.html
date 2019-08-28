@@ -21,9 +21,10 @@
     </div>
 </nav>
 
-<div class="w-100 center pt4-ns flex justify-center mw8">
-    <form class="w-100 center justify-center mw8" action="/reviewer-dashboard">
-        <div class="w-100 flex center justify-center mw8">
+<div class="w-100 center flex mw8">
+    <form class="w-100 center mw8" action="/reviewer-dashboard">
+        {% include 'partials/checkbox.html' %}
+        <div class="w-100 pv2 flex mw8">
             <label class="f6 pa2" for="last_exams">Last exams </label>
             <input id="last_exams"
                    class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
@@ -47,6 +48,6 @@
                    type="text" name="r" placeholder="Shortname">
             <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
         </div>
-        {% include 'partials/checkbox.html' %}
+        
     </form>
 </div>
