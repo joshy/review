@@ -19,7 +19,8 @@
             <label class="f6 pa1" for="writer">Writer </label>
             <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
                    value="{{ writer }}" type="text"
-                   name="writer" placeholder="Shortname">
+                   name="writer" placeholder="Shortname"
+                   {% if not has_general_approval_rights %}readonly {% endif %}>
             <label class="f6 pa1" for="writer">Reviewer </label>
             <input id="reviewer"
                    class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"

@@ -40,7 +40,8 @@
                 value="{{ end_date }}" type="text" name="end_date">
             <label class="f6 pa2" for="writer">Writer </label>
             <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"
-                value="{{ writer }}" type="text" name="w" placeholder="Shortname">
+                value="{{ writer }}" type="text" name="w" placeholder="Shortname"
+                {% if not has_general_approval_rights %}readonly {% endif %}>
             <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
         </div>
     </form>

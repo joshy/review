@@ -1,33 +1,30 @@
 import logging
 import os
+import sys
 from datetime import datetime
 
 import pandas as pd
 import psycopg2
-from flask import Flask, g, jsonify, make_response, render_template, request
+from flask import (Flask, g, redirect, render_template, request, session,
+                   url_for)
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
+from requests import get
 
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
-from repo.database.review_report import (
-    query_review_report,
-    query_review_report_by_acc,
-    query_review_reports,
-)
-from review.calculations import (
-    calculate_median,
-    calculate_median_by_reviewer,
-    calculate_median_by_writer,
-    relative,
-)
+from repo.database.review_report import (query_review_report,
+                                         query_review_report_by_acc,
+                                         query_review_reports)
+from review.calculations import (calculate_median,
+                                 calculate_median_by_reviewer,
+                                 calculate_median_by_writer, relative)
 from review.database import (
     query_all_by_departments,
     query_by_reviewer_and_date_and_department_and_modality,
     query_by_reviewer_and_department_and_modality,
     query_by_writer_and_date_and_department_and_modality,
-    query_by_writer_and_department_and_modality,
-)
+    query_by_writer_and_department_and_modality)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("repo.default_config")
@@ -35,6 +32,10 @@ app.config.from_pyfile("config.cfg")
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.0.1"
+
+
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
 
 RIS_DB_SETTINGS = {
     "host": app.config["RIS_DB_HOST"],
@@ -51,6 +52,13 @@ REVIEW_DB_SETTINGS = {
     "host": app.config["REVIEW_DB_HOST"],
     "port": app.config["REVIEW_DB_PORT"],
 }
+
+WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
+
+if not WHO_IS_WHO_URL:
+    logging.error("WHO_IS_WHO_URL is not set, quitting!")
+    sys.exit(1)
+
 
 REPORTS_FOLDER = "reports"
 if not os.path.exists(REPORTS_FOLDER):
@@ -82,9 +90,17 @@ assets.register("js_all", js)
 
 @app.route("/")
 def review():
+    if "user" not in session:
+        return redirect(url_for("authenticate"))
+    user = session["user"]
+    ris_kuerzel = user["ris"]["mitarb_kuerzel"]
+    has_general_approval_rights = user["ris"]["has_general_approval_rights"]
     now = datetime.now().strftime("%d.%m.%Y")
     day = request.args.get("day", now)
-    writer = request.args.get("writer", "")
+    if not has_general_approval_rights:
+        writer = ris_kuerzel
+    else:
+        writer = request.args.get("writer", "")
     reviewer = request.args.get("reviewer", "")
     befund_status = request.args.get("befund_status", "")
     dd = datetime.strptime(day, "%d.%m.%Y")
@@ -97,8 +113,24 @@ def review():
         day=day,
         writer=writer,
         reviewer=reviewer,
+        has_general_approval_rights=has_general_approval_rights,
         version=version,
     )
+
+
+@app.route("/authenticate")
+def authenticate():
+    loginname = request.headers.get("Remote-User")
+    if loginname:
+        user = get(WHO_IS_WHO_URL + loginname).json()
+        session["user"] = user
+        return redirect(url_for("review"))
+    return redirect(url_for("not_authenticated"))
+
+
+@app.route("/not_authenticated")
+def not_authenticated():
+    return "Sorry you are not authenticated to use this app", 401
 
 
 @app.route("/diff/<id>")
