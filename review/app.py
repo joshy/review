@@ -54,6 +54,7 @@ REVIEW_DB_SETTINGS = {
 }
 
 WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
+SSO_MODE = app.config["SSO_MODE"]
 
 if not WHO_IS_WHO_URL:
     logging.error("WHO_IS_WHO_URL is not set, quitting!")
@@ -90,11 +91,13 @@ assets.register("js_all", js)
 
 @app.route("/")
 def review():
-    if "user" not in session:
+    if SSO_MODE and "user" not in session:
         return redirect(url_for("authenticate"))
-    user = session["user"]
-    ris_kuerzel = user["ris"]["mitarb_kuerzel"]
-    has_general_approval_rights = user["ris"]["has_general_approval_rights"]
+    user = session.get("user", None)
+    has_general_approval_rights = True
+    if user:
+        ris_kuerzel = user["ris"]["mitarb_kuerzel"]
+        has_general_approval_rights = user["ris"]["has_general_approval_rights"]
     now = datetime.now().strftime("%d.%m.%Y")
     day = request.args.get("day", now)
     if not has_general_approval_rights:
