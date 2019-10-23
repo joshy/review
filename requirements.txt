@@ -10,3 +10,4 @@ PyReadableDiff
 striprtf
 pandas
 gunicorn
+flask-login

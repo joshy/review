@@ -10,7 +10,8 @@ from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 from requests import get
 
-# from flask_login import LoginManager
+from flask_login import LoginManager, current_user
+from flask_login.utils import login_required
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
 from repo.database.review_report import (
@@ -31,16 +32,17 @@ from review.database import (
     query_by_writer_and_date_and_department_and_modality,
     query_by_writer_and_department_and_modality,
 )
+from review.user import User
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("repo.default_config")
 app.config.from_pyfile("config.cfg")
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
-version = app.config["VERSION"] = "4.0.1"
+version = app.config["VERSION"] = "4.1.0"
 
-#login_manager = LoginManager()
-#login_manager.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
@@ -97,19 +99,25 @@ js = Bundle(
 assets.register("js_all", js)
 
 
+@login_manager.request_loader
+def load_user_from_request(request):
+    loginname = request.headers.get("Remote-User")
+    if loginname:
+        user = get(WHO_IS_WHO_URL + loginname).json()
+        user = User(user)
+        return user
+
+    # finally, return None if both methods did not login the user
+    return None
+
+
 @app.route("/")
+@login_required
 def review():
-    if SSO_MODE and "user" not in session:
-        return redirect(url_for("authenticate"))
-    user = session.get("user", None)
-    has_general_approval_rights = True
-    if user and "ris" in user:
-        ris_kuerzel = user["ris"]["mitarb_kuerzel"]
-        has_general_approval_rights = user["ris"]["has_general_approval_rights"]
     now = datetime.now().strftime("%d.%m.%Y")
     day = request.args.get("day", now)
-    if not has_general_approval_rights:
-        writer = ris_kuerzel
+    if not current_user.has_general_approval_rights():
+        writer = current_user.ris_kuerzel()
     else:
         writer = request.args.get("writer", "")
     reviewer = request.args.get("reviewer", "")
@@ -124,24 +132,13 @@ def review():
         day=day,
         writer=writer,
         reviewer=reviewer,
-        has_general_approval_rights=has_general_approval_rights,
         version=version,
     )
 
 
-@app.route("/authenticate")
-def authenticate():
-    loginname = request.headers.get("Remote-User")
-    if loginname:
-        user = get(WHO_IS_WHO_URL + loginname).json()
-        session["user"] = user
-        return redirect(url_for("review"))
-    return redirect(url_for("not_authenticated"))
-
-
-@app.route("/not_authenticated")
-def not_authenticated():
-    return "Sorry you are not authenticated to use this app", 401
+@app.route("/no_rights")
+def no_rights():
+    return "Sorry, you have no rights to view this page", 401
 
 
 @app.route("/diff/<id>")
@@ -174,8 +171,12 @@ def diff_by_accession():
 
 
 @app.route("/writer-dashboard")
+@login_required
 def writer_dashboard():
-    writer = request.args.get("w", "")
+    if not current_user.has_general_approval_rights():
+        writer = current_user.ris_kuerzel()
+    else:
+        writer = request.args.get("writer", "")
     last_exams = request.args.get("last_exams", 30)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
@@ -230,7 +231,10 @@ def writer_dashboard():
 
 
 @app.route("/reviewer-dashboard")
+@login_required
 def reviewer_dashboard():
+    if not current_user.has_general_approval_rights():
+        return redirect(url_for("no_rights"))
     reviewer = request.args.get("r", "")
     last_exams = request.args.get("last_exams", 30)
     start_date = request.args.get("start_date", "")

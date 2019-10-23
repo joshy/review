@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.1.0 - 23.10.2019
+ * Use with SSO and flask-login
+
 ## v4.0.1 - 14.08.2019
  * Night shifts where missed because they go directly to befund status "g"
 
