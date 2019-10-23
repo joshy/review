@@ -5,26 +5,32 @@ from datetime import datetime
 
 import pandas as pd
 import psycopg2
-from flask import (Flask, g, redirect, render_template, request, session,
-                   url_for)
+from flask import Flask, g, redirect, render_template, request, session, url_for
 from flask_assets import Bundle, Environment
 from psycopg2.extras import RealDictCursor
 from requests import get
 
+# from flask_login import LoginManager
 from repo.converter import rtf_to_text
 from repo.database.connection import open_connection
-from repo.database.review_report import (query_review_report,
-                                         query_review_report_by_acc,
-                                         query_review_reports)
-from review.calculations import (calculate_median,
-                                 calculate_median_by_reviewer,
-                                 calculate_median_by_writer, relative)
+from repo.database.review_report import (
+    query_review_report,
+    query_review_report_by_acc,
+    query_review_reports,
+)
+from review.calculations import (
+    calculate_median,
+    calculate_median_by_reviewer,
+    calculate_median_by_writer,
+    relative,
+)
 from review.database import (
     query_all_by_departments,
     query_by_reviewer_and_date_and_department_and_modality,
     query_by_reviewer_and_department_and_modality,
     query_by_writer_and_date_and_department_and_modality,
-    query_by_writer_and_department_and_modality)
+    query_by_writer_and_department_and_modality,
+)
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("repo.default_config")
@@ -33,6 +39,8 @@ app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.0.1"
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
@@ -95,7 +103,7 @@ def review():
         return redirect(url_for("authenticate"))
     user = session.get("user", None)
     has_general_approval_rights = True
-    if user:
+    if user and "ris" in user:
         ris_kuerzel = user["ris"]["mitarb_kuerzel"]
         has_general_approval_rights = user["ris"]["has_general_approval_rights"]
     now = datetime.now().strftime("%d.%m.%Y")
