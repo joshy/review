@@ -39,8 +39,8 @@ app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.0.1"
 
-login_manager = LoginManager()
-login_manager.init_app(app)
+#login_manager = LoginManager()
+#login_manager.init_app(app)
 
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
