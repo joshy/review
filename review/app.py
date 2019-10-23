@@ -64,7 +64,6 @@ REVIEW_DB_SETTINGS = {
 }
 
 WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
-SSO_MODE = app.config["SSO_MODE"]
 
 if not WHO_IS_WHO_URL:
     logging.error("WHO_IS_WHO_URL is not set, quitting!")
