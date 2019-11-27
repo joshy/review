@@ -105,7 +105,9 @@ def load_user_from_request(request):
         user = get(WHO_IS_WHO_URL + loginname).json()
         user = User(user)
         return user
-
+    elif "localhost" in request.headers.get("Host"):
+        d = {"ris":{"mitarb_kuerzel":"CYRJO","has_general_approval_rights":True}}
+        return User(d)
     # finally, return None if both methods did not login the user
     return None
 
@@ -175,7 +177,7 @@ def writer_dashboard():
     if not current_user.has_general_approval_rights():
         writer = current_user.ris_kuerzel()
     else:
-        writer = request.args.get("writer", "")
+        writer = request.args.get("w", "")
     last_exams = request.args.get("last_exams", 30)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
@@ -226,6 +228,7 @@ def writer_dashboard():
         end_date=end_date,
         version=version,
         departments=departments,
+        has_general_approval_rights=current_user.has_general_approval_rights()
     )
 
 
@@ -284,6 +287,7 @@ def reviewer_dashboard():
         end_date=end_date,
         version=version,
         departments=departments,
+        has_general_approval_rights=current_user.has_general_approval_rights()
     )
 
 
