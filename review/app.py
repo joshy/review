@@ -138,6 +138,7 @@ def review():
         writer=writer,
         reviewer=reviewer,
         version=version,
+        has_general_approval_rights=current_user.has_general_approval_rights(),
     )
 
 
