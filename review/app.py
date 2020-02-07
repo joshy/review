@@ -104,9 +104,13 @@ def load_user_from_request(request):
     if loginname:
         user = get(WHO_IS_WHO_URL + loginname).json()
         user = User(user)
+        # If the RIS username is not empty return user, otherwise user
+        # doesn't exists. Check whoiswho application for implementation details
+        if not user.ris_kuerzel:
+            return None
         return user
     elif "localhost" in request.headers.get("Host"):
-        d = {"ris":{"mitarb_kuerzel":"CYRJO","has_general_approval_rights":True}}
+        d = {"ris": {"mitarb_kuerzel": "CYRJO", "has_general_approval_rights": True}}
         return User(d)
     # finally, return None if both methods did not login the user
     return None
@@ -228,7 +232,7 @@ def writer_dashboard():
         end_date=end_date,
         version=version,
         departments=departments,
-        has_general_approval_rights=current_user.has_general_approval_rights()
+        has_general_approval_rights=current_user.has_general_approval_rights(),
     )
 
 
@@ -287,7 +291,7 @@ def reviewer_dashboard():
         end_date=end_date,
         version=version,
         departments=departments,
-        has_general_approval_rights=current_user.has_general_approval_rights()
+        has_general_approval_rights=current_user.has_general_approval_rights(),
     )
 
 

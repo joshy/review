@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.1.1 - 07.02.2020
+ * Better handling of users with no RIS account
+
 ## v4.1.0 - 23.10.2019
  * Use with SSO and flask-login
 
