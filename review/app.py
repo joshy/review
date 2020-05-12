@@ -65,6 +65,8 @@ REVIEW_DB_SETTINGS = {
 
 WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
 
+ADMIN_USERS = app.config["ADMIN_USERS"]
+
 if not WHO_IS_WHO_URL:
     logging.error("WHO_IS_WHO_URL is not set, quitting!")
     sys.exit(1)
@@ -102,13 +104,15 @@ assets.register("js_all", js)
 def load_user_from_request(request):
     loginname = request.headers.get("Remote-User")
     if loginname:
-        user = get(WHO_IS_WHO_URL + loginname).json()
-        user = User(user)
+        userjson = get(WHO_IS_WHO_URL + loginname).json()
+        user = User(userjson)
         # If the RIS username is not empty return user, otherwise user
         # doesn't exists. Check whoiswho application for implementation details
         if not user.ris_kuerzel:
             return None
-        return user
+        if user.ris_kuerzel in ADMIN_USERS:
+            userjson["ris"]["has_general_approval_rights"] = True
+            return User(userjson)
     elif "localhost" in request.headers.get("Host"):
         d = {"ris": {"mitarb_kuerzel": "CYRJO", "has_general_approval_rights": True}}
         return User(d)
