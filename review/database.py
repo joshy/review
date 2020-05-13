@@ -507,3 +507,18 @@ def query_all_rows(cursor):
                """
     cursor.execute(sql)
     return cursor.fetchall()
+
+
+def query_not_finalized(cursor):
+    sql = """
+              SELECT
+                 befund_schluessel
+              FROM
+                 reports
+              WHERE
+                 befund_g is not NULL
+              AND
+                 befund_f is NULL
+          """
+    cursor.execute(sql)
+    return cursor.fetchall()
