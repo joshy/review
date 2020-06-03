@@ -42,6 +42,14 @@ def select_report(cursor, accession_number):
         return None, None
 
 
+def query_final_reports(cursor, befund_schluessel):
+    print(befund_schluessel)
+    rows = _query_by_final_status_and_schluessel(cursor, befund_schluessel)
+    for row in rows:
+        row['befund_f'] = _select_befund(cursor, befund_schluessel)
+    return rows
+
+
 def query_report_by_befund_status(cursor, start_date, end_date, befund_status='s'):
     rows = _query_by_befund_status(cursor, start_date, end_date, befund_status)
     for row in rows:
@@ -102,6 +110,60 @@ def _query_by_befund_status(cursor, start_date, end_date, befund_status='s'):
         start = start_date.strftime('%Y-%m-%d %H:%M:%S')
         end = end_date.strftime('%Y-%m-%d %H:%M:%S')
         cursor.execute(sql, start_date=start, end_date=end, befund_status=befund_status)
+        desc = [d[0].lower() for d in cursor.description]
+        result = [dict(zip(desc, row)) for row in cursor]
+        return result
+    except cx_Oracle.DatabaseError as e:
+        logging.error('Database error occured')
+        logging.error(e)
+        return None
+
+def _query_by_final_status_and_schluessel(cursor, befund_schluessel):
+    """
+    Query all accession number by given time range and BEFUND_STATUS.
+    """
+    sql = """
+          SELECT
+            A.PATIENT_SCHLUESSEL,
+            A.UNTERS_SCHLUESSEL,
+            A.UNTERS_ART,
+            A.UNTERS_BEGINN,
+            A.BEFUND_SCHLUESSEL,
+            A.SCHREIBER,
+            A.SIGNIERER,
+            A.FREIGEBER,
+            A.BEFUND_FREIGABE,
+            A.BEFUND_STATUS,
+            A.LESE_DATUM,
+            A.LESER,
+            A.GEGENLESE_DATUM,
+            A.GEGENLESER,
+            B.UNTART_NAME,
+            C.PP_MISC_MFD_1_KUERZEL,
+            C.PP_MISC_MFD_1_BEZEICHNUNG,
+            D.PAT_NAME,
+            D.PAT_VORNAME
+          FROM
+            A_BEFUND A
+          INNER JOIN
+              A_UNTARTEN B
+          ON
+            A.UNTERS_ART = B.UNTART_KUERZEL
+          INNER JOIN
+            A_UNTBEH_SONSTIGE_FELDER C
+          ON
+            A.UNTERS_SCHLUESSEL = C.UNTERS_SCHLUESSEL
+          INNER JOIN
+            A_PATIENT D
+          ON
+            A.PATIENT_SCHLUESSEL = D.PATIENT_SCHLUESSEL
+          WHERE
+              A.BEFUND_STATUS = 'f'
+            AND
+              A.BEFUND_SCHLUESSEL = :befund_schluessel
+          """
+    try:
+        cursor.execute(sql, befund_schluessel=befund_schluessel)
         desc = [d[0].lower() for d in cursor.description]
         result = [dict(zip(desc, row)) for row in cursor]
         return result

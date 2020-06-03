@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.1.2 - 13.05.2020
+ * Added script to finalize old hanging reports in status 'g'
+
 ## v4.1.1 - 07.02.2020
  * Better handling of users with no RIS account
 
