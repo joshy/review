@@ -22,10 +22,9 @@
             <thead>
             <tr>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white tl">#</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">Patient</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">PatientId / Accession Number</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25 tl">Type of exam</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Modality</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Department</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Writer</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Reviewer</th>
@@ -37,10 +36,9 @@
             {% for row in rows %}
                 <tr>
                     <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
-                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['pat_name'] }}, {{ row['pat_vorname'] }}</td>
+                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
                     <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
                     <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
-                    <td class="pa1 bb b--black-10 tr">{{ row['pp_misc_mfd_1_kuerzel'] }}</td>
                     <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
                     <td class="pa1 bb b--black-10 dashboardRow tr"><a
                             href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
@@ -48,7 +46,7 @@
                     <td class="pa1 bb b--black-10 dashboardRow tr"><a
                             href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
                     </td>
-                    <td class="pa1 bb b--black-10 tl">{{ row['befund_status'] }}</td>
+                    <td class="pa1 bb b--black-10 tl">{{ row['report_status'] }}</td>
                     <td class="bb b--black-10 tr">
                         {% if row['befund_status'] == 'f' %}
                             <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-alt"></i></nobr></a>

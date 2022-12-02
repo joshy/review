@@ -49,10 +49,10 @@ def update_modalities():
     logging.debug('Iterate over total of {} rows with modality description'.format(count))
     for i, row in enumerate(rows, start=1):
         logging.debug('Iterating over row {}/{} rows'.format(i, count))
-        modality = get_modality(row['unters_art'])
-        logging.debug('Modality {} generated'.format(modality))
-        update_modality(review_cursor, row['unters_schluessel'], modality)
-    logging.info('Inserting modality done')
+        #modality = get_modality(row['unters_art'])
+        #logging.debug('Modality {} generated'.format(modality))
+        #update_modality(review_cursor, row['unters_schluessel'], modality)
+    #logging.info('Inserting modality done')
     review_db.commit()
     review_cursor.close()
 

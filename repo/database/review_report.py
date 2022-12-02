@@ -31,39 +31,30 @@ def query_review_report(cursor, id):
     return result[0] if result else []
 
 
-def query_review_reports(cursor, day, writer, reviewer, befund_status):
+def query_review_reports(cursor, day, writer, reviewer, report_status):
     """
     Query all reports in the review db by day and writer (optional) and 
     reviewer (optional) and befund status (optional).
     """
     sql = """
           SELECT
-            a.patient_schluessel,
-            a.unters_schluessel,
-            a.unters_art,
+            a.pid,
+            a.accession_number,
             a.unters_beginn,
-            a.befund_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.befund_freigabe,
-            a.befund_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
+            a.untart_kuerzel,
             a.untart_name,
-            a.jaccard_g_f,
+            a.schreiber,
+            a.vor_signierer,
+            a.fin_signierer,
+            a.report_status,
+            a.untart_name,
+            a.jaccard_v_f,
             a.jaccard_s_f,
-            a.words_added_g_f,
-            a.words_deleted_g_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
+            a.words_added_v_f,
+            a.words_deleted_v_f,
             a.modality
           FROM
-            reports a
+            sectra_reports a
           WHERE
               a.unters_beginn
                 BETWEEN
@@ -81,9 +72,9 @@ def query_review_reports(cursor, day, writer, reviewer, befund_status):
     if writer:
         sql += f" AND a.schreiber = '{writer.upper()}'"
     if reviewer:
-        sql += f" AND a.freigeber = '{reviewer.upper()}'"
-    if befund_status:
-        sql += f" AND a.befund_status = '{befund_status.lower()}'"
+        sql += f" AND a.fin_signierer = '{reviewer.upper()}'"
+    if report_status:
+        sql += f" AND a.report_status = '{report_status.lower()}'"
     sql = template.render(other_clause=sql) 
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]

@@ -75,20 +75,20 @@ def _extract_section(befund):
 
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     s = time.time()
-    befund_s = rtf_to_text(row['befund_s']) \
-        if row['befund_s'] is not None else ''
-    befund_g = rtf_to_text(row['befund_g']) \
-        if row['befund_g'] is not None else ''
-    befund_f = rtf_to_text(row['befund_f']) \
-        if row['befund_f'] is not None else ''
-    befund_s = _extract_section(befund_s)
-    befund_g = _extract_section(befund_g)
-    befund_f = _extract_section(befund_f)
-    compare_s_f = _diff(befund_s, befund_f)
-    compare_g_f = _diff(befund_g, befund_f)
-    total_lengths = {'total_words_s': _total_length(befund_s),
-                     'total_words_g': _total_length(befund_g),
-                     'total_words_f': _total_length(befund_f)}
+    report_s = rtf_to_text(row['report_s']) \
+        if row['report_s'] is not None else ''
+    report_v = rtf_to_text(row['report_v']) \
+        if row['report_v'] is not None else ''
+    report_f = rtf_to_text(row['report_f']) \
+        if row['report_f'] is not None else ''
+    report_s = _extract_section(report_s)
+    report_v = _extract_section(report_v)
+    report_f = _extract_section(report_f)
+    compare_s_f = _diff(report_s, report_f)
+    compare_g_f = _diff(report_v, report_f)
+    total_lengths = {'total_words_s': _total_length(report_s),
+                     'total_words_g': _total_length(report_v),
+                     'total_words_f': _total_length(report_f)}
     e = time.time()
     logging.debug('Single row diff calculation took %s', e - s)
-    return compare_s_f, compare_g_f, total_lengths, row['unters_schluessel']
+    return compare_s_f, compare_g_f, total_lengths, row['accession_number']
