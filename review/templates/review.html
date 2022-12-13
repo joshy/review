@@ -39,7 +39,11 @@
                     <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
                     <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
                     <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
+                    {% if row['unters_beginn'] %}
                     <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
+                    {% else %}
+                    <td class="pa1 bb b--black-10 tr"></td>
+                    {% endif %}
                     <td class="pa1 bb b--black-10 dashboardRow tr"><a
                             href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
                     </td>
@@ -48,8 +52,8 @@
                     </td>
                     <td class="pa1 bb b--black-10 tl">{{ row['report_status'] }}</td>
                     <td class="bb b--black-10 tr">
-                        {% if row['befund_status'] == 'f' %}
-                            <a href="diff/{{ row['befund_schluessel'] }}"><nobr>Show <i class="fas fa-external-link-alt"></i></nobr></a>
+                        {% if row['report_status'] == 'F' %}
+                            <a href="diff/{{ row['accession_number'] }}"><nobr>Show <i class="fas fa-external-link-alt"></i></nobr></a>
                         {% endif %}
                     </td>
                 </tr>

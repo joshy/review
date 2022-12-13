@@ -1,42 +1,35 @@
 import logging
 import os
-import sys
 from datetime import datetime
 
 import pandas as pd
 import psycopg2
-from flask import Flask, g, redirect, render_template, request, session, url_for
+from flask import (Flask, g, redirect, render_template, request, session,
+                   url_for)
 from flask_assets import Bundle, Environment
+from flask_login import LoginManager, current_user
+from flask_login.utils import login_required
 from psycopg2.extras import RealDictCursor
 from requests import get
 
-from flask_login import LoginManager, current_user
-from flask_login.utils import login_required
 from repo.converter import rtf_to_text
-from repo.database.connection import open_connection
-from repo.database.review_report import (
-    query_review_report,
-    query_review_report_by_acc,
-    query_review_reports,
-)
-from review.calculations import (
-    calculate_median,
-    calculate_median_by_reviewer,
-    calculate_median_by_writer,
-    relative,
-)
+from repo.database.review_report import (query_review_report,
+                                         query_review_report_by_acc,
+                                         query_review_reports)
+from review.calculations import (calculate_median,
+                                 calculate_median_by_reviewer,
+                                 calculate_median_by_writer, relative)
 from review.database import (
     query_all_by_departments,
     query_by_reviewer_and_date_and_department_and_modality,
     query_by_reviewer_and_department_and_modality,
     query_by_writer_and_date_and_department_and_modality,
-    query_by_writer_and_department_and_modality,
-)
+    query_by_writer_and_department_and_modality)
 from review.user import User
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("repo.default_config")
-app.config.from_pyfile("config.cfg")
+#app.config.from_pyfile("config.cfg")
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.1.2"
@@ -63,12 +56,13 @@ REVIEW_DB_SETTINGS = {
     "port": app.config["REVIEW_DB_PORT"],
 }
 
-WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
+#WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
 
+"""
 if not WHO_IS_WHO_URL:
     logging.error("WHO_IS_WHO_URL is not set, quitting!")
     sys.exit(1)
-
+"""
 
 REPORTS_FOLDER = "reports"
 if not os.path.exists(REPORTS_FOLDER):
@@ -151,13 +145,14 @@ def no_rights():
 def diff(id):
     con = get_review_db()
     row = query_review_report(con.cursor(), id)
-    cases = ["befund_s", "befund_g", "befund_f"]
+    cases = ["report_s", "report_v", "report_f"]
     for c in cases:
         if c in row:
             field = c + "_text"
             v = row[c]
             if v:
-                row[field] = rtf_to_text(v)
+                row[field] = rtf_to_text(v, encoding="cp1252", errors="ignore")
+    print(row["report_f_text"])
     return render_template("diff.html", row=row, version=version)
 
 
@@ -349,13 +344,6 @@ def get_review_db():
         db = g._review_database = psycopg2.connect(**REVIEW_DB_SETTINGS)
     return g._review_database
 
-
-def get_ris_db():
-    """ Returns a connection to the Oracle db. """
-    db = getattr(g, "_ris_database", None)
-    if db is None:
-        db = g._ris_database = open_connection(**RIS_DB_SETTINGS)
-    return g._ris_database
 
 
 @app.teardown_appcontext

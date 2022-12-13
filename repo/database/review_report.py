@@ -21,13 +21,14 @@ def query_review_report(cursor, id):
           SELECT
             *
           FROM
-            reports a
+            sectra_reports a
           WHERE
-              a.befund_schluessel = %s
+              a.accession_number = %s
           """
     cursor.execute(sql, (id,))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
+    print(result)
     return result[0] if result else []
 
 
@@ -56,7 +57,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
           FROM
             sectra_reports a
           WHERE
-              a.unters_beginn
+              a.last_updated
                 BETWEEN
                   %s
                     AND
