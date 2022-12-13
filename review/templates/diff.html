@@ -45,7 +45,7 @@
             </div>
             <div class="pa2 pt4" style="white-space: pre-line; flex:1; width:0">
                 <div class="w-100 mb0 bb inline-flex f7">
-                    <span class="inline-flex">Approval:<span class="b pl1"> {{row['freigeber']}}</span></span>
+                    <span class="inline-flex">Approval:<span class="b pl1"> {{row['fin_signierer']}}</span></span>
                 </div>
                 <div id="final">
                     {{ row['report_f_text'] }}
@@ -55,13 +55,13 @@
                 <div class="w-100 mb0 bb inline-flex f7">
                     <div class="inline-flex ">Diff </div>
                     <div class="inline-flex pl4 ml-auto">
-                        <span>Additions: <span id="words_added_g_f"> {{row['words_added_g_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
+                        <span>Additions: <span id="words_added_g_f"> {{row['words_added_v_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
                     </div>
                     <div class="inline-flex pl2">
-                        <span>Deletions: <span id="words_deleted_g_f">{{row['words_deleted_g_f']}}</span><span id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</span></span>
+                        <span>Deletions: <span id="words_deleted_g_f">{{row['words_deleted_v_f']}}</span><span id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</span></span>
                     </div>
                     <div class="inline-flex pl2">
-                        <span>Similarity: <span id="jaccard_g_f">{{row['jaccard_g_f']}}</span><span id="jaccard_s_f" class="dn">{{row['jaccard_s_f']}}</span></span>
+                        <span>Similarity: <span id="jaccard_g_f">{{row['jaccard_v_f']}}</span><span id="jaccard_s_f" class="dn">{{row['jaccard_s_f']}}</span></span>
                     </div>
                 </div>
                 <div id="diff"></div>
