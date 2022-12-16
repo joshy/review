@@ -3,12 +3,12 @@ from math import floor
 
 def relative(df):
     if df.shape[0] > 0:
-        df['words_added_relative_g_f'] = df.apply(
-            lambda row: _relative(row['total_words_f'], row['words_added_g_f']), axis=1)
+        df['words_added_relative_v_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_added_v_f']), axis=1)
         df['words_added_relative_s_f'] = df.apply(
             lambda row: _relative(row['total_words_f'], row['words_added_s_f']), axis=1)
-        df['words_deleted_relative_g_f'] = df.apply(
-            lambda row: _relative(row['total_words_f'], row['words_deleted_g_f']), axis=1)
+        df['words_deleted_relative_v_f'] = df.apply(
+            lambda row: _relative(row['total_words_f'], row['words_deleted_v_f']), axis=1)
         df['words_deleted_relative_s_f'] = df.apply(
             lambda row: _relative(row['total_words_f'], row['words_deleted_s_f']), axis=1)
     return df
@@ -42,8 +42,8 @@ def calculate_median_by_reviewer(df):
 
 
 def calculate_median(rows):
-    keys = ["jaccard_s_f", "jaccard_g_f", "words_added_relative_s_f",
-            "words_added_relative_g_f", "words_deleted_relative_s_f", "words_deleted_relative_g_f"]
+    keys = ["jaccard_s_f", "jaccard_v_f", "words_added_relative_s_f",
+            "words_added_relative_v_f", "words_deleted_relative_s_f", "words_deleted_relative_v_f"]
     median_values = {}
 
     for key in keys:

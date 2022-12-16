@@ -35,16 +35,16 @@ $(function () {
         writing.text(x);
         diff();
         if (this.value === 'befund_s') {
-            $('#words_added_g_f').addClass('dn');
-            $('#words_deleted_g_f').addClass('dn');
-            $('#jaccard_g_f').addClass('dn');
+            $('#words_added_v_f').addClass('dn');
+            $('#words_deleted_v_f').addClass('dn');
+            $('#jaccard_v_f').addClass('dn');
             $('#words_added_s_f').removeClass('dn');
             $('#words_deleted_s_f').removeClass('dn');
             $('#jaccard_s_f').removeClass('dn')
         } else if (this.value === 'befund_g') {
-            $('#words_added_g_f').removeClass('dn');
-            $('#words_deleted_g_f').removeClass('dn');
-            $('#jaccard_g_f').removeClass('dn');
+            $('#words_added_v_f').removeClass('dn');
+            $('#words_deleted_v_f').removeClass('dn');
+            $('#jaccard_v_f').removeClass('dn');
             $('#words_added_s_f').addClass('dn');
             $('#words_deleted_s_f').addClass('dn');
             $('#jaccard_s_f').addClass('dn')

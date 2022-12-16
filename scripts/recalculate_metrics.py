@@ -35,12 +35,12 @@ def _update_metrics():
     logging.debug('Iterate over total of {} rows'.format(count))
     for i, row in enumerate(rows, start=0):
         logging.debug('Iterating over row {}/{}'.format(i, count))
-        logging.debug('Current jaccard_s_f: {} / jaccard_g_f: {}'.format(row['jaccard_s_f'], row['jaccard_g_f']))
+        logging.debug('Current jaccard_s_f: {} / jaccard_v_f: {}'.format(row['jaccard_s_f'], row['jaccard_v_f']))
         before["jaccard_s_f"] = row['jaccard_s_f']
-        before["jaccard_g_f"] = row['jaccard_g_f']
+        before["jaccard_v_f"] = row['jaccard_v_f']
         before_list.append(before)
         calculations = diffs(row)
-        after["jaccard_g_f"] = calculations[1]['jaccard']
+        after["jaccard_v_f"] = calculations[1]['jaccard']
         after["jaccard_s_f"] = calculations[0]['jaccard']
         after_list.append(after)
         logging.debug('Row {} with new calculations: {}'.format(i,after_list[i]))

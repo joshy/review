@@ -489,7 +489,7 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
                 checkValue = value.substr(value.length - 3);
 
             if (checkValue === "s_f") {
-                value = tempValue + "g_f";
+                value = tempValue + "v_f";
                 d3.selectAll("." + classNames[2]).text("gegengelesen -> final");
             }
             else {

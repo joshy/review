@@ -39,9 +39,9 @@ function drawWordsAddedGraphWriter(reviewer) {
         color = "#009418";
 
     if (reviewer != null) {
-        drawGraph(d3.select("#WordsAddedGraph" + reviewer), "words_added_relative_g_f", maxIntervalValue, minIntervalValue,
+        drawGraph(d3.select("#WordsAddedGraph" + reviewer), "words_added_relative_v_f", maxIntervalValue, minIntervalValue,
             classNames, color, maxBarValue, null, null, reviewer);
-        drawBarChart(d3.select("#WordsAddedBarChart" + reviewer), "words_added_relative_g_f", color, maxBarValue, null,
+        drawBarChart(d3.select("#WordsAddedBarChart" + reviewer), "words_added_relative_v_f", color, maxBarValue, null,
             reviewer);
     }
     else {
@@ -59,9 +59,9 @@ function drawWordsDeletedGraphWriter(reviewer) {
         color = "#f5070d";
 
     if (reviewer != null) {
-        drawGraph(d3.select("#WordsDeletedGraph" + reviewer), "words_deleted_relative_g_f", maxIntervalValue,
+        drawGraph(d3.select("#WordsDeletedGraph" + reviewer), "words_deleted_relative_v_f", maxIntervalValue,
             minIntervalValue, classNames, color, maxBarValue, null, null, reviewer);
-        drawBarChart(d3.select("#WordsDeletedBarChart" + reviewer), "words_deleted_relative_g_f", color, maxBarValue,
+        drawBarChart(d3.select("#WordsDeletedBarChart" + reviewer), "words_deleted_relative_v_f", color, maxBarValue,
             null, reviewer);
     }
     else {
