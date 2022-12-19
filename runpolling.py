@@ -11,7 +11,6 @@ from psycopg2.extras import DictCursor
 from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs
 from review.database import query_review_reports, update_metrics
-from scripts.populate_modalities import update_modalities
 
 daiquiri.setup(
     level=logging.INFO,
