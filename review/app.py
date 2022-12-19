@@ -62,7 +62,7 @@ REVIEW_DB_SETTINGS = {
     "port": os.getenv("REVIEW_DB_PORT"),
 }
 
-WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
+WHO_IS_WHO_URL = os.getenv("WHO_IS_WHO_URL")
 
 """
 if not WHO_IS_WHO_URL:
