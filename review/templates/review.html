@@ -23,9 +23,9 @@
             <tr>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white tl">#</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">PatientId / Accession Number</th>
+                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25 tl">Type of exam</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Modality</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Writer</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Reviewer</th>
                 <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">Status</th>
@@ -37,18 +37,23 @@
                 <tr>
                     <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
                     <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
-                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
-                    <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
                     {% if row['unters_beginn'] %}
                     <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
                     {% else %}
                     <td class="pa1 bb b--black-10 tr"></td>
                     {% endif %}
-                    <td class="pa1 bb b--black-10 dashboardRow tr"><a
-                            href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
+                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
+                    
+                    <td class="pa1 bb b--black-10 dashboardRow tr">
+                        <a href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
                     </td>
-                    <td class="pa1 bb b--black-10 dashboardRow tr"><a
-                            href="reviewer-dashboard?r={{ row['freigeber'] }}">{{ row['freigeber'] }}</a>
+                    <td class="pa1 bb b--black-10 dashboardRow tr">
+                        {% if row['fin_signierer'] %}
+                            <a href="reviewer-dashboard?r={{ row['fin_signierer'] }}">{{ row['fin_signierer'] }}</a>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
                     </td>
                     <td class="pa1 bb b--black-10 tl">{{ row['report_status'] }}</td>
                     <td class="bb b--black-10 tr">

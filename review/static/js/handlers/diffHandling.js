@@ -29,19 +29,19 @@ $(function () {
         display.appendChild(fragment);
     }
 
-    $('input[type=radio][name=befund_text]').change(function () {
+    $('input[type=radio][name=report_text]').on('change', function () {
         var writing = $('#writing');
         var x = document.getElementById(this.value).textContent;
         writing.text(x);
         diff();
-        if (this.value === 'befund_s') {
+        if (this.value === 'report_s') {
             $('#words_added_v_f').addClass('dn');
             $('#words_deleted_v_f').addClass('dn');
             $('#jaccard_v_f').addClass('dn');
             $('#words_added_s_f').removeClass('dn');
             $('#words_deleted_s_f').removeClass('dn');
             $('#jaccard_s_f').removeClass('dn')
-        } else if (this.value === 'befund_g') {
+        } else if (this.value === 'report_v') {
             $('#words_added_v_f').removeClass('dn');
             $('#words_deleted_v_f').removeClass('dn');
             $('#jaccard_v_f').removeClass('dn');

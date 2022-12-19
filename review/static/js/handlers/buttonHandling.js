@@ -20,7 +20,7 @@ function buttonHandlerWriter() {
 }
 
 function buttonHandlerReviewer() {
-    $(".writerButton").click(function () {
+    $(".writerButton").on('click',function () {
         var writer = $(this).closest("tr")
             .find(".writerName")
             .text();

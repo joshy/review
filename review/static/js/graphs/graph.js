@@ -847,7 +847,7 @@ function filterByWriter(data, writer) {
 function filterByReviewer(data, reviewer) {
     if (reviewer != null) {
         data = data.filter(function (d) {
-            if (d["freigeber"] === reviewer) {
+            if (d["fin_signierer"] === reviewer) {
                 return d;
             }
         });
