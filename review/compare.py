@@ -75,11 +75,11 @@ def _extract_section(befund):
 
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     s = time.time()
-    report_s = rtf_to_text(row['report_s'], encoding="cp1252", errors="ignore") \
+    report_s = rtf_to_text(row['report_s']) \
         if row['report_s'] is not None else ''
-    report_v = rtf_to_text(row['report_v'], encoding="cp1252", errors="ignore") \
+    report_v = rtf_to_text(row['report_v']) \
         if row['report_v'] is not None else ''
-    report_f = rtf_to_text(row['report_f'], encoding="cp1252", errors="ignore") \
+    report_f = rtf_to_text(row['report_f']) \
         if row['report_f'] is not None else ''
     report_s = _extract_section(report_s)
     report_v = _extract_section(report_v)
@@ -87,7 +87,7 @@ def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     compare_s_f = _diff(report_s, report_f)
     compare_v_f = _diff(report_v, report_f)
     total_lengths = {'total_words_s': _total_length(report_s),
-                     'total_words_g': _total_length(report_v),
+                     'total_words_v': _total_length(report_v),
                      'total_words_f': _total_length(report_f)}
     e = time.time()
     logging.debug('Single row diff calculation took %s', e - s)

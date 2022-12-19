@@ -58,7 +58,7 @@ def update_metrics(cursor, accession_number, diffs):
                 diffs[1]["additions"],
                 diffs[1]["deletions"],
                 diffs[2]["total_words_s"],
-                diffs[2]["total_words_g"],
+                diffs[2]["total_words_v"],
                 diffs[2]["total_words_f"],
                 accession_number,
             ),
@@ -117,52 +117,9 @@ def insert(cursor, row, report_status):
     )
 
 
-def update(cursor, row, report_status):
-    field = "befund_" + report_status
-    sql = """
-          UPDATE reports
-          SET
-            {} = %s,
-            lese_datum = %s,
-            leser = %s,
-            gegenlese_datum = %s,
-            gegenleser = %s,
-            freigeber = %s,
-            report_status = %s,
-            report_freigabe = %s,
-            unters_beginn = %s,
-            pat_vorname = %s,
-            pat_name = %s,
-            untart_name = %s
-          WHERE
-            accession_number = %s
-          """.format(
-        field
-    )
-    cursor.execute(
-        sql,
-        (
-            row[field],
-            row["lese_datum"],
-            row["leser"],
-            row["gegenlese_datum"],
-            row["gegenleser"],
-            row["freigeber"],
-            row["report_status"],
-            row["report_freigabe"],
-            row["unters_beginn"],
-            row["pat_vorname"],
-            row["pat_name"],
-            row["untart_name"],
-            row["accession_number"],
-        ),
-    )
-
-
 def query_by_writer_and_department_and_modality(
     cursor, writer, last_exams, departments, modalities
 ):
-    print(modalities)
     """
     Query all reports in the review db by writer.
     """
@@ -241,7 +198,7 @@ def query_by_writer_and_date_and_department_and_modality(
             a.words_deleted_s_f,
             a.words_deleted_v_f,
             a.total_words_s,
-            a.total_words_g,
+            a.total_words_v,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
             a.pp_misc_mfd_1_bezeichnung,
@@ -303,7 +260,7 @@ def query_by_reviewer_and_department_and_modality(
             a.words_deleted_v_f,
             a.words_deleted_v_f,
             a.total_words_s,
-            a.total_words_g,
+            a.total_words_v,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
             a.pp_misc_mfd_1_bezeichnung,
@@ -364,7 +321,7 @@ def query_by_reviewer_and_date_and_department_and_modality(
             a.words_deleted_s_f,
             a.words_deleted_v_f,
             a.total_words_s,
-            a.total_words_g,
+            a.total_words_v,
             a.total_words_f,
             a.pp_misc_mfd_1_kuerzel,
             a.pp_misc_mfd_1_bezeichnung,
