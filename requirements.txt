@@ -10,3 +10,4 @@ striprtf
 pandas
 gunicorn
 flask-login
+python-dotenv
