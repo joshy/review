@@ -1,7 +1,4 @@
 import json
-import logging
-import re
-import subprocess
 
 from striprtf.striprtf import rtf_to_text
 
