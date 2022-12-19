@@ -11,7 +11,7 @@ class User(UserMixin):
         self.admin_users = os.getenv("ADMIN_USERS")
 
     def has_general_approval_rights(self):
-        if self.ris_kuerzel in self.admin_users:
+        if self.ris_kuerzel() in self.admin_users:
             return True
         return self.user["ris"]["has_general_approval_rights"]
 
