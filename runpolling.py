@@ -50,7 +50,6 @@ def calculate_comparison():
 
 def job():
     calculate_comparison()
-    update_modalities()
 
 
 def run_schedule():
@@ -60,7 +59,7 @@ def run_schedule():
 
 
 if __name__ == "__main__":
-    schedule.every(1).minutes.do(job)
+    schedule.every(5).minutes.do(job)
     t = Thread(target=run_schedule)
     t.start()
     logger.info("Polling is up and running")
