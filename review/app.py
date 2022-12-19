@@ -4,32 +4,36 @@ from datetime import datetime
 
 import pandas as pd
 import psycopg2
-from flask import (Flask, g, redirect, render_template, request, session,
-                   url_for)
+from dotenv import load_dotenv
+from flask import Flask, g, redirect, render_template, request, url_for
 from flask_assets import Bundle, Environment
 from flask_login import LoginManager, current_user
 from flask_login.utils import login_required
 from psycopg2.extras import RealDictCursor
+from repo.converter import rtf_to_text
+from repo.database.review_report import (
+    query_review_report,
+    query_review_report_by_acc,
+    query_review_reports,
+)
 from requests import get
 
-from repo.converter import rtf_to_text
-from repo.database.review_report import (query_review_report,
-                                         query_review_report_by_acc,
-                                         query_review_reports)
-from review.calculations import (calculate_median,
-                                 calculate_median_by_reviewer,
-                                 calculate_median_by_writer, relative)
+from review.calculations import (
+    calculate_median,
+    calculate_median_by_reviewer,
+    calculate_median_by_writer,
+    relative,
+)
 from review.database import (
     query_all_by_departments,
     query_by_reviewer_and_date_and_department_and_modality,
     query_by_reviewer_and_department_and_modality,
     query_by_writer_and_date_and_department_and_modality,
-    query_by_writer_and_department_and_modality)
+    query_by_writer_and_department_and_modality,
+)
 from review.user import User
 
-app = Flask(__name__, instance_relative_config=True)
-app.config.from_object("repo.default_config")
-#app.config.from_pyfile("config.cfg")
+app = Flask(__name__)
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.1.2"
@@ -40,23 +44,25 @@ login_manager.init_app(app)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
 
+load_dotenv()
+
 RIS_DB_SETTINGS = {
-    "host": app.config["RIS_DB_HOST"],
-    "port": app.config["RIS_DB_PORT"],
-    "service": app.config["RIS_DB_SERVICE"],
-    "user": app.config["RIS_DB_USER"],
-    "password": app.config["RIS_DB_PASSWORD"],
+    "host": os.getenv("RIS_DB_HOST"),
+    "port": os.getenv("RIS_DB_PORT"),
+    "service": os.getenv("RIS_DB_SERVICE"),
+    "user": os.getenv("RIS_DB_USER"),
+    "password": os.getenv("RIS_DB_PASSWORD"),
 }
 
 REVIEW_DB_SETTINGS = {
-    "dbname": app.config["REVIEW_DB_NAME"],
-    "user": app.config["REVIEW_DB_USER"],
-    "password": app.config["REVIEW_DB_PASSWORD"],
-    "host": app.config["REVIEW_DB_HOST"],
-    "port": app.config["REVIEW_DB_PORT"],
+    "dbname": os.getenv("REVIEW_DB_NAME"),
+    "user": os.getenv("REVIEW_DB_USER"),
+    "password": os.getenv("REVIEW_DB_PASSWORD"),
+    "host": os.getenv("REVIEW_DB_HOST"),
+    "port": os.getenv("REVIEW_DB_PORT"),
 }
 
-#WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
+WHO_IS_WHO_URL = app.config["WHO_IS_WHO_URL"]
 
 """
 if not WHO_IS_WHO_URL:
@@ -95,9 +101,10 @@ assets.register("js_all", js)
 @login_manager.request_loader
 def load_user_from_request(request):
     loginname = request.headers.get("Remote-User")
+    print(loginname)
     if loginname:
-        user = get(WHO_IS_WHO_URL + loginname).json()
-        user = User(user)
+        #user = get(WHO_IS_WHO_URL + loginname).json()
+        user = User(loginname)
         # If the RIS username is not empty return user, otherwise user
         # doesn't exists. Check whoiswho application for implementation details
         if not user.ris_kuerzel:

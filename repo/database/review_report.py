@@ -6,9 +6,9 @@ def query_review_report_by_acc(cursor, id):
           SELECT
             *
           FROM
-            reports a
+            sectra_reports a
           WHERE
-              a.unters_schluessel = %s
+              a.accession_number = %s
           """
     cursor.execute(sql, (id,))
     desc = [d[0].lower() for d in cursor.description]
@@ -28,7 +28,6 @@ def query_review_report(cursor, id):
     cursor.execute(sql, (id,))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
-    print(result)
     return result[0] if result else []
 
 
@@ -57,7 +56,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
           FROM
             sectra_reports a
           WHERE
-              a.last_updated
+              a.unters_beginn
                 BETWEEN
                   %s
                     AND
@@ -71,12 +70,12 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND a.schreiber = '{writer.upper()}'"
+        sql += f" AND a.schreiber = '{writer.lower()}'"
     if reviewer:
-        sql += f" AND a.fin_signierer = '{reviewer.upper()}'"
+        sql += f" AND a.fin_signierer = '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.lower()}'"
-    sql = template.render(other_clause=sql) 
+    sql = template.render(other_clause=sql)
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
