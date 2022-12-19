@@ -101,10 +101,9 @@ assets.register("js_all", js)
 @login_manager.request_loader
 def load_user_from_request(request):
     loginname = request.headers.get("Remote-User")
-    print(loginname)
     if loginname:
-        #user = get(WHO_IS_WHO_URL + loginname).json()
-        user = User(loginname)
+        user = get(WHO_IS_WHO_URL + loginname).json()
+        user = User(user)
         # If the RIS username is not empty return user, otherwise user
         # doesn't exists. Check whoiswho application for implementation details
         if not user.ris_kuerzel:
