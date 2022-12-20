@@ -9,23 +9,23 @@
         </a>
     </div>
 
-    <div class="cf pl4 dtc w-40 v-btm truncate">
+    <div class="cf dtc w-40 v-btm truncate">
         <form action="/">
             <label class="f6 pa1" for="datepicker">Date </label>
             <input id="datepicker"
-                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-20 b--near-black"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
                    value="{{ day }}" type="text"
                    name="day" placeholder="day">
             <label class="f6 pa1" for="writer">Writer </label>
-            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
+            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-20 b--near-black"
                    value="{{ writer }}" type="text"
-                   name="writer" placeholder="Shortname"
+                   name="writer" placeholder="Windows login name"
                    {% if not has_general_approval_rights %}readonly {% endif %}>
             <label class="f6 pa1" for="writer">Reviewer </label>
             <input id="reviewer"
-                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
+                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-20 b--near-black"
                    value="{{ reviewer }}" type="text"
-                   name="reviewer" placeholder="Shortname">
+                   name="reviewer" placeholder="Windows login name">
             <label class="f6 pa1" for="writer">Befund Status </label>
             <input id="reviewer"
                    class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
