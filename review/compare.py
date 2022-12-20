@@ -5,7 +5,7 @@ from typing import Dict, Tuple
 
 import pydiff
 
-from repo.converter import rtf_to_text
+from striprtf.striprtf import rtf_to_text
 
 _word_split_re = re.compile(r'(\s+|[^\w\s]+)', re.UNICODE)
 

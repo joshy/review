@@ -95,14 +95,6 @@ js = Bundle(
 )
 assets.register("js_all", js)
 
-def text(report_file):
-    if report_file is None:
-        return None
-    with open(report_file) as f:
-        text = f.read()
-        return rtf_to_text(text)
-
-
 
 @login_manager.request_loader
 def load_user_from_request(request):
@@ -167,21 +159,6 @@ def diff(id):
     return render_template("diff.html", row=row, version=version)
 
 
-@app.route("/diff")
-def diff_by_accession():
-    con = get_review_db()
-    acc = request.args.get("accession_number", -1)
-    row = query_review_report_by_acc(con.cursor(), acc)
-    cases = ["befund_s", "befund_g", "befund_f"]
-    for c in cases:
-        if c in row:
-            field = c + "_text"
-            v = row[c]
-            if v:
-                row[field] = rtf_to_text(v)
-    return render_template("diff.html", row=row, version=version)
-
-
 @app.route("/writer-dashboard")
 @login_required
 def writer_dashboard():
@@ -200,9 +177,7 @@ def writer_dashboard():
         "OTHER",
     ]
     modalities = "{" + ",".join(modalities) + "}"
-    rows = load_data_by_writer(
-        writer, last_exams, start_date, end_date, modalities
-    )
+    rows = load_data_by_writer(writer, last_exams, start_date, end_date, modalities)
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
     df_rows = remove_NaT_format(df_rows)
@@ -247,9 +222,7 @@ def reviewer_dashboard():
         "OTHER",
     ]
     modalities = "{" + ",".join(modalities) + "}"
-    rows = load_data_by_reviewer(
-        reviewer, last_exams, start_date, end_date, modalities
-    )
+    rows = load_data_by_reviewer(reviewer, last_exams, start_date, end_date, modalities)
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
     df_rows = remove_NaT_format(df_rows)
@@ -276,9 +249,7 @@ def reviewer_dashboard():
     )
 
 
-def load_data_by_writer(
-    writer, last_exams, start_date, end_date, modalities
-):
+def load_data_by_writer(writer, last_exams, start_date, end_date, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
@@ -288,15 +259,11 @@ def load_data_by_writer(
             cursor, writer, s_d, e_d, modalities
         )
     else:
-        rows = query_by_writer_and_modality(
-            cursor, writer, last_exams, modalities
-        )
+        rows = query_by_writer_and_modality(cursor, writer, last_exams, modalities)
     return rows
 
 
-def load_data_by_reviewer(
-    reviewer, last_exams, start_date, end_date, modalities
-):
+def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
@@ -306,9 +273,7 @@ def load_data_by_reviewer(
             cursor, reviewer, s_d, e_d, modalities
         )
     else:
-        rows = query_by_reviewer_and_modality(
-            cursor, reviewer, last_exams, modalities
-        )
+        rows = query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities)
         print(len(rows))
     return rows
 
@@ -331,10 +296,9 @@ def get_review_db():
     return g._review_database
 
 
-
 @app.teardown_appcontext
 def teardown_db(exception):
-    """ Closes DB connection when app context is done. """
+    """Closes DB connection when app context is done."""
     logging.debug("Closing db connection")
     db = getattr(g, "_ris_database", None)
     if db is not None:
