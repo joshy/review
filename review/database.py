@@ -77,7 +77,8 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     if reviewer:
         sql += f" AND a.fin_signierer = '{reviewer.lower()}'"
     if report_status:
-        sql += f" AND a.report_status = '{report_status.lower()}'"
+        sql += f" AND a.report_status = '{report_status.upper()}'"
+    
     sql = template.render(other_clause=sql)
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
