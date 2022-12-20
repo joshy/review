@@ -44,13 +44,6 @@ app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
 
 load_dotenv()
 
-RIS_DB_SETTINGS = {
-    "host": os.getenv("RIS_DB_HOST"),
-    "port": os.getenv("RIS_DB_PORT"),
-    "service": os.getenv("RIS_DB_SERVICE"),
-    "user": os.getenv("RIS_DB_USER"),
-    "password": os.getenv("RIS_DB_PASSWORD"),
-}
 
 REVIEW_DB_SETTINGS = {
     "dbname": os.getenv("REVIEW_DB_NAME"),
@@ -294,12 +287,3 @@ def get_review_db():
     if db is None:
         db = g._review_database = psycopg2.connect(**REVIEW_DB_SETTINGS)
     return g._review_database
-
-
-@app.teardown_appcontext
-def teardown_db(exception):
-    """Closes DB connection when app context is done."""
-    logging.debug("Closing db connection")
-    db = getattr(g, "_ris_database", None)
-    if db is not None:
-        db.close()
