@@ -10,8 +10,8 @@ $(".infoReview").hover(
 $(".infoDashboard").hover(
     function () {
         $(this).append($("<span>: The Dashboard visualizes the similarity calculation between three different states of each report: <br>" +
-            "<b>&#39schreiben&#39, &#39gegengelesen&#39 and &#39final&#39</b> <br>" +
-            "The similarities between <b>&#39schreiben -> final&#39 and &#39gegengelesen -> final&#39</b> have been calculated <br>" +
+            "<b>&#39schreiben&#39, &#39vorläufig&#39 and &#39final&#39</b> <br>" +
+            "The similarities between <b>&#39schreiben -> final&#39 and &#39vorläufig -> final&#39</b> have been calculated <br>" +
             "and can be compared using the dashboard. The calculation have been measured by means of the <b>Jaccard-Index</b>.</span>"));
     }, function () {
         $(this).find("span:last").remove();
@@ -21,7 +21,7 @@ $(".infoReportsList").hover(
     function () {
         $(this).append($("<span>: The List below shows the specified reports which have been concluded by status final <br>" +
             "Click on <b>&#39Changes&#39</b> at the end of each row to see the particular report. <br>" +
-            "<b>s->f: &#39schreiben -> final&#39 / g->f: &#39gegengelesen -> final&#39</b> </span>"));
+            "<b>s->f: &#39schreiben -> final&#39 / g->f: &#39vorläufig -> final&#39</b> </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -29,7 +29,7 @@ $(".infoReportsList").hover(
 $(".infoSimilarity").hover(
     function () {
         $(this).append($("<span>: The following graph shows the <b>Similarity-Value</b> of each concluded report over time. Click on a specific circle to see the report<br>" + "" +
-            "Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and &#39gegengelesen -> final&#39</b> <br>" +
+            "Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and &#39vorläufig -> final&#39</b> <br>" +
             "Click on a specific histogram interval to see a detailed view, by clicking the third time the graph will be reset.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
@@ -39,7 +39,7 @@ $(".infoWordsAdded").hover(
     function () {
         $(this).append($("<span>: The following graph shows the <b>relative amount of all added words of each concluded report over time</b>.<br>" +
             "Click on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
-            "&#39gegengelesen -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
+            "&#39vorläufig -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -48,7 +48,7 @@ $(".infoWordsDeleted").hover(
     function () {
         $(this).append($("<span>: The following graph shows the <b>relative amount of all deleted words of each concluded report over time</b>. Click<br>"+
             "on a specific circle to see the report. Click on the button at the top right corner to switch between <b>&#39schreiben -> final&#39 and<br>" +
-            "&#39gegengelesen -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
+            "&#39vorläufig -> final&#39</b> Click on a specific histogram interval to see a detailed view, clicking the third time will reset the graph.  </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -57,7 +57,7 @@ $(".infoMedianSimilarity").hover(
     function () {
         $(this).append($("<span>: The following graph shows your <b>personal calculated Median over the specified reports</b> and the <b>calculated Median over all<br>" +
             "reports</b>. By clicking on the button at the top right corner of the specific graph you can switch between <br>" +
-            "<b>&#39schreiben -> final&#39 and &#39gegengelesen -> final&#39</b> values. </span>"));
+            "<b>&#39schreiben -> final&#39 and &#39vorläufig -> final&#39</b> values. </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -66,7 +66,7 @@ $(".infoMedianDocumentChanges").hover(
     function () {
         $(this).append($("<span>: The following chart shows the <b>Median of personal and overall document changes</b> in comparison to the whole corresponding report<br>" +
             "in percent. By clicking on the button at the top right corner of the specific graph you can switch between <br>" +
-            "<b>&#39schreiben -> final&#39 and &#39gegengelesen -> final&#39</b> values. </span>"));
+            "<b>&#39schreiben -> final&#39 and &#39vorläufig -> final&#39</b> values. </span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -75,7 +75,7 @@ $(".infoDocumentChanges").hover(
     function () {
         $(this).append($("<span>: The following graphs show the <b>personal calculated Median of all added / deleted words over <br>" +
             "the specified reports</b> and the <b>calculated Median over all reports</b> in comparison to the whole corresponding report <br>" +
-            "in percent. The calculation is based upon the following comparison: <b>&#39gegengelesen -> final&#39</b></span>"));
+            "in percent. The calculation is based upon the following comparison: <b>&#39vorläufig -> final&#39</b></span>"));
     }, function () {
         $(this).find("span:last").remove();
     });
@@ -109,7 +109,7 @@ $(".infoTreeMap").hover(
 
 $(".infoDiffView").hover(
     function () {
-        $(this).append($("<span>: The left column shows the choosen report by the states: <b>&#39schreiben&#39</b>  or <b>&#39gegengelesen&#39.</b> " +
+        $(this).append($("<span>: The left column shows the choosen report by the states: <b>&#39schreiben&#39</b>  or <b>&#39vorläufig&#39.</b> " +
             "Choose on the top of the this column which of the two states should be diplayed. <br>"+
     "The middle column shows the choosen report by the state <b>&#39final&#39</b>. The right column shows the difference between the other columns: Added Words are green and deleted Words are red.<br>"+
     "<b>Cave!</b> Since the Jaccard-Index-Calculation has been optimized, only changes in the Sections <b>&#39Befund&#39</b> and <b>&#39Beurteilung&#39</b> " +

@@ -117,9 +117,7 @@ def insert(cursor, row, report_status):
     )
 
 
-def query_by_writer_and_department_and_modality(
-    cursor, writer, last_exams, departments, modalities
-):
+def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
     """
     Query all reports in the review db by writer.
     """
@@ -153,7 +151,7 @@ def query_by_writer_and_department_and_modality(
           WHERE
               a.schreiber = %s
           AND
-              a.report_status = 'f'
+              a.report_status = 'F'
           AND
               a.schreiber != b.fin_signierer
           AND 
@@ -162,34 +160,25 @@ def query_by_writer_and_department_and_modality(
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (writer.upper(), modalities, last_exams))
+    cursor.execute(sql, (writer, modalities, last_exams))
     return cursor.fetchall()
 
 
-def query_by_writer_and_date_and_department_and_modality(
-    cursor, writer, start_date, end_date, departments, modalities
+def query_by_writer_and_date_and_modality(
+    cursor, writer, start_date, end_date, modalities
 ):
     """
     Query all reports in the review db by writer.
     """
     sql = """
           SELECT
-            a.patient_schluessel,
+            a.pid,
             a.accession_number,
-            a.unters_art,
             a.unters_beginn,
-            a.report_schluessel,
             a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.report_freigabe,
+            a.vor_signierer,
+            a.fin_signierer,
             a.report_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
             a.untart_name,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -200,97 +189,98 @@ def query_by_writer_and_date_and_department_and_modality(
             a.total_words_s,
             a.total_words_v,
             a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
             a.modality
           FROM
-            reports a 
-          INNER JOIN 
-            reports b 
-          ON 
-            a.accession_number = b.accession_number
+            sectra_reports a 
           WHERE
               a.schreiber = %s
           AND
               a.unters_beginn between %s and %s
           AND
-              a.report_status = 'f'
-          AND
-              a.schreiber != b.freigeber
-          AND
-              a.pp_misc_mfd_1_kuerzel = ANY(%s)
+              a.report_status = 'F'
           AND
               a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.upper(), start_date, end_date, departments, modalities))
+    cursor.execute(sql, (writer.upper(), start_date, end_date, modalities))
     return cursor.fetchall()
 
 
-def query_by_reviewer_and_department_and_modality(
-    cursor, reviewer, last_exams, departments, modalities
-):
+def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
     """
     Query all reports in the review db by reviewer.
     """
     sql = """
           SELECT
-            a.patient_schluessel,
+            a.pid,
             a.accession_number,
-            a.unters_art,
             a.unters_beginn,
-            a.report_schluessel,
             a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.report_freigabe,
+            a.vor_signierer,
+            a.fin_signierer,
             a.report_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
             a.untart_name,
             a.jaccard_s_f,
             a.jaccard_v_f,
             a.words_added_s_f,
             a.words_added_v_f,
-            a.words_deleted_v_f,
+            a.words_deleted_s_f,
             a.words_deleted_v_f,
             a.total_words_s,
             a.total_words_v,
             a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
             a.modality
           FROM
-            reports a
-          INNER JOIN 
-            reports b 
-          ON 
-            a.accession_number = b.accession_number
+            sectra_reports a
           WHERE
-              a.freigeber = %s
+              a.fin_signierer ilike %s
           AND
-              a.report_status = 'f'
-          AND
-              a.schreiber != b.freigeber
-          AND 
-              a.pp_misc_mfd_1_kuerzel = ANY(%s)
+              a.report_status = 'F'
           AND 
               a.modality= ANY(%s)
           ORDER BY
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (reviewer.upper(), departments, modalities, last_exams))
+    cursor.execute(sql, (reviewer.upper(), modalities, last_exams))
     return cursor.fetchall()
 
 
-def query_by_reviewer_and_date_and_department_and_modality(
-    cursor, reviewer, start_date, end_date, departments, modalities
+def query_all_by_departments(cursor):
+    """
+    Query all reports in the review db which have status final
+    """
+    sql = """
+          SELECT
+            a.jaccard_s_f,
+            a.jaccard_v_f,
+            a.words_added_s_f,
+            a.words_added_v_f,
+            a.words_deleted_s_f,
+            a.words_deleted_v_f,
+            a.total_words_s,
+            a.total_words_v,
+            a.total_words_f
+          FROM
+            sectra_reports a
+          INNER JOIN 
+            sectra_reports b 
+          ON 
+            a.accession_number = b.accession_number
+          WHERE
+              a.report_status = 'F'
+          AND
+              a.schreiber != b.fin_signierer
+          ORDER BY
+              a.unters_beginn desc
+          LIMIT 2000
+          """
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+def query_by_reviewer_and_date_and_modality(
+    cursor, reviewer, start_date, end_date, modalities
 ):
     """
     Query all reports in the review db by reviewer, date and department.
@@ -337,92 +327,15 @@ def query_by_reviewer_and_date_and_department_and_modality(
           AND
               a.unters_beginn between %s and %s
           AND
-              a.report_status = 'f'
+              a.report_status = 'F'
           AND
               a.schreiber != b.freigeber
-          AND
-              a.pp_misc_mfd_1_kuerzel = ANY(%s)
           AND
               a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(
-        sql, (reviewer.upper(), start_date, end_date, departments, modalities)
-    )
-    return cursor.fetchall()
-
-
-def query_all_by_departments(cursor, departments):
-    """
-    Query all reports in the review db which have status final
-    """
-    sql = """
-          SELECT
-            a.jaccard_s_f,
-            a.jaccard_v_f,
-            a.words_added_s_f,
-            a.words_added_v_f,
-            a.words_deleted_s_f,
-            a.words_deleted_v_f,
-            a.total_words_s,
-            a.total_words_v,
-            a.total_words_f
-          FROM
-            sectra_reports a
-          INNER JOIN 
-            sectra_reports b 
-          ON 
-            a.accession_number = b.accession_number
-          WHERE
-              a.report_status = 'f'
-          AND
-              a.schreiber != b.fin_signierer
-          ORDER BY
-              a.unters_beginn desc
-          LIMIT 2000
-          """
-    cursor.execute(sql, [departments])
-    return cursor.fetchall()
-
-
-def update_department_development(cursor, row, item):
-    """
-    Temporary Method to fill existing rows with the department description (development)
-    """
-    sql = """
-              UPDATE sectra_eports SET 
-                pp_misc_mfd_1_kuerzel = %s
-              WHERE
-                accession_number = %s
-              """
-    cursor.execute(sql, (item, row))
-
-
-def update_modality(cursor, row, item):
-    """
-    Temporary Method to fill existing rows with the modality description
-    """
-    sql = """
-              UPDATE sectra_reports SET 
-                modality = %s
-              WHERE
-                accession_number = %s
-              """
-    cursor.execute(sql, (item, row))
-
-
-def query_all_rows(cursor):
-    """
-    Temporary Method: query all rows (development)
-    """
-    sql = """
-              SELECT
-                 accession_number
-              FROM sectra_reports
-            
-               """
-    cursor.execute(sql)
+    cursor.execute(sql, (reviewer.upper(), start_date, end_date, modalities))
     return cursor.fetchall()
 
 

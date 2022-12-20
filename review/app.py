@@ -26,10 +26,10 @@ from review.calculations import (
 )
 from review.database import (
     query_all_by_departments,
-    query_by_reviewer_and_date_and_department_and_modality,
-    query_by_reviewer_and_department_and_modality,
-    query_by_writer_and_date_and_department_and_modality,
-    query_by_writer_and_department_and_modality,
+    query_by_reviewer_and_date_and_modality,
+    query_by_reviewer_and_modality,
+    query_by_writer_and_date_and_modality,
+    query_by_writer_and_modality,
 )
 from review.user import User
 
@@ -126,10 +126,10 @@ def review():
     else:
         writer = request.args.get("writer", "")
     reviewer = request.args.get("reviewer", "")
-    befund_status = request.args.get("befund_status", "")
+    report_status = request.args.get("report_status", "")
     dd = datetime.strptime(day, "%d.%m.%Y")
     con = get_review_db()
-    rows = query_review_reports(con.cursor(), dd, writer, reviewer, befund_status)
+    rows = query_review_reports(con.cursor(), dd, writer, reviewer, report_status)
     day = dd.strftime("%d.%m.%Y")
     return render_template(
         "review.html",
@@ -157,7 +157,7 @@ def diff(id):
             field = c + "_text"
             v = row[c]
             if v:
-                row[field] = rtf_to_text(v, encoding="iso8859-1")
+                row[field] = rtf_to_text(v)
     return render_template("diff.html", row=row, version=version)
 
 
@@ -186,18 +186,6 @@ def writer_dashboard():
     last_exams = request.args.get("last_exams", 30)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
-    departments = request.args.getlist("departments") or [
-        "AOD",
-        "CTD",
-        "MSK",
-        "NUK",
-        "IR",
-        "FPS",
-        "MAM",
-        "NR",
-        "UKBB",
-    ]
-    departments = "{" + ",".join(departments) + "}"
     modalities = request.args.getlist("modalities") or [
         "CT",
         "MRI",
@@ -207,7 +195,7 @@ def writer_dashboard():
     ]
     modalities = "{" + ",".join(modalities) + "}"
     rows = load_data_by_writer(
-        writer, last_exams, start_date, end_date, departments, modalities
+        writer, last_exams, start_date, end_date, modalities
     )
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
@@ -215,7 +203,7 @@ def writer_dashboard():
     data = calculate_median_by_reviewer(df_rows)
     rows = df_rows.to_dict("records")
     median_single = calculate_median(rows)
-    all_rows = load_all_data(departments)
+    all_rows = load_all_data()
     df_all_rows = pd.DataFrame(all_rows)
     df_all_rows = remove_NaT_format(df_all_rows)
     all_rows = relative(df_all_rows).to_dict("records")
@@ -232,7 +220,6 @@ def writer_dashboard():
         start_date=start_date,
         end_date=end_date,
         version=version,
-        departments=departments,
         has_general_approval_rights=current_user.has_general_approval_rights(),
     )
 
@@ -246,18 +233,6 @@ def reviewer_dashboard():
     last_exams = request.args.get("last_exams", 30)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
-    departments = request.args.getlist("departments") or [
-        "AOD",
-        "CTD",
-        "MSK",
-        "NUK",
-        "IR",
-        "FPS",
-        "MAM",
-        "NR",
-        "UKBB",
-    ]
-    departments = "{" + ",".join(departments) + "}"
     modalities = request.args.getlist("modalities") or [
         "CT",
         "MRI",
@@ -267,7 +242,7 @@ def reviewer_dashboard():
     ]
     modalities = "{" + ",".join(modalities) + "}"
     rows = load_data_by_reviewer(
-        reviewer, last_exams, start_date, end_date, departments, modalities
+        reviewer, last_exams, start_date, end_date, modalities
     )
     df_rows = pd.DataFrame(rows)
     df_rows = relative(df_rows)
@@ -275,7 +250,7 @@ def reviewer_dashboard():
     data = calculate_median_by_writer(df_rows)
     rows = df_rows.to_dict("records")
     median_single = calculate_median(rows)
-    all_rows = load_all_data(departments)
+    all_rows = load_all_data()
     df_all_rows = pd.DataFrame(all_rows)
     df_all_rows = remove_NaT_format(df_all_rows)
     all_rows = relative(df_all_rows).to_dict("records")
@@ -291,51 +266,51 @@ def reviewer_dashboard():
         start_date=start_date,
         end_date=end_date,
         version=version,
-        departments=departments,
         has_general_approval_rights=current_user.has_general_approval_rights(),
     )
 
 
 def load_data_by_writer(
-    writer, last_exams, start_date, end_date, departments, modalities
+    writer, last_exams, start_date, end_date, modalities
 ):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
         s_d = datetime.strptime(start_date, "%d.%m.%Y")
         e_d = datetime.strptime(end_date, "%d.%m.%Y")
-        rows = query_by_writer_and_date_and_department_and_modality(
-            cursor, writer, s_d, e_d, departments, modalities
+        rows = query_by_writer_and_date_and_modality(
+            cursor, writer, s_d, e_d, modalities
         )
     else:
-        rows = query_by_writer_and_department_and_modality(
-            cursor, writer, last_exams, departments, modalities
+        rows = query_by_writer_and_modality(
+            cursor, writer, last_exams, modalities
         )
     return rows
 
 
 def load_data_by_reviewer(
-    reviewer, last_exams, start_date, end_date, departments, modalities
+    reviewer, last_exams, start_date, end_date, modalities
 ):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
     if start_date and end_date:
         s_d = datetime.strptime(start_date, "%d.%m.%Y")
         e_d = datetime.strptime(end_date, "%d.%m.%Y")
-        rows = query_by_reviewer_and_date_and_department_and_modality(
-            cursor, reviewer, s_d, e_d, departments, modalities
+        rows = query_by_reviewer_and_date_and_modality(
+            cursor, reviewer, s_d, e_d, modalities
         )
     else:
-        rows = query_by_reviewer_and_department_and_modality(
-            cursor, reviewer, last_exams, departments, modalities
+        rows = query_by_reviewer_and_modality(
+            cursor, reviewer, last_exams, modalities
         )
+        print(len(rows))
     return rows
 
 
-def load_all_data(departments):
+def load_all_data():
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
-    return query_all_by_departments(cursor, departments)
+    return query_all_by_departments(cursor)
 
 
 def remove_NaT_format(df):

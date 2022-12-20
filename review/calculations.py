@@ -15,8 +15,15 @@ def relative(df):
 
 
 def _relative(total, changes):
-    t = total or 1.0
-    return changes / t
+    if total == 'None':
+        t = 1.0
+    else: 
+        t = total
+    if changes == 'None':
+        c = 0
+    else:
+        c = changes
+    return c / t
 
 
 def calculate_median_by_writer(df):
@@ -34,9 +41,9 @@ def calculate_median_by_reviewer(df):
     rows = {}
     median = {}
     if df.shape[0] > 0:
-        reviewer_list = df['freigeber'].drop_duplicates()
+        reviewer_list = df['fin_signierer'].drop_duplicates()
         for reviewer in reviewer_list:
-            rows[reviewer] = df.loc[df['freigeber'] == reviewer].to_dict('records')
+            rows[reviewer] = df.loc[df['fin_signierer'] == reviewer].to_dict('records')
             median['median_' + reviewer] = calculate_median(rows[reviewer])
     return median
 
@@ -56,10 +63,11 @@ def calculate_median(rows):
 def _calculate_median(values):
     if len(values) == 0:
         return 0
-
+    values = [v for v in values if v != 'None']
     values = sorted(values)
     half = int(floor(len(values) / 2))
-
+    if len(values) == 0:
+        return 0
     if len(values) % 2:
         return values[half]
     else:
