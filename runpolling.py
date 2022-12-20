@@ -38,10 +38,11 @@ def calculate_comparison():
     logger.debug(f"Total rows to update {total} for metrics")
     for i, r in enumerate(rows, 1):
         d = diffs(r)
-        update_metrics(cursor, r["accession_number"], d)
-        logger.debug(f"Updated row {i} of {total}", i, total)
-        if i % 10 == 0:
-            db.commit()
+        if d is not None:
+            update_metrics(cursor, r["accession_number"], d)
+            logger.debug(f"Updated row {i} of {total}", i, total)
+            if i % 10 == 0:
+                db.commit()
     db.commit()
     cursor.close()
     logger.debug(f"Updating metrics done for {total} rows")
