@@ -75,20 +75,25 @@ def _extract_section(befund):
 
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     s = time.time()
-    report_s = rtf_to_text(row['report_s']) \
-        if row['report_s'] is not None else ''
-    report_v = rtf_to_text(row['report_v']) \
-        if row['report_v'] is not None else ''
-    report_f = rtf_to_text(row['report_f']) \
-        if row['report_f'] is not None else ''
-    report_s = _extract_section(report_s)
-    report_v = _extract_section(report_v)
-    report_f = _extract_section(report_f)
-    compare_s_f = _diff(report_s, report_f)
-    compare_v_f = _diff(report_v, report_f)
-    total_lengths = {'total_words_s': _total_length(report_s),
-                     'total_words_v': _total_length(report_v),
-                     'total_words_f': _total_length(report_f)}
-    e = time.time()
-    logging.debug('Single row diff calculation took %s', e - s)
-    return compare_s_f, compare_v_f, total_lengths, row['accession_number']
+    try:
+        report_s = rtf_to_text(row['report_s']) \
+            if row['report_s'] is not None else ''
+        report_v = rtf_to_text(row['report_v']) \
+            if row['report_v'] is not None else ''
+        report_f = rtf_to_text(row['report_f']) \
+            if row['report_f'] is not None else ''
+        report_s = _extract_section(report_s)
+        report_v = _extract_section(report_v)
+        report_f = _extract_section(report_f)
+        compare_s_f = _diff(report_s, report_f)
+        compare_v_f = _diff(report_v, report_f)
+        total_lengths = {'total_words_s': _total_length(report_s),
+                        'total_words_v': _total_length(report_v),
+                        'total_words_f': _total_length(report_f)}
+        e = time.time()
+        logging.debug('Single row diff calculation took %s', e - s)
+        return compare_s_f, compare_v_f, total_lengths, row['accession_number']
+    except UnicodeDecodeError:
+        logging.error(f"Can decode row with acc: {row['accession_number']}")
+        return None
+    
