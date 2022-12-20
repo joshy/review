@@ -45,7 +45,7 @@ def calculate_comparison():
                 db.commit()
     db.commit()
     cursor.close()
-    logger.debug(f"Updating metrics done for {total} rows")
+    logger.info(f"Updating metrics done for {total} rows")
 
 
 def job():
