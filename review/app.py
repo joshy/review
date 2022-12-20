@@ -152,7 +152,7 @@ def diff(id):
             field = c + "_text"
             v = row[c]
             if v:
-                row[field] = rtf_to_text(v, encoding="iso8859-1")
+                row[field] = rtf_to_text(v, encoding="iso8859-1", errors="ignore")
     return render_template("diff.html", row=row, version=version)
 
 

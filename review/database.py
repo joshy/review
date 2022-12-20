@@ -66,7 +66,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
                   %s
             {{ other_clause }}
           ORDER BY
-              a.unters_beginn
+              a.unters_beginn desc
           """
     start = day.strftime("%Y-%m-%d 00:00:00")
     end = day.strftime("%Y-%m-%d 23:59:59")

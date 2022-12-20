@@ -38,7 +38,7 @@
                     <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
                     <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
                     {% if row['unters_beginn'] %}
-                    <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y') }}</td>
+                    <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M:%S') }}</td>
                     {% else %}
                     <td class="pa1 bb b--black-10 tr"></td>
                     {% endif %}
