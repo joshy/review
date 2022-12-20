@@ -10,12 +10,8 @@ from flask_assets import Bundle, Environment
 from flask_login import LoginManager, current_user
 from flask_login.utils import login_required
 from psycopg2.extras import RealDictCursor
-from repo.converter import rtf_to_text
-from repo.database.review_report import (
-    query_review_report,
-    query_review_report_by_acc,
-    query_review_reports,
-)
+from striprtf.striprtf import rtf_to_text
+
 from requests import get
 
 from review.calculations import (
@@ -25,6 +21,8 @@ from review.calculations import (
     relative,
 )
 from review.database import (
+    query_review_reports,
+    query_review_report_by_acc,
     query_all_by_departments,
     query_by_reviewer_and_date_and_modality,
     query_by_reviewer_and_modality,
@@ -97,6 +95,14 @@ js = Bundle(
 )
 assets.register("js_all", js)
 
+def text(report_file):
+    if report_file is None:
+        return None
+    with open(report_file) as f:
+        text = f.read()
+        return rtf_to_text(text)
+
+
 
 @login_manager.request_loader
 def load_user_from_request(request):
@@ -150,14 +156,14 @@ def no_rights():
 @app.route("/diff/<id>")
 def diff(id):
     con = get_review_db()
-    row = query_review_report(con.cursor(), id)
+    row = query_review_report_by_acc(con.cursor(), id)
     cases = ["report_s", "report_v", "report_f"]
     for c in cases:
         if c in row:
             field = c + "_text"
             v = row[c]
             if v:
-                row[field] = rtf_to_text(v)
+                row[field] = rtf_to_text(v, encoding="iso8859-1")
     return render_template("diff.html", row=row, version=version)
 
 
