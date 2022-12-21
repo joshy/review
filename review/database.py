@@ -34,9 +34,38 @@ def query_review_report(cursor, id):
     return result[0] if result else []
 
 
+def query_review_report(cursor):
+    """
+    Returns the rows where the reports are finalized and metrics are not yet
+    calculated.
+    """
+    sql = """
+          SELECT
+            unters_schluessel,
+            befund_s,
+            befund_g,
+            befund_f,
+            unters_beginn
+          FROM
+            reports
+          WHERE
+            befund_f is not null
+          AND
+            jaccard_s_f is null
+          OR
+            (jaccard_s_f = 0 AND jaccard_g_f = 0)
+          ORDER BY
+            unters_beginn desc
+          LIMIT 1000
+          """
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    return results
+
+
 def query_review_reports(cursor, day, writer, reviewer, report_status):
     """
-    Query all reports in the review db by day and writer (optional) and 
+    Query all reports in the review db by day and writer (optional) and
     reviewer (optional) and befund status (optional).
     """
     sql = """
@@ -78,7 +107,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
         sql += f" AND a.fin_signierer = '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
-    
+
     sql = template.render(other_clause=sql)
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
@@ -333,6 +362,7 @@ def query_all_by_departments(cursor):
           """
     cursor.execute(sql)
     return cursor.fetchall()
+
 
 def query_by_reviewer_and_date_and_modality(
     cursor, reviewer, start_date, end_date, modalities

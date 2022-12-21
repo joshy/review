@@ -10,7 +10,7 @@ from psycopg2.extras import DictCursor
 
 from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs
-from review.database import query_review_reports, update_metrics
+from review.database import query_review_report, update_metrics
 
 daiquiri.setup(
     level=logging.INFO,
@@ -33,7 +33,7 @@ def get_review_db():
 def calculate_comparison():
     db = get_review_db()
     cursor = db.cursor(cursor_factory=DictCursor)
-    rows = query_review_reports(cursor)
+    rows = query_review_report(cursor)
     total = len(rows)
     logger.debug(f"Total rows to update {total} for metrics")
     for i, r in enumerate(rows, 1):
