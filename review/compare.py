@@ -76,11 +76,11 @@ def _extract_section(befund):
 def diffs(row) -> Tuple[Dict[str, str], Dict[str, str], Dict[str, int], str]:
     s = time.time()
     try:
-        report_s = rtf_to_text(row['report_s']) \
+        report_s = rtf_to_text(row['report_s'], encoding="iso8859-1", errors="ignore") \
             if row['report_s'] is not None else ''
-        report_v = rtf_to_text(row['report_v']) \
+        report_v = rtf_to_text(row['report_v'], encoding="iso8859-1", errors="ignore") \
             if row['report_v'] is not None else ''
-        report_f = rtf_to_text(row['report_f']) \
+        report_f = rtf_to_text(row['report_f'], encoding="iso8859-1", errors="ignore") \
             if row['report_f'] is not None else ''
         report_s = _extract_section(report_s)
         report_v = _extract_section(report_v)
