@@ -41,19 +41,19 @@ def query_review_report(cursor):
     """
     sql = """
           SELECT
-            unters_schluessel,
-            befund_s,
-            befund_g,
-            befund_f,
+            a.accession_number,,
+            a.report_s,
+            a.report_v,
+            a.report_f,
             unters_beginn
           FROM
-            reports
+            sectra_reports
           WHERE
-            befund_f is not null
+            report_f is not null
           AND
             jaccard_s_f is null
           OR
-            (jaccard_s_f = 0 AND jaccard_g_f = 0)
+            (jaccard_s_f = 0 AND jaccard_v_f = 0)
           ORDER BY
             unters_beginn desc
           LIMIT 1000
