@@ -47,7 +47,7 @@ def query_review_report(cursor):
             a.report_f,
             unters_beginn
           FROM
-            sectra_reports
+            sectra_reports a
           WHERE
             report_f is not null
           AND
