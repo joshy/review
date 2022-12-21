@@ -41,7 +41,7 @@ def query_review_report(cursor):
     """
     sql = """
           SELECT
-            a.accession_number,,
+            a.accession_number,
             a.report_s,
             a.report_v,
             a.report_f,
