@@ -17,3 +17,6 @@ class User(UserMixin):
 
     def ris_kuerzel(self):
         return self.user["ris"]["mitarb_kuerzel"]
+
+    def login_name(self):
+        return self.user["account_name"]

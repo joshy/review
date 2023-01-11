@@ -97,7 +97,7 @@ def load_user_from_request(request):
         user = User(user)
         # If the RIS username is not empty return user, otherwise user
         # doesn't exists. Check whoiswho application for implementation details
-        if not user.ris_kuerzel:
+        if not user.login_name:
             return None
         return user
     elif "localhost" in request.headers.get("Host"):
@@ -113,7 +113,7 @@ def review():
     now = datetime.now().strftime("%d.%m.%Y")
     day = request.args.get("day", now)
     if not current_user.has_general_approval_rights():
-        writer = current_user.ris_kuerzel()
+        writer = current_user.login_name()
     else:
         writer = request.args.get("writer", "")
         if writer != "" and "@" not in writer:
@@ -160,7 +160,7 @@ def diff(id):
 @login_required
 def writer_dashboard():
     if not current_user.has_general_approval_rights():
-        writer = current_user.ris_kuerzel()
+        writer = current_user.login_name()
     else:
         writer = request.args.get("w", "")
     last_exams = request.args.get("last_exams", 30)
