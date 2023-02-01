@@ -78,9 +78,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
             a.unters_beginn,
             a.untart_kuerzel,
             a.untart_name,
-            lower(a.schreiber) as schreiber,
-            lower(a.vor_signierer) as vor_signierer,
-            lower(a.fin_signierer) as fin_signierer, 
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer, 
             a.report_status,
             a.untart_name,
             a.jaccard_v_f,
@@ -105,9 +105,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND lower(a.schreiber) = '{writer.lower()}'"
+        sql += f" AND lower(a.schreiber) LIKE '{writer.lower()}%'"
     if reviewer:
-        sql += f" AND lower(a.fin_signierer) = '{reviewer.lower()}'"
+        sql += f" AND lower(a.fin_signierer) LIKE '{reviewer.lower()}%'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -215,9 +215,9 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
             a.untart_kuerzel, 
             a.untart_name,
             a.unters_beginn,
-            lower(a.schreiber) as schreiber,
-            lower(a.vor_signierer) as vor_signierer,
-            lower(a.fin_signierer) as fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -236,11 +236,11 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
           ON 
             a.accession_number = b.accession_number
           WHERE
-              lower(a.schreiber) = %s
+              split_part(lower(a.schreiber), '@', 1) LIKE %s
           AND
               a.report_status = 'F'
           AND
-              lower(a.schreiber) != lower(b.fin_signierer)
+              split_part(lower(a.schreiber), '@', 1) != split_part(lower(b.fin_signierer), '@', 1)
           AND 
               a.modality = ANY(%s)
           ORDER BY
@@ -262,9 +262,9 @@ def query_by_writer_and_date_and_modality(
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            lower(a.schreiber) as schreiber,
-            lower(a.vor_signierer) as vor_signierer,
-            lower(a.fin_signierer) as fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -280,7 +280,7 @@ def query_by_writer_and_date_and_modality(
           FROM
             sectra_reports a 
           WHERE
-              lower(a.schreiber) = %s
+              lower(a.schreiber) LIKE '%s%'
           AND
               a.unters_beginn between %s and %s
           AND
@@ -303,9 +303,9 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            lower(a.schreiber) as schreiber,
-            lower(a.vor_signierer) as vor_signierer,
-            lower(a.fin_signierer) as fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -321,7 +321,7 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
           FROM
             sectra_reports a
           WHERE
-              lower(a.fin_signierer) = %s
+              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
           AND
               a.report_status = 'F'
           AND 
@@ -364,6 +364,7 @@ def query_all_by_departments(cursor):
           LIMIT 2000
           """
     cursor.execute(sql)
+    log.debug(cursor.query)
     return cursor.fetchall()
 
 

@@ -122,11 +122,7 @@ def review():
         writer = current_user.login_name()
     else:
         writer = request.args.get("writer", "")
-        if writer != "" and "@" not in writer:
-            writer = writer + "@ms.uhbs.ch"
     reviewer = request.args.get("reviewer", "")
-    if reviewer != "" and "@" not in reviewer:
-            reviewer = reviewer + "@ms.uhbs.ch"
     report_status = request.args.get("report_status", "")
     dd = datetime.strptime(day, "%d.%m.%Y")
     con = get_review_db()
