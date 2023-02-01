@@ -105,9 +105,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND lower(a.schreiber) LIKE '{writer.lower()}%'"
+        sql += f" AND split_part(lower(a.schreiber), '@', 1) LIKE '{writer.lower()}'"
     if reviewer:
-        sql += f" AND lower(a.fin_signierer) LIKE '{reviewer.lower()}%'"
+        sql += f" AND split_part(lower(a.fin_signierer), '@', 1) LIKE '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -376,22 +376,13 @@ def query_by_reviewer_and_date_and_modality(
     """
     sql = """
           SELECT
-            a.patient_schluessel,
+            a.pid,
             a.accession_number,
-            a.unters_art,
             a.unters_beginn,
-            a.report_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.report_freigabe,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
             a.untart_name,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -402,17 +393,15 @@ def query_by_reviewer_and_date_and_modality(
             a.total_words_s,
             a.total_words_v,
             a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
             a.modality
           FROM
-            reports a 
+            sectra_reports a 
           INNER JOIN 
-            reports b 
+            sectra_reports b 
           ON 
             a.accession_number = b.accession_number
           WHERE
-              a.freigeber = %s
+              split_part(lower(a.freigeber), '@', 1) LIKE %s
           AND
               a.unters_beginn between %s and %s
           AND
