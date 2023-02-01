@@ -401,13 +401,13 @@ def query_by_reviewer_and_date_and_modality(
           ON 
             a.accession_number = b.accession_number
           WHERE
-              split_part(lower(a.freigeber), '@', 1) LIKE %s
+              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
           AND
               a.unters_beginn between %s and %s
           AND
               a.report_status = 'F'
           AND
-              a.schreiber != b.freigeber
+              a.schreiber != b.fin_signierer
           AND
               a.modality = ANY(%s)
           ORDER BY
