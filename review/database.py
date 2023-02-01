@@ -75,9 +75,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
             a.unters_beginn,
             a.untart_kuerzel,
             a.untart_name,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            lower(a.schreiber) as schreiber,
+            lower(a.vor_signierer) as vor_signierer,
+            lower(a.fin_signierer) as fin_signierer, 
             a.report_status,
             a.untart_name,
             a.jaccard_v_f,
@@ -102,9 +102,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND a.schreiber = '{writer.lower()}'"
+        sql += f" AND lower(a.schreiber) = '{writer.lower()}'"
     if reviewer:
-        sql += f" AND a.fin_signierer = '{reviewer.lower()}'"
+        sql += f" AND lower(a.fin_signierer) = '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -112,6 +112,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
+    print(result)
     return result
 
 
@@ -212,9 +213,9 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
             a.untart_kuerzel, 
             a.untart_name,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            lower(a.schreiber) as schreiber,
+            lower(a.vor_signierer) as vor_signierer,
+            lower(a.fin_signierer) as fin_signierer,
             a.report_status,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -233,11 +234,11 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
           ON 
             a.accession_number = b.accession_number
           WHERE
-              a.schreiber = %s
+              lower(a.schreiber) = %s
           AND
               a.report_status = 'F'
           AND
-              a.schreiber != b.fin_signierer
+              lower(a.schreiber) != lower(b.fin_signierer)
           AND 
               a.modality = ANY(%s)
           ORDER BY
@@ -259,9 +260,9 @@ def query_by_writer_and_date_and_modality(
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            lower(a.schreiber) as schreiber,
+            lower(a.vor_signierer) as vor_signierer,
+            lower(a.fin_signierer) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -300,9 +301,9 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            lower(a.schreiber) as schreiber,
+            lower(a.vor_signierer) as vor_signierer,
+            lower(a.fin_signierer) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -318,7 +319,7 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
           FROM
             sectra_reports a
           WHERE
-              a.fin_signierer ilike %s
+              lower(a.fin_signierer) = %s
           AND
               a.report_status = 'F'
           AND 

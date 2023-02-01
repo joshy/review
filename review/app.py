@@ -163,7 +163,7 @@ def writer_dashboard():
         writer = current_user.login_name()
     else:
         writer = request.args.get("w", "")
-    last_exams = request.args.get("last_exams", 30)
+    last_exams = request.args.get("last_exams", default=30, type=int)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
     modalities = request.args.getlist("modalities") or [
@@ -208,7 +208,7 @@ def reviewer_dashboard():
     if not current_user.has_general_approval_rights():
         return redirect(url_for("no_rights"))
     reviewer = request.args.get("r", "")
-    last_exams = request.args.get("last_exams", 30)
+    last_exams = request.args.get("last_exams", default=30, type=int)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
     modalities = request.args.getlist("modalities") or [
