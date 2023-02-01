@@ -44,6 +44,12 @@ app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
 
 load_dotenv()
 
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
+
 
 REVIEW_DB_SETTINGS = {
     "dbname": os.getenv("REVIEW_DB_NAME"),
@@ -208,6 +214,8 @@ def reviewer_dashboard():
     if not current_user.has_general_approval_rights():
         return redirect(url_for("no_rights"))
     reviewer = request.args.get("r", "")
+    if reviewer == '':
+        reviewer = current_user.login_name()
     last_exams = request.args.get("last_exams", default=30, type=int)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")

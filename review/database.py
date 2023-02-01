@@ -3,6 +3,9 @@ import psycopg2
 
 from jinja2 import Template
 
+# this logger works
+log = logging.getLogger("review.app")
+
 
 def query_review_report_by_acc(cursor, id):
     sql = """
@@ -112,7 +115,6 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     cursor.execute(sql, (start, end))
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
-    print(result)
     return result
 
 
@@ -278,7 +280,7 @@ def query_by_writer_and_date_and_modality(
           FROM
             sectra_reports a 
           WHERE
-              a.schreiber = %s
+              lower(a.schreiber) = %s
           AND
               a.unters_beginn between %s and %s
           AND
@@ -288,7 +290,7 @@ def query_by_writer_and_date_and_modality(
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.upper(), start_date, end_date, modalities))
+    cursor.execute(sql, (writer.lower(), start_date, end_date, modalities))
     return cursor.fetchall()
 
 
@@ -328,7 +330,7 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (reviewer.upper(), modalities, last_exams))
+    cursor.execute(sql, (reviewer.lower(), modalities, last_exams))
     return cursor.fetchall()
 
 
@@ -421,20 +423,5 @@ def query_by_reviewer_and_date_and_modality(
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (reviewer.upper(), start_date, end_date, modalities))
-    return cursor.fetchall()
-
-
-def query_not_finalized(cursor):
-    sql = """
-              SELECT
-                 report_schluessel
-              FROM
-                 sectra_reports
-              WHERE
-                 report_v is not NULL
-              AND
-                 report_f is NULL
-          """
-    cursor.execute(sql)
+    cursor.execute(sql, (reviewer.lower(), start_date, end_date, modalities))
     return cursor.fetchall()
