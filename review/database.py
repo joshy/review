@@ -364,7 +364,6 @@ def query_all_by_departments(cursor):
           LIMIT 2000
           """
     cursor.execute(sql)
-    log.debug(cursor.query)
     return cursor.fetchall()
 
 
