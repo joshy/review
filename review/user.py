@@ -19,4 +19,4 @@ class User(UserMixin):
         return self.user["ris"]["mitarb_kuerzel"]
 
     def login_name(self):
-        return self.user["account_name"]
+        return self.user["query"]
