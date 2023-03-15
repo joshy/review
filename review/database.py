@@ -3,6 +3,9 @@ import psycopg2
 
 from jinja2 import Template
 
+# this logger works
+log = logging.getLogger("review.app")
+
 
 def query_review_report_by_acc(cursor, id):
     sql = """
@@ -75,9 +78,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
             a.unters_beginn,
             a.untart_kuerzel,
             a.untart_name,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer, 
             a.report_status,
             a.untart_name,
             a.jaccard_v_f,
@@ -102,9 +105,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND a.schreiber = '{writer.lower()}'"
+        sql += f" AND split_part(lower(a.schreiber), '@', 1) LIKE '{writer.lower()}'"
     if reviewer:
-        sql += f" AND a.fin_signierer = '{reviewer.lower()}'"
+        sql += f" AND split_part(lower(a.fin_signierer), '@', 1) LIKE '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -212,9 +215,9 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
             a.untart_kuerzel, 
             a.untart_name,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -233,11 +236,11 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
           ON 
             a.accession_number = b.accession_number
           WHERE
-              a.schreiber = %s
+              split_part(lower(a.schreiber), '@', 1) LIKE %s
           AND
               a.report_status = 'F'
           AND
-              a.schreiber != b.fin_signierer
+              split_part(lower(a.schreiber), '@', 1) != split_part(lower(b.fin_signierer), '@', 1)
           AND 
               a.modality = ANY(%s)
           ORDER BY
@@ -259,9 +262,9 @@ def query_by_writer_and_date_and_modality(
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -277,7 +280,7 @@ def query_by_writer_and_date_and_modality(
           FROM
             sectra_reports a 
           WHERE
-              a.schreiber = %s
+              lower(a.schreiber) LIKE '%s%'
           AND
               a.unters_beginn between %s and %s
           AND
@@ -287,7 +290,7 @@ def query_by_writer_and_date_and_modality(
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.upper(), start_date, end_date, modalities))
+    cursor.execute(sql, (writer.lower(), start_date, end_date, modalities))
     return cursor.fetchall()
 
 
@@ -300,9 +303,9 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            a.schreiber,
-            a.vor_signierer,
-            a.fin_signierer,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -318,7 +321,7 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
           FROM
             sectra_reports a
           WHERE
-              a.fin_signierer ilike %s
+              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
           AND
               a.report_status = 'F'
           AND 
@@ -327,7 +330,7 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
               a.unters_beginn desc
           LIMIT %s
           """
-    cursor.execute(sql, (reviewer.upper(), modalities, last_exams))
+    cursor.execute(sql, (reviewer.lower(), modalities, last_exams))
     return cursor.fetchall()
 
 
@@ -372,22 +375,13 @@ def query_by_reviewer_and_date_and_modality(
     """
     sql = """
           SELECT
-            a.patient_schluessel,
+            a.pid,
             a.accession_number,
-            a.unters_art,
             a.unters_beginn,
-            a.report_schluessel,
-            a.schreiber,
-            a.signierer,
-            a.freigeber,
-            a.report_freigabe,
+            split_part(lower(a.schreiber), '@', 1) as schreiber,
+            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
+            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
             a.report_status,
-            a.lese_datum,
-            a.leser,
-            a.gegenlese_datum,
-            a.gegenleser,
-            a.pat_name,
-            a.pat_vorname,
             a.untart_name,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -398,42 +392,25 @@ def query_by_reviewer_and_date_and_modality(
             a.total_words_s,
             a.total_words_v,
             a.total_words_f,
-            a.pp_misc_mfd_1_kuerzel,
-            a.pp_misc_mfd_1_bezeichnung,
             a.modality
           FROM
-            reports a 
+            sectra_reports a 
           INNER JOIN 
-            reports b 
+            sectra_reports b 
           ON 
             a.accession_number = b.accession_number
           WHERE
-              a.freigeber = %s
+              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
           AND
               a.unters_beginn between %s and %s
           AND
               a.report_status = 'F'
           AND
-              a.schreiber != b.freigeber
+              a.schreiber != b.fin_signierer
           AND
               a.modality = ANY(%s)
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (reviewer.upper(), start_date, end_date, modalities))
-    return cursor.fetchall()
-
-
-def query_not_finalized(cursor):
-    sql = """
-              SELECT
-                 report_schluessel
-              FROM
-                 sectra_reports
-              WHERE
-                 report_v is not NULL
-              AND
-                 report_f is NULL
-          """
-    cursor.execute(sql)
+    cursor.execute(sql, (reviewer.lower(), start_date, end_date, modalities))
     return cursor.fetchall()

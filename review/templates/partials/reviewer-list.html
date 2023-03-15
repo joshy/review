@@ -6,7 +6,7 @@
                 {% set reviewerlist = data['rows']|map(attribute ='fin_signierer')|unique|list %}
                 {% for reviewer in reviewerlist %}
                     <tr>
-                        {% set rname = reviewer.split('@')[0] %}
+                        {% set rname = reviewer %}
                         <td class="pa1 bb b--black-10 reviewerName">{{ rname }}
                             <button class="black fr f7 input-reset pa1 ba bg-yellow b--yellow pointer reviewerButton">Show
                             </button>

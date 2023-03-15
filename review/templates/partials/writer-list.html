@@ -6,7 +6,7 @@
                 {% set writerlist = data['rows']|map(attribute ='schreiber')|unique|list %}
                 {% for writer in writerlist %}
                     <tr>
-                        {% set wname = writer.split('@')[0] %}
+                        {% set wname = writer %}
                         <td class="pa1 bb b--black-10 writerName">{{ wname }}
                             <button class="black fr f7 input-reset pa1 ba bg-yellow b--yellow pointer writerButton">Show
                             </button>

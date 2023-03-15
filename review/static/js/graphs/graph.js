@@ -167,8 +167,8 @@ function drawGraph(svg, value, maxIntervalValue, minIntervalValue, classNames, c
                 .style("opacity", 0);
         })
         .on("click", function (d) {
-            console.log("on Diff-Viewer Page: " + d.befund_schluessel);
-            window.location = 'diff/' + d.befund_schluessel;
+            console.log("on Diff-Viewer Page: " + d);
+            window.location = 'diff/' + d.accession_number;
         });
 
     //Define Histogram
