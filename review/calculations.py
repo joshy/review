@@ -15,11 +15,11 @@ def relative(df):
 
 
 def _relative(total, changes):
-    if total == 'None':
+    if total is None or total == 'None':
         t = 1.0
     else: 
         t = total
-    if changes == 'None':
+    if changes is None or changes == 'None':
         c = 0
     else:
         c = changes
