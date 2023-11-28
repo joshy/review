@@ -53,8 +53,11 @@ def _jaccard(before, after):
     after = after.split()
     union = list(set(after + before))
     intersection = list(set(before) - (set(before) - set(after)))
-    jaccard = round(float(len(intersection)) / len(union), 3)
-    return jaccard
+    try:
+        jaccard = round(float(len(intersection)) / len(union), 3)
+        return jaccard
+    except ZeroDivisionError:
+        return 0
 
 
 def _diff(before, after):
