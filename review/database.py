@@ -55,8 +55,6 @@ def query_review_report(cursor):
             report_f is not null
           AND
             jaccard_s_f is null
-          OR
-            (jaccard_s_f = 0 AND jaccard_v_f = 0)
           ORDER BY
             unters_beginn desc
           LIMIT 1000
