@@ -32,15 +32,15 @@
                             <input class="mr1" type="radio" name="report_text" value="report_s" id="report_s_text" /> Schreiben
                         </label>
                     </form>
-                    </div>
-                    <div id="writing">
-                    {{ row['report_v_text'] }}
+                </div>
+                <div id="writing">
+                    {{ row['report_v_text'] | safe }}
                 </div>
                 <div class="dn" id="report_s">
-                    {{ row['report_s_text']}}
+                    {{ row['report_s_text'] | safe }}
                 </div>
                 <div class="dn" id="report_v">
-                    {{ row['report_v_text']}}
+                    {{ row['report_v_text'] | safe }}
                 </div>
             </div>
             <div class="pa2 pt4" style="white-space: pre-line; flex:1; width:0">
@@ -55,6 +55,9 @@
                 <div class="w-100 mb0 bb inline-flex f7">
                     <div class="inline-flex ">Diff </div>
                     <div class="inline-flex pl4 ml-auto">
+                        <span>Hedging Score: <span id="hedging_score_s">{{hedging_score_s}}</span><span id="hedging_score_v" class="dn">{{hedging_score_v}}</span></span>
+                    </div>
+                    <div class="inline-flex pl2">
                         <span>Additions: <span id="words_added_v_f"> {{row['words_added_v_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
                     </div>
                     <div class="inline-flex pl2">

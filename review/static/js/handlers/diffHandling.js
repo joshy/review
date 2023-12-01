@@ -30,11 +30,14 @@ $(function () {
     }
 
     $('input[type=radio][name=report_text]').on('change', function () {
-        var writing = $('#writing');
-        var x = document.getElementById(this.value).textContent;
-        writing.text(x);
+        // gets the value from the hidden elements #report_s or # report_v 
+        var x = document.getElementById(this.value).innerHTML;
+        // and sets that to the first div
+        $('#writing').html(x);
         diff();
         if (this.value === 'report_s') {
+            $('#hedging_score_v').addClass('dn');
+            $('#hedging_score_s').removeClass('dn');
             $('#words_added_v_f').addClass('dn');
             $('#words_deleted_v_f').addClass('dn');
             $('#jaccard_v_f').addClass('dn');
@@ -42,6 +45,8 @@ $(function () {
             $('#words_deleted_s_f').removeClass('dn');
             $('#jaccard_s_f').removeClass('dn')
         } else if (this.value === 'report_v') {
+            $('#hedging_score_s').addClass('dn');
+            $('#hedging_score_v').removeClass('dn');
             $('#words_added_v_f').removeClass('dn');
             $('#words_deleted_v_f').removeClass('dn');
             $('#jaccard_v_f').removeClass('dn');
