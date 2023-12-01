@@ -20,5 +20,4 @@ def highlight_hedging(text):
         for match in matches:
             highlighted_string = highlighted_string.replace(match, '<mark>' + match + '</mark>')
             score = score +  1
-    print(score)
     return highlighted_string,score  
