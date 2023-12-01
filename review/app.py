@@ -2,6 +2,8 @@ import logging
 import os
 from datetime import datetime
 
+from review.hedging import highlight_hedging
+
 import pandas as pd
 import psycopg2
 from dotenv import load_dotenv
@@ -155,7 +157,12 @@ def diff(id):
             v = row[c]
             if v:
                 row[field] = rtf_to_text(v, encoding="iso8859-1", errors="ignore")
-    return render_template("diff.html", row=row, version=version)
+    
+    
+    row["report_v_text"], hedging_score_v = highlight_hedging(row["report_v_text"])
+    row["report_s_text"], hedging_score_s = highlight_hedging(row["report_s_text"])
+
+    return render_template("diff.html", hedging_score_s=hedging_score_s, hedging_score_v=hedging_score_v, row=row, version=version)
 
 
 @app.route("/writer-dashboard")
