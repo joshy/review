@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
   <link rel="stylesheet" href="{{url_for('static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/style.css') }}">
 </head>
 
 <body class="w-100 sans-serif" data-page="diff">
@@ -21,15 +22,18 @@
         {% else %}
         <div class="flex">
             <div class="pl0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex f7">
-                    <span class=" inline-flex self-end-ns">Writing:<span class="b pl1"> {{row['schreiber']}}</span></span>
+                <div class="w-100 mb0 bb inline-flex f7 pv1">
+                    <span class="inline-flex self-end-ns">Writing:<span class="b pl1"> {{row['schreiber']}}</span></span>
+                    <div class="inline-flex pl4 ml-auto">
+                        <span class="b">Hedging Score: <span id="hedging_score_s" class="dark-red b">{{hedging_score_s}}</span><span id="hedging_score_v" class="dark-red b dn">{{hedging_score_v}}</span></span>
+                    </div>
                     <form class="inline-flex ml-auto">
-                        <span class="self-end-ns">Diff with</span>
-                        <label class="pl3 inline-flex" for="report_s_text">
-                            <input class="mr1" type="radio" name="report_text" value="report_v" id="report_v_text" checked/> Gegengelesen
+                        <span class="self-end-ns">Diff with:</span>
+                        <label class="pl1 inline-flex" for="report_s_text">
+                            <input class="mr1 b" type="radio" name="report_text" value="report_v" id="report_v_text" checked/><span class="b">Gegengelesen</span>
                         </label>
                         <label class="pl3 inline-flex" for="report_s_text">
-                            <input class="mr1" type="radio" name="report_text" value="report_s" id="report_s_text" /> Schreiben
+                            <input class="mr1 b" type="radio" name="report_text" value="report_s" id="report_s_text" /><span class="b">Schreiben</span>
                         </label>
                     </form>
                 </div>
@@ -44,27 +48,27 @@
                 </div>
             </div>
             <div class="pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex f7">
-                    <span class="inline-flex">Approval:<span class="b pl1"> {{row['fin_signierer']}}</span></span>
+                <div class="w-100 mb0 bb inline-flex f7 pv1">
+                    <span class="inline-flex ">Approval:<span class="b pl1"> {{row['fin_signierer']}}</span></span>
+                    <div class="inline-flex pl4 ml-auto">
+                        <span class="b">Hedging Score: <span id="hedging_score_f" class="dark-red b">{{hedging_score_f}}</span><span id="hedging_score_f" class="dn">{{hedging_score_v}}</span></span>
+                    </div>
                 </div>
                 <div id="final">
-                    {{ row['report_f_text'] }}
+                    {{ row['report_f_text'] | safe }}
                 </div>
             </div>
             <div class="pr0 pa2 pt4" style="white-space: pre-line; flex:1; width:0">
-                <div class="w-100 mb0 bb inline-flex f7">
-                    <div class="inline-flex ">Diff </div>
-                    <div class="inline-flex pl4 ml-auto">
-                        <span>Hedging Score: <span id="hedging_score_s">{{hedging_score_s}}</span><span id="hedging_score_v" class="dn">{{hedging_score_v}}</span></span>
+                <div class="w-100 mb0 bb inline-flex f7 pv1">
+                    <div class="inline-flex b">Diff </div>
+                    <div class="inline-flex pl2 ml-auto">
+                        <span class="b">Additions: <span id="words_added_v_f" class="b dark-green"> {{row['words_added_v_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
                     </div>
                     <div class="inline-flex pl2">
-                        <span>Additions: <span id="words_added_v_f"> {{row['words_added_v_f']}}</span><span id="words_added_s_f" class="dn">{{row['words_added_s_f']}}</span></span>
+                        <span class="b">Deletions: <span id="words_deleted_v_f" class="b dark-red">{{row['words_deleted_v_f']}}</span><span id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</span></span>
                     </div>
                     <div class="inline-flex pl2">
-                        <span>Deletions: <span id="words_deleted_v_f">{{row['words_deleted_v_f']}}</span><span id="words_deleted_s_f" class="dn">{{row['words_deleted_s_f']}}</span></span>
-                    </div>
-                    <div class="inline-flex pl2">
-                        <span>Similarity: <span id="jaccard_v_f">{{row['jaccard_v_f']}}</span><span id="jaccard_s_f" class="dn">{{row['jaccard_s_f']}}</span></span>
+                        <span class="b">Similarity: <span id="jaccard_v_f">{{row['jaccard_v_f']}}</span><span id="jaccard_s_f" class="dn">{{row['jaccard_s_f']}}</span></span>
                     </div>
                 </div>
                 <div id="diff"></div>

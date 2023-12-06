@@ -158,11 +158,22 @@ def diff(id):
             if v:
                 row[field] = rtf_to_text(v, encoding="iso8859-1", errors="ignore")
     
+    hedging_score_v = "-"
+    if "report_v_text" in row:
+        row["report_v_text"], hedging_score_v = highlight_hedging(row["report_v_text"])
     
-    row["report_v_text"], hedging_score_v = highlight_hedging(row["report_v_text"])
-    row["report_s_text"], hedging_score_s = highlight_hedging(row["report_s_text"])
+    hedging_score_s = "-"
+    if "report_s_text" in row:
+        row["report_s_text"], hedging_score_s = highlight_hedging(row["report_s_text"])
 
-    return render_template("diff.html", hedging_score_s=hedging_score_s, hedging_score_v=hedging_score_v, row=row, version=version)
+    row["report_f_text"], hedging_score_f = highlight_hedging(row["report_f_text"])
+
+    return render_template("diff.html", 
+                           hedging_score_s=hedging_score_s, 
+                           hedging_score_v=hedging_score_v, 
+                           hedging_score_f=hedging_score_f, 
+                           row=row, 
+                           version=version)
 
 
 @app.route("/writer-dashboard")

@@ -132,3 +132,8 @@ div.tooltip {
     fill: lightgray;
     opacity: 0.2;
 }
+
+mark {
+    background-color: red;
+    color: white;    
+}
