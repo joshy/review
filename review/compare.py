@@ -4,7 +4,7 @@ import time
 from typing import Dict, Tuple
 
 import pydiff
-from hedging import highlight_hedging
+from review.hedging import highlight_hedging
 from striprtf.striprtf import rtf_to_text
 
 _word_split_re = re.compile(r"(\s+|[^\w\s]+)", re.UNICODE)
@@ -134,7 +134,7 @@ def hedgings(row):
         _, hedging_count_v = highlight_hedging(report_v)
         _, hedging_count_f = highlight_hedging(report_f)
         e = time.time()
-        logging.debug("Single row diff calculation took %s", e - s)
+        logging.debug("Single row hedging calculation took %s", e - s)
         return {
             "hedging_count_s": hedging_count_s,
             "hedging_count_v": hedging_count_v,
