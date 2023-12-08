@@ -105,7 +105,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     if writer:
         sql += f" AND split_part(lower(a.schreiber), '@', 1) LIKE '{writer.lower()}'"
     if reviewer:
-        sql += f" AND split_part(lower(a.fin_signierer), '@', 1) LIKE '{reviewer.lower()}'"
+        sql += (
+            f" AND split_part(lower(a.fin_signierer), '@', 1) LIKE '{reviewer.lower()}'"
+        )
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -114,6 +116,29 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     desc = [d[0].lower() for d in cursor.description]
     result = [dict(zip(desc, row)) for row in cursor]
     return result
+
+
+def update_hedging(cursor, accession_number, heding_counts):
+    sql = """
+          UPDATE sectra_reports SET
+            hedging_count_s = %s,
+            hedging_count_v = %s,
+            hedging_count_f = %s
+          WHERE
+            accession_number = %s
+          """
+    try:
+        cursor.execute(
+            sql,
+            (
+                heding_counts["hedging_count_s"],
+                heding_counts["hedging_count_v"],
+                heding_counts["hedging_count_f"],
+                accession_number,
+            ),
+        )
+    except psycopg2.Error as e:
+        logging.error("Error %s", e)
 
 
 def update_metrics(cursor, accession_number, diffs):
@@ -132,7 +157,6 @@ def update_metrics(cursor, accession_number, diffs):
             accession_number = %s
           """
     try:
-
         cursor.execute(
             sql,
             (
