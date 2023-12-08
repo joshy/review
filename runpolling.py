@@ -2,27 +2,23 @@ import logging
 import time
 from threading import Thread
 
-import daiquiri
-import daiquiri.formatter
+from rich.logging import RichHandler
 import psycopg2
 import schedule
 from psycopg2.extras import DictCursor
 
 from review.app import REVIEW_DB_SETTINGS
-from review.compare import diffs
-from review.database import query_review_report, update_metrics
+from review.compare import diffs, hedgings
+from review.database import query_review_report, update_metrics, update_hedging
 
-daiquiri.setup(
-    level=logging.INFO,
-    outputs=(
-        daiquiri.output.Stream(
-            formatter=daiquiri.formatter.ColorFormatter(
-                fmt="%(color)s%(levelname)-8.8s " "%(name)s: %(message)s%(color_stop)s"
-            )
-        ),
-    ),
+logging.basicConfig(
+    level="NOTSET",
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)]
 )
-logger = daiquiri.getLogger("poll")
+
+logger = logging.getLogger("poll")
 
 
 def get_review_db():
@@ -38,8 +34,10 @@ def calculate_comparison():
     logger.debug(f"Total rows to update {total} for metrics")
     for i, r in enumerate(rows, 1):
         d = diffs(r)
+        h = hedgings(r)
         if d is not None:
             update_metrics(cursor, r["accession_number"], d)
+            update_hedging(cursor, r["accession_number"], h)
             logger.debug(f"Updated row {i} of {total}", i, total)
             if i % 10 == 0:
                 db.commit()

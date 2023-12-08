@@ -18,6 +18,9 @@ def highlight_hedging(text):
     for pattern in regex_patterns:
         matches = re.findall(pattern, highlighted_string)
         for match in matches:
-            highlighted_string = highlighted_string.replace(match, '<mark>' + match + '</mark>')
+            if type(match) is tuple:
+                highlighted_string = highlighted_string.replace(match[0], '<mark>' + match[0] + '</mark>')
+            else:
+                highlighted_string = highlighted_string.replace(match, '<mark>' + match + '</mark>')
             score = score +  1
     return highlighted_string,score  

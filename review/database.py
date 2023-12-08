@@ -37,6 +37,33 @@ def query_review_report(cursor, id):
     return result[0] if result else []
 
 
+def query_report_for_hedging(cursor, bulk):
+    """
+    Returns the rows where the reports are finalized and hedging counts are not yet
+    calculated.
+    """
+    sql = f"""
+          SELECT
+            a.accession_number,
+            a.report_s,
+            a.report_v,
+            a.report_f,
+            unters_beginn
+          FROM
+            sectra_reports a
+          WHERE
+            report_f is not null
+          AND
+            hedging_count_f = -1
+          ORDER BY
+            unters_beginn desc
+          LIMIT {int(bulk)}
+          """
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    return results
+
+
 def query_review_report(cursor):
     """
     Returns the rows where the reports are finalized and metrics are not yet
@@ -137,6 +164,7 @@ def update_hedging(cursor, accession_number, heding_counts):
                 accession_number,
             ),
         )
+        logging.info(f"Updated row for acc: {accession_number}")
     except psycopg2.Error as e:
         logging.error("Error %s", e)
 
