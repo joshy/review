@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Report Review Server</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,72 +8,75 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
     <link rel="preconnect" href="https://rsms.me/">
-<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    <script async defer data-website-id="91269706-3534-4b9a-9867-2fc74d243f81" src="http://analytics.ict-mscc.uhbs.ch/umami.js"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <script defer src="http://analytics.ict-mscc.uhbs.ch/script.js"
+        data-website-id="436e4dc7-ec27-4fd6-88ba-5ccc63f8f989"></script>
 </head>
 
 <body class="w-100 sans-serif">
-{% include 'partials/review-header.html' %}
-<div class="w-100 b--black-10 mw9 center">
-    <div class="w-100 flex items-center">
-        <h1 class="f3 di-ns pr2">Reports List</h1>
-        <button class="black f7 ba bg-light-yellow b--light-yellow infoReview">Info</button>
-    </div>
+    {% include 'partials/review-header.html' %}
+    <div class="w-100 b--black-10 mw9 center">
+        <div class="w-100 flex items-center">
+            <h1 class="f3 di-ns pr2">Reports List</h1>
+            <button class="black f7 ba bg-light-yellow b--light-yellow infoReview">Info</button>
+        </div>
 
-    <div class="overflow-auto">
-        <table class="f6 w-100 center" cellspacing="0">
-            <thead>
-            <tr>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white tl">#</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">PatientId / Accession Number</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25 tl">Type of exam</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Modality</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Writer</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Reviewer</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">Status</th>
-                <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">History</th>
-            </tr>
-            </thead>
-            <tbody class="lh-copy" style="padding: auto">
-            {% for row in rows %}
-                <tr>
-                    <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
-                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
-                    {% if row['unters_beginn'] %}
-                    <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M:%S') }}</td>
-                    {% else %}
-                    <td class="pa1 bb b--black-10 tr"></td>
-                    {% endif %}
-                    <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
-                    <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
-                    
-                    <td class="pa1 bb b--black-10 dashboardRow tr">
-                        <a href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
-                    </td>
-                    <td class="pa1 bb b--black-10 dashboardRow tr">
-                        {% if row['fin_signierer'] %}
-                            <a href="reviewer-dashboard?r={{ row['fin_signierer'] }}">{{ row['fin_signierer'] }}</a>
+        <div class="overflow-auto">
+            <table class="f6 w-100 center" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pl0 pa1 bg-white tl">#</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-20 tl">PatientId / Accession Number</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Date of exam</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white w-25 tl">Type of exam</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Modality</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Writer</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">Reviewer</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tl">Status</th>
+                        <th class="fw6 bb bw1 b--black-80 tl pb2 pa1 bg-white tr">History</th>
+                    </tr>
+                </thead>
+                <tbody class="lh-copy" style="padding: auto">
+                    {% for row in rows %}
+                    <tr>
+                        <td class="pl0 pa1 bb b--black-10 w-5 tl">{{ loop.index }}</td>
+                        <td class="pa1 bb b--black-10 w-25 tl">{{ row['pid'] }} / {{ row['accession_number'] }}</td>
+                        {% if row['unters_beginn'] %}
+                        <td class="pa1 bb b--black-10 tr">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M:%S') }}</td>
                         {% else %}
+                        <td class="pa1 bb b--black-10 tr"></td>
+                        {% endif %}
+                        <td class="pa1 bb b--black-10 w-25 tl">{{ row['untart_name'] }}</td>
+                        <td class="pa1 bb b--black-10 tr">{{ row['modality'] }}</td>
+
+                        <td class="pa1 bb b--black-10 dashboardRow tr">
+                            <a href="writer-dashboard?w={{ row['schreiber'] }}">{{ row['schreiber'] }}</a>
+                        </td>
+                        <td class="pa1 bb b--black-10 dashboardRow tr">
+                            {% if row['fin_signierer'] %}
+                            <a href="reviewer-dashboard?r={{ row['fin_signierer'] }}">{{ row['fin_signierer'] }}</a>
+                            {% else %}
                             &nbsp;
-                        {% endif %}
-                    </td>
-                    <td class="pa1 bb b--black-10 tl">{{ row['report_status'] }}</td>
-                    <td class="bb b--black-10 tr">
-                        {% if row['report_status'] == 'F' %}
-                            <a href="diff/{{ row['accession_number'] }}"><nobr>Show <i class="fas fa-external-link-alt"></i></nobr></a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                            {% endif %}
+                        </td>
+                        <td class="pa1 bb b--black-10 tl">{{ row['report_status'] }}</td>
+                        <td class="bb b--black-10 tr">
+                            {% if row['report_status'] == 'F' %}
+                            <a href="diff/{{ row['accession_number'] }}">
+                                <nobr>Show <i class="fas fa-external-link-alt"></i></nobr>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-{% assets "js_all" %}
+    {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/pikaday.js') }}"></script>
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-{% endassets %}
+    {% endassets %}
 </body>
 
 </html>
