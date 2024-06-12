@@ -38,7 +38,7 @@ def calculate_comparison():
         if d is not None:
             update_metrics(cursor, r["accession_number"], d)
             update_hedging(cursor, r["accession_number"], h)
-            logger.debug(f"Updated row {i} of {total}", i, total)
+            logger.debug(f"Updated row {i} of {total}")
             if i % 10 == 0:
                 db.commit()
     db.commit()
