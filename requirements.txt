@@ -11,3 +11,4 @@ pandas
 gunicorn
 flask-login
 python-dotenv
+rich
