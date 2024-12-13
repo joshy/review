@@ -4,6 +4,7 @@ import click
 import psycopg2
 from sqlalchemy import create_engine, text
 from psycopg2.extras import DictCursor
+import datetime
 
 from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs, hedgings
@@ -167,7 +168,10 @@ def run_query_for_day(day):
 def run_query_for_date_range(start_date, end_date):
     """Mock function to run a query for a date range."""
     click.echo(f"Running query for the range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
-
+    current_date = start_date
+    while current_date <= end_date:
+        run_query_for_day(current_date)
+        current_date += datetime.timedelta(days=1)
 
 
 
