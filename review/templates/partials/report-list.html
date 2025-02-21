@@ -18,7 +18,13 @@
             <tbody class="lh-copy">
             {% for row in data['rows'] %}
                 <tr>
-                    <td class="pa1 bb b--black-10 w-20">{{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td class="pa1 bb b--black-10 w-20">
+                        {% if row['unters_beginn'] is string %}
+                            {{ row['unters_beginn'] }}  {# Output as-is if it's a string #}
+                        {% else %}
+                            {{ row['unters_beginn'].strftime('%d.%m.%Y %H:%M') }}
+                        {% endif %}
+                    </td>
                     <td class="pa1 bb b--black-10 w-20">{{ row['untart_name'] }}</td>
                     <td class="pa1 bb b--black-10">{{ row['modality'] }}</td>
                     <td class="pa1 bb b--black-10 dashboardRow"><a
