@@ -112,3 +112,5 @@ repo/static/gen
 privat_patient.csv
 
 *.csv
+
+flask_session/*

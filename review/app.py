@@ -2,20 +2,20 @@ import logging
 import os
 from datetime import datetime
 
-from review.hedging import highlight_hedging
-
+import identity
 import pandas as pd
 import psycopg2
-from dotenv import load_dotenv
-from flask import Flask, g, redirect, render_template, request, url_for
+import structlog
+from flask import Flask, g, redirect, render_template, request, session, url_for
 from flask_assets import Bundle, Environment
-from flask_login import LoginManager, current_user
-from flask_login.utils import login_required
+from httpx import get
+from identity.web import Auth
 from psycopg2.extras import RealDictCursor
 from striprtf.striprtf import rtf_to_text
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-from requests import get
-
+import review.app_config as app_config
+from flask_session import Session
 from review.calculations import (
     calculate_median,
     calculate_median_by_reviewer,
@@ -23,34 +23,42 @@ from review.calculations import (
     relative,
 )
 from review.database import (
-    query_review_reports,
-    query_review_report_by_acc,
     query_all_by_departments,
     query_by_reviewer_and_date_and_modality,
     query_by_reviewer_and_modality,
     query_by_writer_and_date_and_modality,
     query_by_writer_and_modality,
+    query_review_report_by_acc,
+    query_review_reports,
 )
-from review.user import User
+from review.hedging import highlight_hedging
+
+log = structlog.get_logger()
 
 app = Flask(__name__)
+app.config.from_object(app_config)
+# Set the secret key to some random bytes. Keep this really secret!
+app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
+Session(app)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 app.jinja_env.add_extension("jinja2.ext.loopcontrols")
 app.jinja_env.add_extension("jinja2.ext.do")
 version = app.config["VERSION"] = "4.1.2"
 
-login_manager = LoginManager()
-login_manager.init_app(app)
 
-# Set the secret key to some random bytes. Keep this really secret!
-app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
+auth = Auth(
+    session=session,
+    authority=app_config.AUTHORITY,
+    client_id=app_config.CLIENT_ID,
+    client_credential=app_config.CLIENT_SECRET,
+)
 
-load_dotenv()
+log.info("starting review app")
 
-if __name__ != '__main__':
-    gunicorn_logger = logging.getLogger('gunicorn.error')
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-
 
 
 REVIEW_DB_SETTINGS = {
@@ -62,16 +70,6 @@ REVIEW_DB_SETTINGS = {
 }
 
 WHO_IS_WHO_URL = os.getenv("WHO_IS_WHO_URL")
-
-"""
-if not WHO_IS_WHO_URL:
-    logging.error("WHO_IS_WHO_URL is not set, quitting!")
-    sys.exit(1)
-"""
-
-REPORTS_FOLDER = "reports"
-if not os.path.exists(REPORTS_FOLDER):
-    os.makedirs(REPORTS_FOLDER, exist_ok=True)
 
 assets = Environment(app)
 js = Bundle(
@@ -97,31 +95,57 @@ js = Bundle(
 assets.register("js_all", js)
 
 
-@login_manager.request_loader
-def load_user_from_request(request):
-    loginname = request.headers.get("Remote-User")
-    if loginname:
-        user = get(WHO_IS_WHO_URL + loginname).json()
-        user = User(user)
-        # If the RIS username is not empty return user, otherwise user
-        # doesn't exists. Check whoiswho application for implementation details
-        if not user.login_name:
-            return None
-        return user
-    elif "localhost" in request.headers.get("Host"):
-        d = {"ris": {"mitarb_kuerzel": "CYRJO", "has_general_approval_rights": True}}
-        return User(d)
-    # finally, return None if both methods did not login the user
-    return None
+@app.before_request    
+def check_authentication():
+    public_endpoints = ["static", "login", "auth_response"]
+    if request.endpoint not in public_endpoints:
+        if not auth.get_user():
+            return redirect(url_for("login"))
+        else:
+            user = auth.get_user()
+            log.info(f"Logged in user is: {user.get('preferred_username')}")
+            loginname = user.get("samAccountName")
+            who_is_who_user = get(WHO_IS_WHO_URL + loginname).json()
+            session["user"] = user | who_is_who_user 
+            admin_users = os.getenv("ADMIN_USERS")
+            session["is_admin"] = False
+            if loginname in admin_users or session["user"]["ris"]["has_general_approval_rights"]:
+                session["is_admin"] = True
+
+
+@app.route("/login")
+def login():
+    log.info("login page called")
+    return render_template(
+        "login.html",
+        version=identity.__version__,
+        **auth.log_in(
+            scopes=app_config.SCOPE,  # Have user consent to scopes during log-in
+            redirect_uri=url_for(
+                "auth_response", _external=True
+            ),  # Optional. If present, this absolute URL must match your app's redirect_uri registered in Azure Portal
+        ),
+    )
+
+
+@app.route(app_config.REDIRECT_PATH)
+def auth_response():
+    result = auth.complete_log_in(request.args)
+    if "error" in result:
+        session.clear()
+        return render_template("auth_error.html", result=result)
+    return redirect(url_for("review"))
 
 
 @app.route("/")
-@login_required
 def review():
+    log.info("review")
     now = datetime.now().strftime("%d.%m.%Y")
     day = request.args.get("day", now)
-    if not current_user.has_general_approval_rights():
-        writer = current_user.login_name()
+    current_user = session["user"]
+    is_admin = session["is_admin"]
+    if not is_admin:
+        writer = current_user["samAccountName"]
     else:
         writer = request.args.get("writer", "")
     reviewer = request.args.get("reviewer", "")
@@ -137,7 +161,7 @@ def review():
         writer=writer,
         reviewer=reviewer,
         version=version,
-        has_general_approval_rights=current_user.has_general_approval_rights(),
+        has_general_approval_rights=is_admin,
     )
 
 
@@ -157,30 +181,33 @@ def diff(id):
             v = row[c]
             if v:
                 row[field] = rtf_to_text(v, encoding="iso8859-1", errors="ignore")
-    
+
     hedging_score_v = "-"
     if "report_v_text" in row:
         row["report_v_text"], hedging_score_v = highlight_hedging(row["report_v_text"])
-    
+
     hedging_score_s = "-"
     if "report_s_text" in row:
         row["report_s_text"], hedging_score_s = highlight_hedging(row["report_s_text"])
 
     row["report_f_text"], hedging_score_f = highlight_hedging(row["report_f_text"])
 
-    return render_template("diff.html", 
-                           hedging_score_s=hedging_score_s, 
-                           hedging_score_v=hedging_score_v, 
-                           hedging_score_f=hedging_score_f, 
-                           row=row, 
-                           version=version)
+    return render_template(
+        "diff.html",
+        hedging_score_s=hedging_score_s,
+        hedging_score_v=hedging_score_v,
+        hedging_score_f=hedging_score_f,
+        row=row,
+        version=version,
+    )
 
 
 @app.route("/writer-dashboard")
-@login_required
-def writer_dashboard():
-    if not current_user.has_general_approval_rights():
-        writer = current_user.login_name()
+def writer_dashboard(*, context):
+    current_user = auth.get_user()
+    is_admin = session["is_admin"]
+    if not is_admin:
+        writer = current_user["samAccountName"]
     else:
         writer = request.args.get("w", "")
     last_exams = request.args.get("last_exams", default=30, type=int)
@@ -218,18 +245,19 @@ def writer_dashboard():
         start_date=start_date,
         end_date=end_date,
         version=version,
-        has_general_approval_rights=current_user.has_general_approval_rights(),
+        has_general_approval_rights=is_admin,
     )
 
 
 @app.route("/reviewer-dashboard")
-@login_required
 def reviewer_dashboard():
-    if not current_user.has_general_approval_rights():
+    current_user = auth.get_user()
+    is_admin = session["is_admin"]
+    if not is_admin:
         return redirect(url_for("no_rights"))
     reviewer = request.args.get("r", "")
-    if reviewer == '':
-        reviewer = current_user.login_name()
+    if reviewer == "":
+        reviewer = current_user["samAccountName"]
     last_exams = request.args.get("last_exams", default=30, type=int)
     start_date = request.args.get("start_date", "")
     end_date = request.args.get("end_date", "")
@@ -264,7 +292,7 @@ def reviewer_dashboard():
         start_date=start_date,
         end_date=end_date,
         version=version,
-        has_general_approval_rights=current_user.has_general_approval_rights(),
+        has_general_approval_rights=is_admin,
     )
 
 

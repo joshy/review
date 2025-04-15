@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "Running dev server on port 5555"
-flask --app "runserver:app" --debug run --host 0.0.0.0 --port 5555
+echo "Running dev server on port 8443"
+flask --app "review.app:app" --debug run --host 0.0.0.0 --port 8443
