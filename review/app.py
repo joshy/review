@@ -67,7 +67,7 @@ def create_app():
         authority=app_config.AUTHORITY,
         client_id=app_config.CLIENT_ID,
         client_credential=app_config.CLIENT_SECRET,
-        redirect_uri="http://localhost:8443/getAToken",
+        redirect_uri=app_config.REDIRECT_URI,
     )
 
     # Initialize JS assets
