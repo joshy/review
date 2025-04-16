@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-import identity
 import pandas as pd
 import psycopg2
 import structlog
@@ -9,7 +8,7 @@ from flask import Flask, g, redirect, render_template, request, session, url_for
 from flask_assets import Bundle, Environment
 from flask_session import Session
 from httpx import get
-from identity.web import Auth
+from identity.flask import Auth
 from psycopg2.extras import RealDictCursor
 from striprtf.striprtf import rtf_to_text
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -64,10 +63,11 @@ def create_app():
 
     # Initialize auth
     auth = Auth(
-        session=session,
+        app,
         authority=app_config.AUTHORITY,
         client_id=app_config.CLIENT_ID,
         client_credential=app_config.CLIENT_SECRET,
+        redirect_uri="http://localhost:8443/getAToken",
     )
 
     # Initialize JS assets
@@ -106,41 +106,6 @@ def init_js(app):
 
 
 def register_routes(app, auth):
-    @app.before_request
-    def check_authentication():
-        public_endpoints = ["static", "login", "auth_response", "getAToken"]
-        if request.endpoint not in public_endpoints:
-            if not auth.get_user():
-                log.info("No user found, redirecting to login, endpoint: %s", request.endpoint)
-                return redirect(url_for("login"))
-            else:
-                user = auth.get_user()
-                log.info(f"Logged in user is: {user.get('preferred_username')}")
-                loginname = user.get("samAccountName")
-                who_is_who_user = get(WHO_IS_WHO_URL + loginname).json()
-                session["user"] = user | who_is_who_user
-                admin_users = os.getenv("ADMIN_USERS")
-                session["is_admin"] = False
-                if (
-                    loginname in admin_users
-                    or session["user"]["ris"]["has_general_approval_rights"]
-                ):
-                    session["is_admin"] = True
-
-    @app.route("/login")
-    def login():
-        log.info("login page called")
-        return render_template(
-            "login.html",
-            version=identity.__version__,
-            **auth.log_in(
-                scopes=app_config.SCOPE,  # Have user consent to scopes during log-in
-                redirect_uri=url_for(
-                    "auth_response", _external=True
-                ),  # Optional. If present, this absolute URL must match your app's redirect_uri registered in Azure Portal
-            ),
-        )
-
     @app.route(app_config.REDIRECT_PATH)
     def auth_response():
         result = auth.complete_log_in(request.args)
@@ -149,15 +114,13 @@ def register_routes(app, auth):
         return redirect(url_for("review"))
 
     @app.route("/")
-    def review():
+    @auth.login_required()
+    def review(*, context):
         log.info("review")
-        user = auth.get_user()
-        if not user:
-            return redirect(url_for("login"))
+        user = context["user"]
         now = datetime.now().strftime("%d.%m.%Y")
         day = request.args.get("day", now)
-        is_admin = session["is_admin"]
-        if not is_admin:
+        if not is_admin(user):
             writer = user["samAccountName"]
         else:
             writer = request.args.get("writer", "")
@@ -182,7 +145,8 @@ def register_routes(app, auth):
         return "Sorry, you have no rights to view this page", 401
 
     @app.route("/diff/<id>")
-    def diff(id):
+    @auth.login_required()
+    def diff(id, *, context):
         con = get_review_db()
         row = query_review_report_by_acc(con.cursor(), id)
         cases = ["report_s", "report_v", "report_f"]
@@ -217,11 +181,11 @@ def register_routes(app, auth):
         )
 
     @app.route("/writer-dashboard")
-    def writer_dashboard():
-        current_user = auth.get_user()
-        is_admin = session["is_admin"]
-        if not is_admin:
-            writer = current_user["samAccountName"]
+    @auth.login_required()
+    def writer_dashboard(*, context):
+        user = context["user"]
+        if not is_admin(user):
+            writer = user["samAccountName"]
         else:
             writer = request.args.get("w", "")
         last_exams = request.args.get("last_exams", default=30, type=int)
@@ -263,14 +227,14 @@ def register_routes(app, auth):
         )
 
     @app.route("/reviewer-dashboard")
-    def reviewer_dashboard():
-        current_user = auth.get_user()
-        is_admin = session["is_admin"]
-        if not is_admin:
+    @auth.login_required()
+    def reviewer_dashboard(*, context):
+        user = context["user"]
+        if not is_admin(user):
             return redirect(url_for("no_rights"))
         reviewer = request.args.get("r", "")
         if reviewer == "":
-            reviewer = current_user["samAccountName"]
+            reviewer = user["samAccountName"]
         last_exams = request.args.get("last_exams", default=30, type=int)
         start_date = request.args.get("start_date", "")
         end_date = request.args.get("end_date", "")
@@ -309,6 +273,23 @@ def register_routes(app, auth):
             version=VERSION,
             has_general_approval_rights=is_admin,
         )
+
+
+def is_admin(user):
+    if "is_admin" in session:
+        return session["is_admin"]
+    log.debug("is_admin not set in session, checking via who_is_who")
+    loginname = user.get("samAccountName")
+    who_is_who_user = get(WHO_IS_WHO_URL + loginname).json()
+    session["user"] = user | who_is_who_user
+    admin_users = os.getenv("ADMIN_USERS")
+    session["is_admin"] = False
+    if (
+        loginname in admin_users
+        or session["user"]["ris"]["has_general_approval_rights"]
+    ):
+        session["is_admin"] = True
+    return session["is_admin"]
 
 
 def load_data_by_writer(writer, last_exams, start_date, end_date, modalities):
