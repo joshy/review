@@ -1,10 +1,14 @@
 import os
 from dotenv import load_dotenv
+from cachelib.file import FileSystemCache
 
 load_dotenv()
 
-# Tells the Flask-session extension to store sessions in the filesystem
-SESSION_TYPE = "filesystem"
+# Session settings
+SESSION_TYPE = "cachelib"
+SESSION_SERIALIZATION_FORMAT = "json"
+SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="sessions")
+
 
 # In production, your setup may use multiple web servers behind a load balancer,
 # and the subsequent requests may not be routed to the same web server.
@@ -19,5 +23,6 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 AUTHORITY = f"https://login.microsoftonline.com/{os.getenv('TENANT_ID', 'common')}"
 REDIRECT_PATH = "/getAToken"  # Used for forming an absolute URL to your redirect URI.
-ENDPOINT = 'https://graph.microsoft.com/v1.0/users'  # This resource requires no admin consent
+# This resource requires no admin consent
+ENDPOINT = "https://graph.microsoft.com/v1.0/users"
 SCOPE = ["User.ReadBasic.All"]

@@ -113,4 +113,4 @@ privat_patient.csv
 
 *.csv
 
-flask_session/*
+sessions/*
