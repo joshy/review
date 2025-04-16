@@ -132,7 +132,6 @@ def login():
 def auth_response():
     result = auth.complete_log_in(request.args)
     if "error" in result:
-        session.clear()
         return render_template("auth_error.html", result=result)
     return redirect(url_for("review"))
 
