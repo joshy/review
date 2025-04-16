@@ -23,7 +23,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 AUTHORITY = f"https://login.microsoftonline.com/{os.getenv('TENANT_ID', 'common')}"
 REDIRECT_PATH = "/getAToken"
-REDIRECT_URI = f"{os.getenv('SERVER_URL')}/{REDIRECT_PATH}"
+REDIRECT_URI = f"{os.getenv('SERVER_URL')}{REDIRECT_PATH}"
 # This resource requires no admin consent
 ENDPOINT = "https://graph.microsoft.com/v1.0/users"
 SCOPE = ["User.ReadBasic.All"]
