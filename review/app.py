@@ -202,7 +202,7 @@ def diff(id):
 
 
 @app.route("/writer-dashboard")
-def writer_dashboard(*, context):
+def writer_dashboard():
     current_user = auth.get_user()
     is_admin = session["is_admin"]
     if not is_admin:
