@@ -9,6 +9,7 @@ import datetime
 from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs, hedgings
 from review.database import query_review_report_by_acc, update_hedging, update_metrics, query_report_for_hedging
+from striprtf.striprtf import rtf_to_text
 
 
 # Set the logging configuration
@@ -173,6 +174,123 @@ def run_query_for_date_range(start_date, end_date):
         run_query_for_day(current_date)
         current_date += datetime.timedelta(days=1)
 
+
+@cli.command()
+@click.option('--start-date', type=click.DateTime(formats=["%Y-%m-%d"]), required=True, help="Start date of the range (format: YYYY-MM-DD).")
+@click.option('--end-date', type=click.DateTime(formats=["%Y-%m-%d"]), required=True, help="End date of the range (format: YYYY-MM-DD).")
+def clean_reports(start_date, end_date):
+    """
+    Extracts data from sectra_reports table, converts RTF-encoded reports to plain text,
+    and stores them in sectra_reports_cleaned table.
+    """
+    if start_date > end_date:
+        click.echo("Error: Start date cannot be after end date.")
+        return
+    
+    click.echo(f"Cleaning reports for the range: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}")
+    
+    connection = get_review_db()
+    cursor = connection.cursor(cursor_factory=DictCursor)
+    
+    try:
+        # Create the cleaned table if it doesn't exist
+        create_table_sql = """
+            CREATE TABLE IF NOT EXISTS sectra_reports_cleaned (
+                accession_number VARCHAR PRIMARY KEY,
+                report_s TEXT,
+                report_v TEXT,
+                report_f TEXT
+            )
+        """
+        cursor.execute(create_table_sql)
+        connection.commit()
+        logging.info("Created sectra_reports_cleaned table if it didn't exist")
+        
+        # Query data from sectra_reports within the date range
+        start_datetime = start_date.strftime("%Y-%m-%d 00:00:00")
+        end_datetime = end_date.strftime("%Y-%m-%d 23:59:59")
+        
+        query_sql = """
+            SELECT
+                accession_number,
+                report_s,
+                report_v,
+                report_f
+            FROM
+                sectra_reports
+            WHERE
+                unters_beginn BETWEEN %s AND %s
+        """
+        cursor.execute(query_sql, (start_datetime, end_datetime))
+        rows = cursor.fetchall()
+        
+        logging.info(f"Found {len(rows)} records to process")
+        
+        # Process each row: convert RTF to plain text and insert into cleaned table
+        processed = 0
+        for row in rows:
+            accession_number = row['accession_number']
+            
+            # Convert RTF to plain text for each report field
+            report_s_cleaned = None
+            report_v_cleaned = None
+            report_f_cleaned = None
+            
+            if row['report_s']:
+                try:
+                    report_s_cleaned = rtf_to_text(row['report_s'], encoding="iso8859-1", errors="ignore")
+                except Exception as e:
+                    logging.warning(f"Error converting report_s for {accession_number}: {e}")
+                    report_s_cleaned = None
+            
+            if row['report_v']:
+                try:
+                    report_v_cleaned = rtf_to_text(row['report_v'], encoding="iso8859-1", errors="ignore")
+                except Exception as e:
+                    logging.warning(f"Error converting report_v for {accession_number}: {e}")
+                    report_v_cleaned = None
+            
+            if row['report_f']:
+                try:
+                    report_f_cleaned = rtf_to_text(row['report_f'], encoding="iso8859-1", errors="ignore")
+                except Exception as e:
+                    logging.warning(f"Error converting report_f for {accession_number}: {e}")
+                    report_f_cleaned = None
+            
+            # Insert or update the cleaned data
+            insert_sql = """
+                INSERT INTO sectra_reports_cleaned
+                    (accession_number, report_s, report_v, report_f)
+                VALUES
+                    (%s, %s, %s, %s)
+                ON CONFLICT (accession_number)
+                DO UPDATE SET
+                    report_s = EXCLUDED.report_s,
+                    report_v = EXCLUDED.report_v,
+                    report_f = EXCLUDED.report_f
+            """
+            cursor.execute(insert_sql, (accession_number, report_s_cleaned, report_v_cleaned, report_f_cleaned))
+            processed += 1
+            
+            if processed % 100 == 0:
+                connection.commit()
+                logging.info(f"Processed {processed} records...")
+        
+        connection.commit()
+        logging.info(f"Successfully processed {processed} records")
+        click.echo(f"Successfully cleaned and stored {processed} records in sectra_reports_cleaned table")
+        
+    except psycopg2.Error as e:
+        logging.error(f"Database error: {e}")
+        connection.rollback()
+        click.echo(f"Error: {e}")
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        connection.rollback()
+        click.echo(f"Error: {e}")
+    finally:
+        cursor.close()
+        connection.close()
 
 
 if __name__ == "__main__":
