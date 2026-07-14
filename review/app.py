@@ -1,5 +1,7 @@
+import logging
 import os
 from datetime import datetime
+from time import perf_counter
 
 import pandas as pd
 import psycopg2
@@ -33,6 +35,86 @@ from review.hedging import highlight_hedging
 
 log = structlog.get_logger()
 
+
+def configure_logging():
+    """Configure application logging from the LOG_LEVEL environment variable."""
+    log_level_name = os.getenv("LOG_LEVEL", "INFO").upper()
+    log_level = getattr(logging, log_level_name, None)
+    invalid_log_level_name = None
+    if not isinstance(log_level, int):
+        invalid_log_level_name = log_level_name
+        log_level_name = "INFO"
+        log_level = logging.INFO
+
+    logging.basicConfig(level=log_level, format="%(message)s")
+    logging.getLogger().setLevel(log_level)
+
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.stdlib.add_log_level,
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.JSONRenderer(),
+        ],
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
+
+    if invalid_log_level_name:
+        log.warning(
+            "invalid log level configured; falling back to INFO",
+            configured_log_level=invalid_log_level_name,
+        )
+    log.info("configured logging", log_level=log_level_name)
+
+
+def register_logging_hooks(app):
+    @app.before_request
+    def start_request_logging():
+        g._request_started_at = perf_counter()
+        g.request_id = request.headers.get("X-Request-ID") or request.headers.get(
+            "X-Correlation-ID"
+        )
+
+    @app.after_request
+    def log_request(response):
+        duration_ms = None
+        started_at = getattr(g, "_request_started_at", None)
+        if started_at is not None:
+            duration_ms = round((perf_counter() - started_at) * 1000, 2)
+
+        if getattr(g, "request_id", None):
+            response.headers["X-Request-ID"] = g.request_id
+
+        log_method = log.warning if response.status_code >= 500 else log.info
+        log_method(
+            "request completed",
+            method=request.method,
+            path=request.path,
+            endpoint=request.endpoint,
+            status_code=response.status_code,
+            duration_ms=duration_ms,
+            remote_addr=request.headers.get("X-Forwarded-For", request.remote_addr),
+            request_id=getattr(g, "request_id", None),
+        )
+        return response
+
+    @app.teardown_request
+    def log_unhandled_exception(error):
+        if error is not None:
+            log.exception(
+                "request failed",
+                method=request.method,
+                path=request.path,
+                endpoint=request.endpoint,
+                error_type=type(error).__name__,
+                request_id=getattr(g, "request_id", None),
+            )
+
+
 REVIEW_DB_SETTINGS = {
     "dbname": os.getenv("REVIEW_DB_NAME"),
     "user": os.getenv("REVIEW_DB_USER"),
@@ -47,8 +129,11 @@ VERSION = "4.1.2"
 
 
 def create_app():
+    configure_logging()
+
     app = Flask(__name__)
     app.config.from_object(app_config)
+    register_logging_hooks(app)
 
     # Set the secret key to some random bytes. Keep this really secret!
     app.secret_key = b'_5#y2L"F4QA458z\n\xec]/'
@@ -76,7 +161,7 @@ def create_app():
     # Register routes
     register_routes(app, auth)
 
-    log.info("starting review app")
+    log.info("starting review app", version=VERSION)
     return app
 
 
@@ -129,6 +214,15 @@ def register_routes(app, auth):
         dd = datetime.strptime(day, "%d.%m.%Y")
         con = get_review_db()
         rows = query_review_reports(con.cursor(), dd, writer, reviewer, report_status)
+        log.debug(
+            "loaded review reports",
+            report_count=len(rows),
+            day=dd.strftime("%Y-%m-%d"),
+            writer_filter_set=bool(writer),
+            reviewer_filter_set=bool(reviewer),
+            report_status_filter_set=bool(report_status),
+            user_is_admin=is_admin(user),
+        )
         day = dd.strftime("%d.%m.%Y")
         return render_template(
             "review.html",
@@ -147,8 +241,15 @@ def register_routes(app, auth):
     @app.route("/diff/<id>")
     @auth.login_required()
     def diff(id, *, context):
+        log.debug("loading report diff")
         con = get_review_db()
         row = query_review_report_by_acc(con.cursor(), id)
+        log.debug(
+            "loaded report diff source data",
+            has_report_s=bool(row.get("report_s")),
+            has_report_v=bool(row.get("report_v")),
+            has_report_f=bool(row.get("report_f")),
+        )
         cases = ["report_s", "report_v", "report_f"]
         for c in cases:
             if c in row:
@@ -170,6 +271,13 @@ def register_routes(app, auth):
             )
 
         row["report_f_text"], hedging_score_f = highlight_hedging(row["report_f_text"])
+
+        log.debug(
+            "calculated report diff hedging scores",
+            has_score_s=hedging_score_s != "-",
+            has_score_v=hedging_score_v != "-",
+            has_score_f=hedging_score_f != "-",
+        )
 
         return render_template(
             "diff.html",
@@ -211,6 +319,16 @@ def register_routes(app, auth):
         df_all_rows = remove_NaT_format(df_all_rows)
         all_rows = relative(df_all_rows).to_dict("records")
         median_all = calculate_median(all_rows)
+        log.debug(
+            "prepared writer dashboard data",
+            row_count=len(rows),
+            all_row_count=len(all_rows),
+            writer_filter_set=bool(writer),
+            last_exams=last_exams,
+            start_date_set=bool(start_date),
+            end_date_set=bool(end_date),
+            modalities=modalities,
+        )
         data["rows"] = rows
         data["median_single"] = median_single
         data["median_all"] = median_all
@@ -260,6 +378,16 @@ def register_routes(app, auth):
         df_all_rows = remove_NaT_format(df_all_rows)
         all_rows = relative(df_all_rows).to_dict("records")
         median_all = calculate_median(all_rows)
+        log.debug(
+            "prepared reviewer dashboard data",
+            row_count=len(rows),
+            all_row_count=len(all_rows),
+            reviewer_filter_set=bool(reviewer),
+            last_exams=last_exams,
+            start_date_set=bool(start_date),
+            end_date_set=bool(end_date),
+            modalities=modalities,
+        )
         data["rows"] = rows
         data["median_single"] = median_single
         data["median_all"] = median_all
@@ -277,6 +405,7 @@ def register_routes(app, auth):
 
 def is_admin(user):
     if "is_admin" in session:
+        log.debug("using cached admin status", is_admin=session["is_admin"])
         return session["is_admin"]
     log.debug("is_admin not set in session, checking via who_is_who")
     loginname = user.get("samAccountName")
@@ -289,12 +418,14 @@ def is_admin(user):
         or session["user"]["ris"]["has_general_approval_rights"]
     ):
         session["is_admin"] = True
+    log.debug("resolved admin status", is_admin=session["is_admin"])
     return session["is_admin"]
 
 
 def load_data_by_writer(writer, last_exams, start_date, end_date, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
+    started_at = perf_counter()
     if start_date and end_date:
         s_d = datetime.strptime(start_date, "%d.%m.%Y")
         e_d = datetime.strptime(end_date, "%d.%m.%Y")
@@ -303,12 +434,20 @@ def load_data_by_writer(writer, last_exams, start_date, end_date, modalities):
         )
     else:
         rows = query_by_writer_and_modality(cursor, writer, last_exams, modalities)
+    log.debug(
+        "loaded writer dashboard rows",
+        row_count=len(rows),
+        duration_ms=round((perf_counter() - started_at) * 1000, 2),
+        date_range_set=bool(start_date and end_date),
+        writer_filter_set=bool(writer),
+    )
     return rows
 
 
 def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, modalities):
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
+    started_at = perf_counter()
     if start_date and end_date:
         s_d = datetime.strptime(start_date, "%d.%m.%Y")
         e_d = datetime.strptime(end_date, "%d.%m.%Y")
@@ -317,13 +456,27 @@ def load_data_by_reviewer(reviewer, last_exams, start_date, end_date, modalities
         )
     else:
         rows = query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities)
+    log.debug(
+        "loaded reviewer dashboard rows",
+        row_count=len(rows),
+        duration_ms=round((perf_counter() - started_at) * 1000, 2),
+        date_range_set=bool(start_date and end_date),
+        reviewer_filter_set=bool(reviewer),
+    )
     return rows
 
 
 def load_all_data():
     con = get_review_db()
     cursor = con.cursor(cursor_factory=RealDictCursor)
-    return query_all_by_departments(cursor)
+    started_at = perf_counter()
+    rows = query_all_by_departments(cursor)
+    log.debug(
+        "loaded all department rows",
+        row_count=len(rows),
+        duration_ms=round((perf_counter() - started_at) * 1000, 2),
+    )
+    return rows
 
 
 def remove_NaT_format(df):
@@ -334,5 +487,6 @@ def get_review_db():
     "Returns a connection to the PostgreSQL Review DB"
     db = getattr(g, "_review_database", None)
     if db is None:
+        log.debug("opening review database connection")
         db = g._review_database = psycopg2.connect(**REVIEW_DB_SETTINGS)
     return g._review_database
