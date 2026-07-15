@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tachyons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pikaday.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -17,13 +18,13 @@
 
 <body class="w-100 sans-serif bg-near-white">
     {% include 'partials/review-header.html' %}
-    <div class="w-100 b--black-10 mw9 center">
-        <div class="w-100 flex items-center">
-            <h1 class="f3 di-ns pr2">Reports List</h1>
+    <div class="w-100 b--black-10 mw9 center pa3 ph4-ns">
+        <div class="w-100 flex items-center mb3">
+            <h1 class="f3 di-ns pr2 mv0">Reports List</h1>
             <button class="black f7 ba bg-light-yellow b--light-yellow infoReview">Info</button>
         </div>
 
-        <div class="overflow-auto">
+        <div class="overflow-auto card-panel pa3">
             <table class="f6 w-100 center" cellspacing="0">
                 <thead>
                     <tr>

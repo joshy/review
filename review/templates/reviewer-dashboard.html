@@ -14,35 +14,41 @@
 
 <body class="w-100 sans-serif bg-near-white" data-page="reviewer-dashboard">
 {% include 'partials/reviewer-dashboard-header.html' %}
-<div class="w-100 b--black-10 mw8 center">
-    <div class="w-100 pt4 flex items-center">
-        <h1 class="f3 di-ns pr2">Personal Dashboard</h1>
+<div class="w-100 b--black-10 mw8 center pa3 ph4-ns">
+    <div class="w-100 pt3 flex items-center mb2">
+        <h1 class="f3 di-ns pr2 mv0">Personal Dashboard</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoDashboard">Info</button>
     </div>
-    <p>This is a personal dashboard that should help the supervisor to keep track of radiological assistant reports.
+    <p class="black-70 lh-copy mt0 mb4">This is a personal dashboard that should help the supervisor to keep track of radiological assistant reports.
     </p>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
+    <div class="w-100 flex items-center mb2">
+        <h1 class="f4 di-ns pr2 mv0">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
     </div>
-    {% include 'partials/report-list.html' %}
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Relative Document Changes</h1>
+    <div class="card-panel mb4">
+        {% include 'partials/report-list.html' %}
+    </div>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Relative Document Changes</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoDocumentChanges">Info</button>
     </div>
-    <svg id="WordsAddedBarChart" class="ph4-l" width="440" height="250"></svg>
-    <svg id="WordsDeletedBarChart" class="pl2-l" width="440" height="250"></svg>
-    <h3 class="f5 di-ns pl6-l pr7-l ">
-        Words added
-    </h3>
-    <h3 class="f5 di-ns ph6-l">
-        Words deleted
-    </h3>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Writer List</h1>
+    <div class="card-panel pa3 mb4">
+        <svg id="WordsAddedBarChart" class="ph4-l" width="440" height="250"></svg>
+        <svg id="WordsDeletedBarChart" class="pl2-l" width="440" height="250"></svg>
+        <h3 class="f5 di-ns pl6-l pr7-l mv0">
+            Words added
+        </h3>
+        <h3 class="f5 di-ns ph6-l mv0">
+            Words deleted
+        </h3>
+    </div>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Writer List</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoWriterList">Info</button>
     </div>
-    {% include 'partials/writer-list.html' %}
+    <div class="card-panel mb3">
+        {% include 'partials/writer-list.html' %}
+    </div>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/pikaday.js') }}"></script>

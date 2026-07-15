@@ -14,54 +14,64 @@
 
 <body class="w-100 sans-serif bg-near-white" data-page="writer-dashboard">
 {% include 'partials/writer-dashboard-header.html' %}
-<div id="graphs" class="w-100 b--black-10 mw8 center">
-    <div class="w-100 pt4 flex items-center">
-        <h1 class="f3 di-ns pr2">Personal Dashboard</h1>
+<div id="graphs" class="w-100 b--black-10 mw8 center pa3 ph4-ns">
+    <div class="w-100 pt3 flex items-center mb2">
+        <h1 class="f3 di-ns pr2 mv0">Personal Dashboard</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoDashboard">Info</button>
     </div>
-    <p> This is a personal dashboard that should help the assistant to improve on writing radiology reports. <br>
+    <p class="black-70 lh-copy mt0 mb4"> This is a personal dashboard that should help the assistant to improve on writing radiology reports. <br>
     </p>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
+    <div class="w-100 flex items-center mb2">
+        <h1 class="f4 di-ns pr2 mv0">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
     </div>
-    {% include 'partials/report-list.html' %}
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Similarity</h1>
+    <div class="card-panel mb4">
+        {% include 'partials/report-list.html' %}
+    </div>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Similarity</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoSimilarity">Info</button>
     </div>
-    <svg id="SimilarityGraph" width="1000" height="500"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f5 pr2 pv1">Median</h1>
-        <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianSimilarity">Info</button>
+    <div class="card-panel pa3 mb4">
+        <svg id="SimilarityGraph" width="1000" height="500"></svg>
+        <div class="w-100 flex items-center mt2">
+            <h1 class="f5 pr2 pv1 mv0">Median</h1>
+            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianSimilarity">Info</button>
+        </div>
+        <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
+        <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
     </div>
-    <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
-    <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Words added</h1>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Words added</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsAdded">Info</button>
     </div>
-    <svg id="WordsAddedGraph" width="1000" height="500"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f5 pv1 pr2">Median</h1>
-        <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+    <div class="card-panel pa3 mb4">
+        <svg id="WordsAddedGraph" width="1000" height="500"></svg>
+        <div class="w-100 flex items-center mt2">
+            <h1 class="f5 pv1 pr2 mv0">Median</h1>
+            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+        </div>
+        <svg id="WordsAddedBarChart" class="ph6-l" width="700" height="200"></svg>
     </div>
-    <svg id="WordsAddedBarChart" class="ph6-l" width="700" height="200"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Words deleted</h1>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Words deleted</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsDeleted">Info</button>
     </div>
-    <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f5 pv1 pr2">Median</h1>
-        <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+    <div class="card-panel pa3 mb4">
+        <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
+        <div class="w-100 flex items-center mt2">
+            <h1 class="f5 pv1 pr2 mv0">Median</h1>
+            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+        </div>
+        <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
     </div>
-    <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
-    <div class="w-100 flex items-center">
-        <h1 class="f4 di-ns pr2">Reviewer List</h1>
+    <div class="w-100 flex items-center mt4 mb2">
+        <h1 class="f4 di-ns pr2 mv0">Reviewer List</h1>
         <button class="black f7 ba bg-light-yellow b--light-yellow infoReviewerList">Info</button>
     </div>
-    {% include 'partials/reviewer-list.html' %}
+    <div class="card-panel mb3">
+        {% include 'partials/reviewer-list.html' %}
+    </div>
 </div>
 {% assets "js_all" %}
     <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/pikaday.js') }}"></script>
