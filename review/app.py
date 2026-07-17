@@ -124,6 +124,8 @@ REVIEW_DB_SETTINGS = {
 }
 
 WHO_IS_WHO_URL = os.getenv("WHO_IS_WHO_URL")
+# Internal host uses a self-signed certificate; allow disabling verification via .env.
+WHO_IS_WHO_VERIFY_SSL = os.getenv("WHO_IS_WHO_VERIFY_SSL", "true").lower() != "false"
 
 VERSION = "4.1.2"
 
@@ -409,7 +411,7 @@ def is_admin(user):
         return session["is_admin"]
     log.debug("is_admin not set in session, checking via who_is_who")
     loginname = user.get("samAccountName")
-    who_is_who_user = get(WHO_IS_WHO_URL + loginname).json()
+    who_is_who_user = get(WHO_IS_WHO_URL + loginname, verify=WHO_IS_WHO_VERIFY_SSL).json()
     session["user"] = user | who_is_who_user
     admin_users = os.getenv("ADMIN_USERS")
     session["is_admin"] = False

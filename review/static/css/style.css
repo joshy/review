@@ -157,14 +157,102 @@ nav.bb {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+/* --- Site header --- */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding: 1rem 1rem;
+}
+
+@media (min-width: 30em) {
+    .app-header {
+        padding: 1rem 2rem;
+    }
+}
+
+.app-header__brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    color: #1d1d1b;
+    text-decoration: none;
+}
+
+.app-header__brand:hover {
+    color: #1d1d1b;
+    text-decoration: underline;
+}
+
+.app-header__version {
+    color: #6b6b6b;
+    font-weight: 400;
+}
+
+.app-header__form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+
+.app-header__form label {
+    color: #6b6b6b;
+    white-space: nowrap;
+}
+
+.app-header__form input[type="text"] {
+    min-width: 0;
+}
+
+.app-header__institute {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    text-decoration: none;
+    color: #1d1d1b;
+}
+
+.app-header__institute:hover {
+    color: #1d1d1b;
+}
+
+.app-header__logo {
+    height: 28px;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.app-header__institute-text {
+    font-size: 0.75rem;
+    line-height: 1.25;
+    color: #6b6b6b;
+    text-align: right;
+    display: none;
+}
+
+@media (min-width: 60em) {
+    .app-header__institute-text {
+        display: block;
+    }
+}
+
 a {
     transition: color 0.15s ease;
 }
 
 .card-panel {
     background: #ffffff;
-    border-radius: 6px;
+    border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem;
 }
 
 table.f6 tbody tr {

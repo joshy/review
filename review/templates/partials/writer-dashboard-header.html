@@ -1,30 +1,27 @@
-<nav class="w-100 center pv4 mw8 bb b--light-gray">
-    <div class="flex justify-between">
-        <div class="dtc v-btm w-25 tl">
-            <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black underline-hover" href="/"
-                title="Home">
-                Report Review Server
-                <div>
-                    <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
-                </div>
-            </a>
-        </div>
+<nav class="bb b--light-gray app-header">
+    <a class="app-header__brand" href="/" title="Home">
+        <span class="f5 fw6">Report Review Server</span>
+        <span class="app-header__version f7">v{{ version }}</span>
+    </a>
 
-        <div class="dtc v-btm w-35 tr">
-            <a class="link f6 f5-ns dib near-black underline-hover"
-                href="http://www.unispital-basel.ch/index.php?id=1899"
-                title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
-                Universitätsspital Basel
-                <br>Klinik für Radiologie und Nuklearmedizin
-            </a>
-        </div>
-    </div>
+    <a class="app-header__institute" href="http://www.unispital-basel.ch/index.php?id=1899"
+       title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
+        <span class="app-header__institute-text">
+            Klinik für Radiologie und Nuklearmedizin
+        </span>
+        <img class="app-header__logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="Universitätsspital Basel">
+    </a>
 </nav>
 
-<div class="w-100 center mw8">
-    <form class="w-100 mw8 cf" action="/writer-dashboard">
+<div class="card-panel pa3 mt3">
+    <div class="flex items-center mb2">
+        <h1 class="f3 di-ns pr2 mv0">Personal Dashboard</h1>
+        <button class="black f7 ba bg-light-yellow b--light-yellow infoDashboard">Info</button>
+    </div>
+    <p class="black-70 lh-copy mt0 mb3">This is a personal dashboard that should help the assistant to improve on writing radiology reports.</p>
+    <form class="cf" action="/writer-dashboard">
         {% include 'partials/checkbox.html' %}
-        <div class="w-100 pv2 flex mw8">
+        <div class="pv2 flex">
             <label class="f6 pa2" for="last_exams">Last exams </label>
             <input id="last_exams"
                 class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black b--near-black w-10"

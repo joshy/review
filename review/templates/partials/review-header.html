@@ -1,44 +1,38 @@
-<nav class="w-100 center pv4 mw9 bb b--light-gray">
-    <div class="dtc v-btm w-10 tl">
-        <a class="dtc v-btm link w-75 link f6 f5-ns dib mr3 mr4-ns near-black underline-hover" href="/"
-           title="Home">
-            Report Review Server
-            <div>
-                <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
-            </div>
-        </a>
-    </div>
+<nav class="w-100 center mw9 bb b--light-gray app-header">
+    <a class="app-header__brand" href="/" title="Home">
+        <span class="f5 fw6">Report Review Server</span>
+        <span class="app-header__version f7">v{{ version }}</span>
+    </a>
 
-    <div class="cf dtc w-40 v-btm truncate">
-        <form action="/">
-            <label class="f6 pa1" for="datepicker">Date </label>
-            <input id="datepicker"
-                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
-                   value="{{ day }}" type="text"
-                   name="day" placeholder="day">
-            <label class="f6 pa1" for="writer">Writer </label>
-            <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-20 b--near-black"
-                   value="{{ writer }}" type="text"
-                   name="writer" placeholder="Windows login name"
-                   {% if not has_general_approval_rights %}readonly {% endif %}>
-            <label class="f6 pa1" for="writer">Reviewer </label>
-            <input id="reviewer"
-                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-20 b--near-black"
-                   value="{{ reviewer }}" type="text"
-                   name="reviewer" placeholder="Windows login name">
-            <label class="f6 pa1" for="writer">Befund Status </label>
-            <input id="reviewer"
-                   class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w-10 b--near-black"
-                   value="{{ report_status }}" type="text"
-                   name="report_status" placeholder="F">
-            <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
-        </form>
-    </div>
-    <div class="dtc v-btm w-10 tr">
-        <a class="link f6 f5-ns dib near-black underline-hover" href="http://www.unispital-basel.ch/index.php?id=1899"
-           title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
-            Universitätsspital Basel
-            <br>Klinik für Radiologie und Nuklearmedizin
-        </a>
-    </div>
+    <form class="app-header__form" action="/">
+        <label class="f6" for="datepicker">Date</label>
+        <input id="datepicker"
+               class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w4 b--near-black"
+               value="{{ day }}" type="text"
+               name="day" placeholder="day">
+        <label class="f6" for="writer">Writer</label>
+        <input id="writer" class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w4 b--near-black"
+               value="{{ writer }}" type="text"
+               name="writer" placeholder="Windows login name"
+               {% if not has_general_approval_rights %}readonly {% endif %}>
+        <label class="f6" for="reviewer">Reviewer</label>
+        <input id="reviewer"
+               class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w4 b--near-black"
+               value="{{ reviewer }}" type="text"
+               name="reviewer" placeholder="Windows login name">
+        <label class="f6" for="report_status">Befund Status</label>
+        <input id="report_status"
+               class="f6 pa2 input-reset ba bg-transparent hover-bg-grey hover-black w3 b--near-black"
+               value="{{ report_status }}" type="text"
+               name="report_status" placeholder="F">
+        <input class="black f6 input-reset pa2 ba bg-yellow b--yellow pointer" type="submit" value="Search">
+    </form>
+
+    <a class="app-header__institute" href="http://www.unispital-basel.ch/index.php?id=1899"
+       title="Universitätsspital Basel, Klinik für Radiologie und Nuklearmedizin">
+        <span class="app-header__institute-text">
+            Klinik für Radiologie und Nuklearmedizin
+        </span>
+        <img class="app-header__logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="Universitätsspital Basel">
+    </a>
 </nav>
