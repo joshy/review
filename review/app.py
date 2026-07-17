@@ -127,7 +127,7 @@ WHO_IS_WHO_URL = os.getenv("WHO_IS_WHO_URL")
 # Internal host uses a self-signed certificate; allow disabling verification via .env.
 WHO_IS_WHO_VERIFY_SSL = os.getenv("WHO_IS_WHO_VERIFY_SSL", "true").lower() != "false"
 
-VERSION = "4.1.2"
+VERSION = "4.2.0"
 
 
 def create_app():
@@ -308,7 +308,6 @@ def register_routes(app, auth):
             "RX",
             "OTHER",
         ]
-        modalities = "{" + ",".join(modalities) + "}"
         rows = load_data_by_writer(writer, last_exams, start_date, end_date, modalities)
         df_rows = pd.DataFrame(rows)
         df_rows = relative(df_rows)
@@ -365,7 +364,6 @@ def register_routes(app, auth):
             "RX",
             "OTHER",
         ]
-        modalities = "{" + ",".join(modalities) + "}"
         rows = load_data_by_reviewer(
             reviewer, last_exams, start_date, end_date, modalities
         )

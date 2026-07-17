@@ -16,60 +16,70 @@
 {% include 'partials/writer-dashboard-header.html' %}
 
 <div id="graphs">
-    <div class="card-panel pa3 mt3">
-        <div class="flex items-center mb2">
-            <h1 class="f4 di-ns pr2 mv0">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
+    <div class="card-panel mt3">
+        <div class="pa2">
+            <div class="flex items-center mb2">
+                <h1 class="f4 di-ns pr2 mv0">Reports List</h1><span class="pr2"><i>({{ data['rows']|length }} reports)</i></span>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoReportsList">Info</button>
+            </div>
+            {% include 'partials/report-list.html' %}
         </div>
-        {% include 'partials/report-list.html' %}
     </div>
 
-    <div class="card-panel pa3 mt3">
-        <div class="flex items-center mb2">
-            <h1 class="f4 di-ns pr2 mv0">Similarity</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoSimilarity">Info</button>
+    <div class="card-panel mt3">
+        <div class="pa2">
+            <div class="flex items-center mb2">
+                <h1 class="f4 di-ns pr2 mv0">Similarity</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoSimilarity">Info</button>
+            </div>
+            <svg id="SimilarityGraph" width="1000" height="500"></svg>
+            <div class="flex items-center mt2">
+                <h1 class="f5 pr2 pv1 mv0">Median</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianSimilarity">Info</button>
+            </div>
+            <svg id="SimilarityPieChartSingle" width="450" height="330"></svg>
+            <svg id="SimilarityPieChartAll" width="450" height="330"></svg>
         </div>
-        <svg id="SimilarityGraph" width="1000" height="500"></svg>
-        <div class="flex items-center mt2">
-            <h1 class="f5 pr2 pv1 mv0">Median</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianSimilarity">Info</button>
-        </div>
-        <svg id="SimilarityPieChartSingle" width="500" height="330"></svg>
-        <svg id="SimilarityPieChartAll" width="500" height="330"></svg>
     </div>
 
-    <div class="card-panel pa3 mt3">
-        <div class="flex items-center mb2">
-            <h1 class="f4 di-ns pr2 mv0">Words added</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsAdded">Info</button>
+    <div class="card-panel mt3">
+        <div class="pa2">
+            <div class="flex items-center mb2">
+                <h1 class="f4 di-ns pr2 mv0">Words added</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsAdded">Info</button>
+            </div>
+            <svg id="WordsAddedGraph" width="1000" height="500"></svg>
+            <div class="flex items-center mt2">
+                <h1 class="f5 pv1 pr2 mv0">Median</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+            </div>
+            <svg id="WordsAddedBarChart" class="ph6-l" width="700" height="200"></svg>
         </div>
-        <svg id="WordsAddedGraph" width="1000" height="500"></svg>
-        <div class="flex items-center mt2">
-            <h1 class="f5 pv1 pr2 mv0">Median</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
-        </div>
-        <svg id="WordsAddedBarChart" class="ph6-l" width="700" height="200"></svg>
     </div>
 
-    <div class="card-panel pa3 mt3">
-        <div class="flex items-center mb2">
-            <h1 class="f4 di-ns pr2 mv0">Words deleted</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsDeleted">Info</button>
+    <div class="card-panel mt3">
+        <div class="pa2">
+            <div class="flex items-center mb2">
+                <h1 class="f4 di-ns pr2 mv0">Words deleted</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoWordsDeleted">Info</button>
+            </div>
+            <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
+            <div class="flex items-center mt2">
+                <h1 class="f5 pv1 pr2 mv0">Median</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
+            </div>
+            <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
         </div>
-        <svg id="WordsDeletedGraph" width="1000" height="500"></svg>
-        <div class="flex items-center mt2">
-            <h1 class="f5 pv1 pr2 mv0">Median</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoMedianDocumentChanges">Info</button>
-        </div>
-        <svg id="WordsDeletedBarChart" class="ph6-l" width="700" height="200"></svg>
     </div>
 
-    <div class="card-panel pa3 mt3 mb3">
-        <div class="flex items-center mb2">
-            <h1 class="f4 di-ns pr2 mv0">Reviewer List</h1>
-            <button class="black f7 ba bg-light-yellow b--light-yellow infoReviewerList">Info</button>
+    <div class="card-panel mt3 mb3">
+        <div class="pa2">
+            <div class="flex items-center mb2">
+                <h1 class="f4 di-ns pr2 mv0">Reviewer List</h1>
+                <button class="black f7 ba bg-light-yellow b--light-yellow infoReviewerList">Info</button>
+            </div>
+            {% include 'partials/reviewer-list.html' %}
         </div>
-        {% include 'partials/reviewer-list.html' %}
     </div>
 </div>
 {% assets "js_all" %}

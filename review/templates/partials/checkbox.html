@@ -1,15 +1,21 @@
-<div id="checkboxes">
+<div id="checkboxes" class="modality-filter">
     <fieldset class="bn ma0 pa0">
-        <legend class="f5 pt3 bb">Filter Modalities</legend>
-        <input type="checkbox" id="CT" name="modalities" value="CT">
-        <label class="f6 dib-m pa1" for="CT">CT</label>
-        <input type="checkbox" id="MRI" name="modalities" value="MRI">
-        <label class="f6 dib-m pa1" for="MRI">MRI</label>
-        <input type="checkbox" id="US" name="modalities" value="US">
-        <label class="f6 dib-m pa1" for="US">US</label>
-        <input type="checkbox" id="RX" name="modalities" value="RX">
-        <label class="f6 dib-m pa1" for="RX">RX</label>
-        <input type="checkbox" id="OTHER" name="modalities" value="OTHER">
-        <label class="f6 dib-m pa1" for="OTHER">OTHER</label>
+        <legend class="modality-filter__legend">Modalities</legend>
+        <div class="modality-filter__options">
+            <input type="checkbox" id="CT" name="modalities" value="CT" class="modality-filter__input">
+            <label class="modality-filter__chip" for="CT">CT</label>
+
+            <input type="checkbox" id="MRI" name="modalities" value="MRI" class="modality-filter__input">
+            <label class="modality-filter__chip" for="MRI">MRI</label>
+
+            <input type="checkbox" id="US" name="modalities" value="US" class="modality-filter__input">
+            <label class="modality-filter__chip" for="US">US</label>
+
+            <input type="checkbox" id="RX" name="modalities" value="RX" class="modality-filter__input">
+            <label class="modality-filter__chip" for="RX">RX</label>
+
+            <input type="checkbox" id="OTHER" name="modalities" value="OTHER" class="modality-filter__input">
+            <label class="modality-filter__chip" for="OTHER">Other</label>
+        </div>
     </fieldset>
 </div>

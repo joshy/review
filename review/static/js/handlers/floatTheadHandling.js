@@ -1,14 +1,3 @@
 function floatThead() {
-
-    var $table = $('.tableDashboard');
-    $table.floatThead({
-        scrollContainer: function ($table) {
-            return $table.closest('.tableWrapper');
-        }
-    });
-    $table.floatThead({
-        responsiveContainer: function ($table) {
-            return $table.closest('.tableWrapper');
-        }
-    });
+    // Sticky header is now handled purely via CSS — no JS needed.
 }

@@ -152,9 +152,28 @@ mark {
 
 /* --- General UI polish --- */
 
-nav.bb {
+nav.bb,
+nav.app-header {
     background-color: #ffffff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tableWrapper {
+    max-height: 28rem;
+    overflow-y: auto;
+}
+
+.tableDashboard {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tableDashboard thead th {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    z-index: 2;
+    box-shadow: inset 0 -2px 0 #333;
 }
 
 /* --- Site header --- */
@@ -166,6 +185,10 @@ nav.bb {
     flex-wrap: wrap;
     gap: 1.25rem;
     padding: 1rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #ffffff;
 }
 
 @media (min-width: 30em) {
@@ -297,7 +320,7 @@ table.f6 tbody tr:hover {
 }
 
 input.input-reset {
-    border-radius: 4px;
+    border-radius: 0;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -308,7 +331,7 @@ input.input-reset:focus {
 }
 
 input[type="submit"] {
-    border-radius: 4px;
+    border-radius: 0;
     font-weight: 600;
     transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
@@ -327,4 +350,68 @@ input[type="submit"]:hover {
 .writerButton:hover {
     background-color: #ffdf4d;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Modality filter chips --- */
+
+.modality-filter {
+    margin-bottom: 0.25rem;
+}
+
+.modality-filter__legend {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.modality-filter__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.modality-filter__input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.modality-filter__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #444;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 100px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+
+.modality-filter__chip:hover {
+    background-color: #e4e4e4;
+    border-color: #bbb;
+}
+
+.modality-filter__input:checked + .modality-filter__chip {
+    background-color: #ffd600;
+    border-color: #e6c200;
+    color: #1d1d1b;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modality-filter__input:focus-visible + .modality-filter__chip {
+    outline: 2px solid #ffd600;
+    outline-offset: 2px;
 }
