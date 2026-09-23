@@ -6,9 +6,15 @@ from sqlalchemy import create_engine, text
 from psycopg2.extras import DictCursor
 import datetime
 
-from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs, hedgings
-from review.database import query_review_report_by_acc, update_hedging, update_metrics, query_report_for_hedging
+from review.database import (
+    connect_review_db,
+    mssql_enabled,
+    query_report_for_hedging,
+    query_review_report_by_acc,
+    update_hedging,
+    update_metrics,
+)
 from striprtf.striprtf import rtf_to_text
 
 
@@ -21,8 +27,7 @@ logging.basicConfig(
 
 
 def get_review_db():
-    db = psycopg2.connect(**REVIEW_DB_SETTINGS)
-    return db
+    return connect_review_db()
 
 
 def secta_cdwh_connection():
@@ -155,8 +160,9 @@ def run_query_for_day(day):
                 UPDATE sectra_reports
                 SET unters_beginn = %s
                 WHERE accession_number = %s
-                RETURNING accession_number;
             """
+        if not mssql_enabled():
+            sql += " RETURNING accession_number"
         try:
             cursor = connection.cursor(cursor_factory=DictCursor)
             cursor.execute(sql,(i.ExaminationDate, i.ExaminationAccessionNumber))
@@ -194,14 +200,25 @@ def clean_reports(start_date, end_date):
     
     try:
         # Create the cleaned table if it doesn't exist
-        create_table_sql = """
-            CREATE TABLE IF NOT EXISTS sectra_reports_cleaned (
-                accession_number VARCHAR PRIMARY KEY,
-                report_s TEXT,
-                report_v TEXT,
-                report_f TEXT
-            )
-        """
+        if mssql_enabled():
+            create_table_sql = """
+                IF OBJECT_ID('dbo.sectra_reports_cleaned', 'U') IS NULL
+                CREATE TABLE sectra_reports_cleaned (
+                    accession_number NVARCHAR(64) NOT NULL PRIMARY KEY,
+                    report_s NVARCHAR(MAX),
+                    report_v NVARCHAR(MAX),
+                    report_f NVARCHAR(MAX)
+                )
+            """
+        else:
+            create_table_sql = """
+                CREATE TABLE IF NOT EXISTS sectra_reports_cleaned (
+                    accession_number VARCHAR PRIMARY KEY,
+                    report_s TEXT,
+                    report_v TEXT,
+                    report_f TEXT
+                )
+            """
         cursor.execute(create_table_sql)
         connection.commit()
         logging.info("Created sectra_reports_cleaned table if it didn't exist")
@@ -258,18 +275,49 @@ def clean_reports(start_date, end_date):
                     report_f_cleaned = None
             
             # Insert or update the cleaned data
-            insert_sql = """
-                INSERT INTO sectra_reports_cleaned
-                    (accession_number, report_s, report_v, report_f)
-                VALUES
-                    (%s, %s, %s, %s)
-                ON CONFLICT (accession_number)
-                DO UPDATE SET
-                    report_s = EXCLUDED.report_s,
-                    report_v = EXCLUDED.report_v,
-                    report_f = EXCLUDED.report_f
-            """
-            cursor.execute(insert_sql, (accession_number, report_s_cleaned, report_v_cleaned, report_f_cleaned))
+            if mssql_enabled():
+                insert_sql = """
+                    IF EXISTS (
+                        SELECT 1 FROM sectra_reports_cleaned WHERE accession_number = %s
+                    )
+                        UPDATE sectra_reports_cleaned
+                        SET report_s = %s, report_v = %s, report_f = %s
+                        WHERE accession_number = %s
+                    ELSE
+                        INSERT INTO sectra_reports_cleaned
+                            (accession_number, report_s, report_v, report_f)
+                        VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(
+                    insert_sql,
+                    (
+                        accession_number,
+                        report_s_cleaned,
+                        report_v_cleaned,
+                        report_f_cleaned,
+                        accession_number,
+                        accession_number,
+                        report_s_cleaned,
+                        report_v_cleaned,
+                        report_f_cleaned,
+                    ),
+                )
+            else:
+                insert_sql = """
+                    INSERT INTO sectra_reports_cleaned
+                        (accession_number, report_s, report_v, report_f)
+                    VALUES
+                        (%s, %s, %s, %s)
+                    ON CONFLICT (accession_number)
+                    DO UPDATE SET
+                        report_s = EXCLUDED.report_s,
+                        report_v = EXCLUDED.report_v,
+                        report_f = EXCLUDED.report_f
+                """
+                cursor.execute(
+                    insert_sql,
+                    (accession_number, report_s_cleaned, report_v_cleaned, report_f_cleaned),
+                )
             processed += 1
             
             if processed % 100 == 0:

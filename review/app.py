@@ -1,10 +1,10 @@
 import logging
 import os
 from datetime import datetime
+from functools import wraps
 from time import perf_counter
 
 import pandas as pd
-import psycopg2
 import structlog
 from flask import Flask, g, redirect, render_template, request, session, url_for
 from flask_assets import Bundle, Environment
@@ -23,6 +23,7 @@ from review.calculations import (
     relative,
 )
 from review.database import (
+    connect_review_db,
     query_all_by_departments,
     query_by_reviewer_and_date_and_modality,
     query_by_reviewer_and_modality,
@@ -129,6 +130,35 @@ WHO_IS_WHO_VERIFY_SSL = os.getenv("WHO_IS_WHO_VERIFY_SSL", "true").lower() != "f
 
 VERSION = "4.2.0"
 
+TESTING = os.getenv("TESTING", "false").lower() in ("true", "1", "yes")
+
+
+def _testing_user():
+    login = (os.getenv("ADMIN_USERS") or "testuser").split(",")[0].strip() or "testuser"
+    return {
+        "samAccountName": login,
+        "name": "Local test user",
+        "ris": {"has_general_approval_rights": True},
+    }
+
+
+class _TestingAuth:
+    """Stand-in for identity.flask.Auth when TESTING=true."""
+
+    def login_required(self):
+        def decorator(view):
+            @wraps(view)
+            def wrapped(*args, **kwargs):
+                kwargs["context"] = {"user": _testing_user()}
+                return view(*args, **kwargs)
+
+            return wrapped
+
+        return decorator
+
+    def complete_log_in(self, _args):
+        return {}
+
 
 def create_app():
     configure_logging()
@@ -148,14 +178,17 @@ def create_app():
     app.jinja_env.add_extension("jinja2.ext.loopcontrols")
     app.jinja_env.add_extension("jinja2.ext.do")
 
-    # Initialize auth
-    auth = Auth(
-        app,
-        authority=app_config.AUTHORITY,
-        client_id=app_config.CLIENT_ID,
-        client_credential=app_config.CLIENT_SECRET,
-        redirect_uri=app_config.REDIRECT_URI,
-    )
+    if TESTING:
+        log.warning("TESTING=true: skipping Entra login and who-is-who")
+        auth = _TestingAuth()
+    else:
+        auth = Auth(
+            app,
+            authority=app_config.AUTHORITY,
+            client_id=app_config.CLIENT_ID,
+            client_credential=app_config.CLIENT_SECRET,
+            redirect_uri=app_config.REDIRECT_URI,
+        )
 
     # Initialize JS assets
     init_js(app)
@@ -407,6 +440,11 @@ def is_admin(user):
     if "is_admin" in session:
         log.debug("using cached admin status", is_admin=session["is_admin"])
         return session["is_admin"]
+    if TESTING:
+        session["user"] = user
+        session["is_admin"] = True
+        log.debug("TESTING=true: skipping who-is-who, treating user as admin")
+        return True
     log.debug("is_admin not set in session, checking via who_is_who")
     loginname = user.get("samAccountName")
     who_is_who_user = get(WHO_IS_WHO_URL + loginname, verify=WHO_IS_WHO_VERIFY_SSL).json()
@@ -483,10 +521,26 @@ def remove_NaT_format(df):
     return df.fillna("None")
 
 
+def _testing_bind():
+    host = (os.getenv("TESTING_HOST") or "127.0.0.1").strip()
+    port = int((os.getenv("TESTING_PORT") or "5000").strip())
+    return host, port
+
+
 def get_review_db():
-    "Returns a connection to the PostgreSQL Review DB"
+    "PostgreSQL unless mssql_db_enabled is true."
     db = getattr(g, "_review_database", None)
     if db is None:
         log.debug("opening review database connection")
-        db = g._review_database = psycopg2.connect(**REVIEW_DB_SETTINGS)
+        db = g._review_database = connect_review_db()
     return g._review_database
+
+
+if __name__ == "__main__":
+    application = create_app()
+    if TESTING:
+        host, port = _testing_bind()
+        log.info("local testing server", host=host, port=port)
+        application.run(host=host, port=port, debug=True)
+    else:
+        application.run()

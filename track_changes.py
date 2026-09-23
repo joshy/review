@@ -3,13 +3,11 @@ import time
 from threading import Thread
 
 from rich.logging import RichHandler
-import psycopg2
 import schedule
 from psycopg2.extras import DictCursor
 
-from review.app import REVIEW_DB_SETTINGS
 from review.compare import diffs, hedgings
-from review.database import query_review_report, update_metrics, update_hedging
+from review.database import connect_review_db, query_review_report, update_metrics, update_hedging
 
 logging.basicConfig(
     level="NOTSET",
@@ -18,12 +16,11 @@ logging.basicConfig(
     handlers=[RichHandler(rich_tracebacks=True)]
 )
 
-logger = logging.getLogger("poll")
+logger = logging.getLogger("track_changes")
 
 
 def get_review_db():
-    db = psycopg2.connect(**REVIEW_DB_SETTINGS)
-    return db
+    return connect_review_db()
 
 
 def calculate_comparison():
@@ -60,4 +57,4 @@ if __name__ == "__main__":
     schedule.every(1).minutes.do(job)
     t = Thread(target=run_schedule)
     t.start()
-    logger.info("Polling is up and running")
+    logger.info("track_changes is up and running")

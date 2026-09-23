@@ -1,10 +1,159 @@
 import logging
-import psycopg2
+import os
 
+import psycopg2
+from dotenv import load_dotenv
 from jinja2 import Template
+
+load_dotenv()
 
 # this logger works
 log = logging.getLogger("review.app")
+
+
+def _env(key, default=""):
+    value = os.getenv(key, default)
+    if value is None:
+        return default
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+        value = value[1:-1]
+    return value
+
+
+def _enabled(key, default="false"):
+    return _env(key, default).lower() in ("true", "1", "yes")
+
+
+def mssql_enabled():
+    """True only when mssql_db_enabled is specifically true. Default is PostgreSQL."""
+    return _enabled("mssql_db_enabled", "false")
+
+
+def _login_expr(column):
+    if mssql_enabled():
+        lowered = f"LOWER({column})"
+        return f"LEFT({lowered}, CHARINDEX('@', {lowered} + '@') - 1)"
+    return f"split_part(lower({column}), '@', 1)"
+
+
+def _limit(count_sql):
+    if mssql_enabled():
+        return f"OFFSET 0 ROWS FETCH NEXT {count_sql} ROWS ONLY"
+    return f"LIMIT {count_sql}"
+
+
+def _modality_clause(modalities):
+    modalities = list(modalities or [])
+    if mssql_enabled():
+        if not modalities:
+            return "1 = 0", []
+        marks = ", ".join(["%s"] * len(modalities))
+        return f"a.modality IN ({marks})", modalities
+    return "a.modality = ANY(%s)", [modalities]
+
+
+def _db_errors():
+    errors = [psycopg2.Error]
+    try:
+        import pymssql
+
+        errors.append(pymssql.Error)
+    except ImportError:
+        pass
+    return tuple(errors)
+
+
+class _MssqlCursor:
+    def __init__(self, cursor, as_dict):
+        self._cursor = cursor
+        self._as_dict = as_dict
+
+    def execute(self, sql, params=None):
+        if params is None:
+            return self._cursor.execute(sql)
+        return self._cursor.execute(sql, params)
+
+    def _adapt(self, row):
+        if row is None or not self._as_dict:
+            return row
+        return {str(key).lower(): value for key, value in row.items()}
+
+    def fetchall(self):
+        return [self._adapt(row) for row in self._cursor.fetchall()]
+
+    def fetchone(self):
+        return self._adapt(self._cursor.fetchone())
+
+    def __iter__(self):
+        for row in self._cursor:
+            yield self._adapt(row)
+
+    def close(self):
+        return self._cursor.close()
+
+    @property
+    def description(self):
+        return self._cursor.description
+
+    @property
+    def rowcount(self):
+        return self._cursor.rowcount
+
+
+class _MssqlConnection:
+    def __init__(self, raw):
+        self._raw = raw
+
+    def cursor(self, cursor_factory=None, **kwargs):
+        as_dict = cursor_factory is not None
+        return _MssqlCursor(self._raw.cursor(as_dict=as_dict), as_dict)
+
+    def commit(self):
+        return self._raw.commit()
+
+    def rollback(self):
+        return self._raw.rollback()
+
+    def close(self):
+        return self._raw.close()
+
+
+def connect_review_db():
+    """PostgreSQL unless mssql_db_enabled is true."""
+    if not mssql_enabled():
+        connection = psycopg2.connect(
+            dbname=_env("REVIEW_DB_NAME"),
+            user=_env("REVIEW_DB_USER"),
+            password=_env("REVIEW_DB_PASSWORD"),
+            host=_env("REVIEW_DB_HOST"),
+            port=_env("REVIEW_DB_PORT"),
+        )
+        log.info(
+            "Using PostgreSQL %s@%s:%s",
+            _env("REVIEW_DB_NAME"),
+            _env("REVIEW_DB_HOST"),
+            _env("REVIEW_DB_PORT"),
+        )
+        return connection
+
+    import pymssql
+
+    connection = pymssql.connect(
+        server=_env("mssql_db_host"),
+        port=int(_env("mssql_db_port")),
+        user=_env("mssql_db_user"),
+        password=_env("mssql_db_password"),
+        database=_env("mssql_db_name"),
+        autocommit=True,
+    )
+    log.info(
+        "Using MS SQL %s@%s:%s",
+        _env("mssql_db_name"),
+        _env("mssql_db_host"),
+        _env("mssql_db_port"),
+    )
+    return _MssqlConnection(connection)
 
 
 def query_review_report_by_acc(cursor, id):
@@ -57,7 +206,7 @@ def query_report_for_hedging(cursor, bulk):
             hedging_count_f = -1
           ORDER BY
             unters_beginn desc
-          LIMIT {int(bulk)}
+          {_limit(int(bulk))}
           """
     cursor.execute(sql)
     results = cursor.fetchall()
@@ -69,7 +218,7 @@ def query_review_report(cursor):
     Returns the rows where the reports are finalized and metrics are not yet
     calculated.
     """
-    sql = """
+    sql = f"""
           SELECT
             a.accession_number,
             a.report_s,
@@ -84,7 +233,7 @@ def query_review_report(cursor):
             jaccard_s_f is null
           ORDER BY
             unters_beginn desc
-          LIMIT 1000
+          {_limit(1000)}
           """
     cursor.execute(sql)
     results = cursor.fetchall()
@@ -96,16 +245,19 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     Query all reports in the review db by day and writer (optional) and
     reviewer (optional) and befund status (optional).
     """
-    sql = """
+    schreiber = _login_expr("a.schreiber")
+    vor = _login_expr("a.vor_signierer")
+    fin = _login_expr("a.fin_signierer")
+    sql = f"""
           SELECT
             a.pid,
             a.accession_number,
             a.unters_beginn,
             a.untart_kuerzel,
             a.untart_name,
-            split_part(lower(a.schreiber), '@', 1) as schreiber,
-            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
-            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer, 
+            {schreiber} as schreiber,
+            {vor} as vor_signierer,
+            {fin} as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_v_f,
@@ -121,7 +273,7 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
                   %s
                     AND
                   %s
-            {{ other_clause }}
+            {{{{ other_clause }}}}
           ORDER BY
               a.unters_beginn desc
           """
@@ -130,11 +282,9 @@ def query_review_reports(cursor, day, writer, reviewer, report_status):
     template = Template(sql)
     sql = ""
     if writer:
-        sql += f" AND split_part(lower(a.schreiber), '@', 1) LIKE '{writer.lower()}'"
+        sql += f" AND {schreiber} LIKE '{writer.lower()}'"
     if reviewer:
-        sql += (
-            f" AND split_part(lower(a.fin_signierer), '@', 1) LIKE '{reviewer.lower()}'"
-        )
+        sql += f" AND {fin} LIKE '{reviewer.lower()}'"
     if report_status:
         sql += f" AND a.report_status = '{report_status.upper()}'"
 
@@ -165,7 +315,7 @@ def update_hedging(cursor, accession_number, heding_counts):
             ),
         )
         logging.info(f"Updated row for acc: {accession_number}")
-    except psycopg2.Error as e:
+    except _db_errors() as e:
         logging.error("Error %s", e)
 
 
@@ -200,7 +350,7 @@ def update_metrics(cursor, accession_number, diffs):
                 accession_number,
             ),
         )
-    except psycopg2.Error as e:
+    except _db_errors() as e:
         logging.error("Error %s", e)
 
 
@@ -258,16 +408,20 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
     """
     Query all reports in the review db by writer.
     """
-    sql = """
+    schreiber = _login_expr("a.schreiber")
+    vor = _login_expr("a.vor_signierer")
+    fin = _login_expr("a.fin_signierer")
+    modality_sql, modality_params = _modality_clause(modalities)
+    sql = f"""
           SELECT
             a.pid,
             a.accession_number,
             a.untart_kuerzel, 
             a.untart_name,
             a.unters_beginn,
-            split_part(lower(a.schreiber), '@', 1) as schreiber,
-            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
-            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
+            {schreiber} as schreiber,
+            {vor} as vor_signierer,
+            {fin} as fin_signierer,
             a.report_status,
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -286,18 +440,18 @@ def query_by_writer_and_modality(cursor, writer, last_exams, modalities):
           ON 
             a.accession_number = b.accession_number
           WHERE
-              split_part(lower(a.schreiber), '@', 1) LIKE %s
+              {schreiber} LIKE %s
           AND
               a.report_status = 'F'
           AND
-              split_part(lower(a.schreiber), '@', 1) != split_part(lower(b.fin_signierer), '@', 1)
+              {schreiber} != {_login_expr("b.fin_signierer")}
           AND 
-              a.modality = ANY(%s)
+              {modality_sql}
           ORDER BY
               a.unters_beginn desc
-          LIMIT %s
+          {_limit("%s")}
           """
-    cursor.execute(sql, (writer, modalities, last_exams))
+    cursor.execute(sql, (writer, *modality_params, last_exams))
     return cursor.fetchall()
 
 
@@ -307,14 +461,24 @@ def query_by_writer_and_date_and_modality(
     """
     Query all reports in the review db by writer.
     """
-    sql = """
+    schreiber = _login_expr("a.schreiber")
+    vor = _login_expr("a.vor_signierer")
+    fin = _login_expr("a.fin_signierer")
+    modality_sql, modality_params = _modality_clause(modalities)
+    if mssql_enabled():
+        writer_sql = f"LOWER(a.schreiber) LIKE %s"
+        writer_param = f"%{writer.lower()}%"
+    else:
+        writer_sql = "lower(a.schreiber) LIKE '%s%'"
+        writer_param = writer.lower()
+    sql = f"""
           SELECT
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            split_part(lower(a.schreiber), '@', 1) as schreiber,
-            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
-            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
+            {schreiber} as schreiber,
+            {vor} as vor_signierer,
+            {fin} as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -330,17 +494,17 @@ def query_by_writer_and_date_and_modality(
           FROM
             sectra_reports a 
           WHERE
-              lower(a.schreiber) LIKE '%s%'
+              {writer_sql}
           AND
               a.unters_beginn between %s and %s
           AND
               a.report_status = 'F'
           AND
-              a.modality = ANY(%s)
+              {modality_sql}
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (writer.lower(), start_date, end_date, modalities))
+    cursor.execute(sql, (writer_param, start_date, end_date, *modality_params))
     return cursor.fetchall()
 
 
@@ -348,14 +512,18 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
     """
     Query all reports in the review db by reviewer.
     """
-    sql = """
+    schreiber = _login_expr("a.schreiber")
+    vor = _login_expr("a.vor_signierer")
+    fin = _login_expr("a.fin_signierer")
+    modality_sql, modality_params = _modality_clause(modalities)
+    sql = f"""
           SELECT
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            split_part(lower(a.schreiber), '@', 1) as schreiber,
-            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
-            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
+            {schreiber} as schreiber,
+            {vor} as vor_signierer,
+            {fin} as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -371,16 +539,16 @@ def query_by_reviewer_and_modality(cursor, reviewer, last_exams, modalities):
           FROM
             sectra_reports a
           WHERE
-              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
+              {fin} LIKE %s
           AND
               a.report_status = 'F'
           AND 
-              a.modality= ANY(%s)
+              {modality_sql}
           ORDER BY
               a.unters_beginn desc
-          LIMIT %s
+          {_limit("%s")}
           """
-    cursor.execute(sql, (reviewer.lower(), modalities, last_exams))
+    cursor.execute(sql, (reviewer.lower(), *modality_params, last_exams))
     return cursor.fetchall()
 
 
@@ -388,7 +556,7 @@ def query_all_by_departments(cursor):
     """
     Query all reports in the review db which have status final
     """
-    sql = """
+    sql = f"""
           SELECT
             a.jaccard_s_f,
             a.jaccard_v_f,
@@ -411,7 +579,7 @@ def query_all_by_departments(cursor):
               a.schreiber != b.fin_signierer
           ORDER BY
               a.unters_beginn desc
-          LIMIT 2000
+          {_limit(2000)}
           """
     cursor.execute(sql)
     return cursor.fetchall()
@@ -423,14 +591,18 @@ def query_by_reviewer_and_date_and_modality(
     """
     Query all reports in the review db by reviewer, date and department.
     """
-    sql = """
+    schreiber = _login_expr("a.schreiber")
+    vor = _login_expr("a.vor_signierer")
+    fin = _login_expr("a.fin_signierer")
+    modality_sql, modality_params = _modality_clause(modalities)
+    sql = f"""
           SELECT
             a.pid,
             a.accession_number,
             a.unters_beginn,
-            split_part(lower(a.schreiber), '@', 1) as schreiber,
-            split_part(lower(a.vor_signierer), '@', 1) as vor_signierer,
-            split_part(lower(a.fin_signierer), '@', 1) as fin_signierer,
+            {schreiber} as schreiber,
+            {vor} as vor_signierer,
+            {fin} as fin_signierer,
             a.report_status,
             a.untart_name,
             a.jaccard_s_f,
@@ -450,7 +622,7 @@ def query_by_reviewer_and_date_and_modality(
           ON 
             a.accession_number = b.accession_number
           WHERE
-              split_part(lower(a.fin_signierer), '@', 1) LIKE %s
+              {fin} LIKE %s
           AND
               a.unters_beginn between %s and %s
           AND
@@ -458,9 +630,9 @@ def query_by_reviewer_and_date_and_modality(
           AND
               a.schreiber != b.fin_signierer
           AND
-              a.modality = ANY(%s)
+              {modality_sql}
           ORDER BY
               a.unters_beginn desc
           """
-    cursor.execute(sql, (reviewer.lower(), start_date, end_date, modalities))
+    cursor.execute(sql, (reviewer.lower(), start_date, end_date, *modality_params))
     return cursor.fetchall()
