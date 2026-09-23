@@ -79,6 +79,7 @@ celerybeat-schedule
 # dotenv
 .env
 .env_oldProduction
+.env_testing
 
 # virtualenv
 venv/

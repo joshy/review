@@ -30,9 +30,12 @@ Login with `repo` user and run the following commands
 
 ## Testing
 
-From the `review` folder, with `.env` present and `TESTING=true` (skips Entra login and who-is-who):
+From the `review` folder, with `.env` present and `TESTING=true` (skips Entra login and who-is-who).
+
+Use Python 3.13. `uv` otherwise picks 3.14, and the locked `psycopg2-binary` and `pandas` wheels stop at 3.13, so `uv sync` tries to compile them and fails.
 
 ```
+uv python pin 3.13
 uv sync
 uv run python -m review.app
 ```
